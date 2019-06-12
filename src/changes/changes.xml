@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+	<properties>
+		<title>everge - Simple text replacement application</title>
+		<author email="bjculkin@mix.wvu">Benjamin Culkin</author>
+	</properties>
+	<body>
+		<release version="current" description="Current work version">    
+			<action dev="Ben Culkin" type="add">
+				Initial release :)
+			</action>         
+		</release>
+	</body>
+</document>
