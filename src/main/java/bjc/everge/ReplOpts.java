@@ -1,4 +1,4 @@
-package bjc.replpair;
+package bjc.everge;
 
 /**
  * Options for processing ReplPairs.

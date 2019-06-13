@@ -1,4 +1,4 @@
-package bjc.replpair;
+package bjc.everge;
 
 /**
  * Represents an error encountered parsing ReplPairs

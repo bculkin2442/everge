@@ -1,4 +1,4 @@
-package bjc.replpair;
+package bjc.everge;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class ReplPairTest {
 
 	@Test
 	public void testStaging() {
-		assertMultiReplace(true, "data/test/test6.rp", "c", "a", "y2", "x");
+		assertMultiReplace("data/test/test6.rp", "c", "a", "y2", "x");
 	}
 
 	private void assertMultiReplace(String fle, String... inps) {
