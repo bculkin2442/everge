@@ -16,7 +16,6 @@ import org.junit.Test;
  * @author Ben Culkin
  */
 public class ReplPairTest {
-	// Test that we load empty files fine
 	@Test
 	public void testLoadFile() {
 		List<ReplPair> lrp = null;
@@ -49,6 +48,11 @@ public class ReplPairTest {
 	@Test
 	public void testReplaceExpOrder() {
 		assertMultiReplace("data/test/test5.rp", "a", "a", "aa", "ab");
+	}
+
+	@Test
+	public void testStaging() {
+		assertMultiReplace(true, "data/test/test6.rp", "c", "a", "y2", "x");
 	}
 
 	private void assertMultiReplace(String fle, String... inps) {
@@ -89,6 +93,8 @@ public class ReplPairTest {
 	}
 
 	private void assertReplacesTo(boolean logRep, String right, List<ReplPair> rps, String inp) {
+		if (logRep) System.err.printf("\t[LOG] Checking '%s' -> '%s'\n", inp, right);
+
 		String tmp = inp;
 
 		for (ReplPair rp : rps) {

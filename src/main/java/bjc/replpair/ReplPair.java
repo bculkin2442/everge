@@ -104,6 +104,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		priority = p;
 	}
+
 	/**
 	 * Read a list of replacement pairs from an input source.
 	 *
@@ -159,15 +160,22 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * 	The list of replacements.
 	 */
 	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn, List<ReplError> errs) {
+		return readList(detals, scn, errs, new ReplOpts());
+	}
+
+	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
+			List<ReplError> errs, ReplOpts ropts) {
 		int lno = 0;
 		int pno = 0;
 
-		int defPrior = 1;
-		int defStage = 1;
+		int defPrior = ropts.defPrior;
+		int defStage = ropts.defStage;
 
-		boolean defMulti = false;
+		boolean defMulti = ropts.defMulti;
 
-		StageStatus defStatus = StageStatus.BOTH;
+		StageStatus defStatus = ropts.defStatus;
+
+		boolean isDebug = ropts.isDebug;
 
 		List<List<ReplPair>> stages = new ArrayList<>();
 		stages.add(new ArrayList<ReplPair>());
@@ -239,6 +247,15 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 						break;
 					case "B":
 						defStatus = StageStatus.BOTH;
+						break;
+					case "DT":
+						isDebug = true;
+						break;
+					case "DF":
+						isDebug = false;
+						break;
+					case "D":
+						isDebug = Boolean.parseBoolean(bitBody);
 						break;
 					default: 
 						errs.add(new ReplError(lno, pno, String.format("Invalid control name '%s'", bitHead), name));
@@ -448,17 +465,26 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			rp.replace = body;
 
-			List<ReplPair> stageList;
-			if (stages.size() < stage) {
+			List<ReplPair> stageList = null;
+			if (stage == 0 || stages.size() < (stage - 1)) {
 				stageList = stages.get(stage);
 
 				if (stageList == null) {
 					stageList = new ArrayList<>();
+
 					stages.add(stage, stageList);
 				}
 			} else {
-				stageList = new ArrayList<>();
-				stages.add(stage, stageList);
+				for (int i = stages.size(); i <= stage; i++) {
+					stages.add(new ArrayList<>());
+				}
+
+				stageList = stages.get(stage);
+			}
+
+			if (isDebug) {
+				System.err.printf("\t[DEBUG] Stage %d: Added %s\n\t\tContents: %s\n",
+						stage, rp, stageList);
 			}
 
 			stageList.add(rp);
@@ -466,7 +492,17 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		// Special-case one-stage processing.
 		if (stages.size() == 1) {
-			detals.addAll(stages.iterator().next());
+			if (isDebug) System.err.printf("\t[DEBUG] Executing single-stage bypass\n");
+
+			for (ReplPair rp : stages.iterator().next()) {
+				if (rp.stat == StageStatus.INTERNAL) {
+					if (isDebug) System.err.printf("\t[DEBUG] Excluding internal RP %s\n", rp);
+
+					continue;
+				}
+
+				detals.add(rp);
+			}
 
 			detals.sort(null);
 
@@ -477,19 +513,46 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		List<ReplPair> tmpList = new ArrayList<>();
 		tmpList.addAll(detals);
 
+		if (isDebug) System.err.printf("\t[DEBUG] Stages: %s\n", stages);
+
+		int procStg = 0;
 		for (List<ReplPair> stageList : stages) {
+			procStg += 1;
 			List<ReplPair> curStage = new ArrayList<>();
+
+			if (isDebug) System.err.printf("\t[DEBUG] Staging stage %d of %d: %s\n",
+					procStg, stageList.size(), stageList);
 
 			for (ReplPair rp : stageList) {
 				// Process through every pair in the previous
 				// stages
 				for (ReplPair curPar : tmpList) {
-					rp.replace = rp.replace.replaceAll(curPar.find, curPar.replace);
+					String tmp = rp.replace.replaceAll(curPar.find, curPar.replace);
+
+					if (isDebug && !rp.replace.equals(tmp)) {
+						System.err.printf("\t[DEBUG] Staged '%s' -> '%s'\t%s\n",
+							rp.replace, tmp, curPar);
+					}
+
+					rp.replace = tmp;
 				}
 
 				// If we're external; add straight to the output
-				if (rp.stat == StageStatus.EXTERNAL) detals.add(rp);
-				else                                 curStage.add(rp);
+				if (rp.stat == StageStatus.EXTERNAL) {
+					if (isDebug) {
+						System.err.printf("\t[DEBUG] Skipped external for staging: %s\n",
+								rp);
+					}
+
+					detals.add(rp);
+				} else {
+					if (isDebug) {
+						System.err.printf("\t[DEBUG] Added to stage %d: %s\n\t\tContents: %s\n",
+								procStg, rp, curStage);
+					}
+
+					curStage.add(rp);
+				}
 			}
 			
 			tmpList.addAll(curStage);
@@ -498,12 +561,20 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		// Copy over to output, excluding internals
 		for (ReplPair rp : tmpList) {
-			if (rp.stat == StageStatus.INTERNAL) continue;
+			if (rp.stat == StageStatus.INTERNAL) {
+				if (isDebug) System.err.printf("\t[DEBUG] Excluded internal: %s\n", rp);
+
+				continue;
+			}
 
 			detals.add(rp);
 		}
 
 		detals.sort(null);
+
+		if (isDebug) {
+			System.err.printf("\t[DEBUG] Final output: %s\n", detals);
+		}
 
 		return detals;
 	}
