@@ -1,0 +1,12 @@
+# Global flag/multi-line test
+|//TRACEf
+|//P/0;S/0;M/true;Df
+
+a
+b\
+# a comment
+1
+
+c
+d|\
+1
