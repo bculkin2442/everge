@@ -1,10 +1,15 @@
 package bjc.everge;
 
+import bjc.everge.TestUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import static bjc.everge.TestUtils.*;
 
 import static org.junit.Assert.*;
 
@@ -55,56 +60,30 @@ public class ReplPairTest {
 		assertMultiReplace("data/test/test6.rp", "c", "a", "y2", "x");
 	}
 
-	private void assertMultiReplace(String fle, String... inps) {
-		assertMultiReplace(false, fle, inps);
+	@Test
+	public void testErrorException() {
+			String msg = 
+				"[ERROR] An error occured parsing replacement pairs:"
+				+ "\n\t[ERROR] line 2, pair 1: Ran out of input looking for"
+				+ " replacement body for raw name 'a'"
+				+ "\n\t\tContext: No associated line";
+
+			assertThrownMessage(msg, "data/test/test7.rp");
 	}
 
-	private void assertMultiReplace(boolean logRep, String fle, String... inps) {
-		if (inps.length < 2) throw new IllegalArgumentException("ERROR: Must provide at least two strings to assertMultiReplace");
-		if (inps.length % 2 != 0) throw new IllegalArgumentException("ERROR: Odd number of strings passed to assertMultiReplace");
+	@Test
+	public void testPairs() {
+		ReplPair rp1 = new ReplPair();
+		ReplPair rp2 = new ReplPair("", "");
 
-		List<ReplPair> lrp = null;
+		rp1.name = rp1.find;
 
-		try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
-			lrp = ReplPair.readList(scn);
-		} catch (Exception ex) {
-			System.err.println("EXCEPTION");
-			ex.printStackTrace();
-
-			assertTrue(false);
-
-			return;
-		}
-
-		for (int i = 0; i < inps.length; i += 2) {
-			String right = inps[i];
-			String inp   = inps[i + 1];
-
-			assertReplacesTo(logRep, right, lrp, inp);
-		}
+		assertEquals(rp2, rp1);
+		assertEquals(rp2.toString(), rp1.toString());
 	}
 
-	private void assertReplacesFrom(String right, String inp, String fle) {
-		assertMultiReplace(fle, right, inp);
-	}
-
-	private void assertReplacesTo(String right, List<ReplPair> rps, String inp) {
-		assertReplacesTo(false, right, rps, inp);
-	}
-
-	private void assertReplacesTo(boolean logRep, String right, List<ReplPair> rps, String inp) {
-		if (logRep) System.err.printf("\t[LOG] Checking '%s' -> '%s'\n", inp, right);
-
-		String tmp = inp;
-
-		for (ReplPair rp : rps) {
-			String oldTmp = tmp;
-
-			tmp = rp.apply(tmp);
-
-			if (logRep) System.err.printf("\t[LOG] '%s' -> '%s'\t%s\n", oldTmp, tmp, rp);
-		}
-
-		assertEquals(right, tmp);
+	@Test
+	public void testGlobals() {
+		assertMultiReplace("data/test/test8.rp", "b1d\n1d\n1b1", "acca");
 	}
 }
