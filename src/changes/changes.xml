@@ -9,6 +9,9 @@
 			<action dev="Ben Culkin" type="add">
 				Initial release :)
 			</action>         
+			<action dev="Ben Culkin" type="add">
+				Added a basic CLI front-end
+			</action>
 		</release>
 	</body>
 </document>

@@ -1,5 +1,7 @@
 package bjc.everge;
 
+import java.io.PrintStream;
+
 /**
  * Options for processing ReplPairs.
  *
@@ -9,61 +11,60 @@ public class ReplOpts {
 	/**
 	 * The default priority.
 	 */
-	public int defPrior;
+	public int defPrior = 0;
+
 	/**
 	 * The default stage.
 	 */
-	public int defStage;
+	public int defStage = 0;
 
 	/**
 	 * Whether to process multi-line defns.
 	 */
-	public boolean defMulti;
+	public boolean defMulti = false;
 
 	/**
 	 * Default status.
 	 */
-	public StageStatus defStatus;
+	public StageStatus defStatus = StageStatus.BOTH;
 
 	/**
 	 * Enable debug info.
 	 */
-	public boolean isDebug;
+	public boolean isDebug = true;
 
 	/**
-	 * Create a default set of options.
+	 * Enable trace info.
 	 */
-	public ReplOpts() {
-		defPrior = 0;
-		defStage = 0;
-
-		defMulti = false;
-
-		defStatus = StageStatus.BOTH;
-
-		isDebug = false;
-	}
+	public boolean isTrace = false;
 
 	/**
-	 * Create a new set of repl. opts
-	 *
-	 * @param p
-	 * 		The default priority to use
-	 * @param s
-	 * 		The default stage to use
-	 * @param m
-	 * 		Whether to process multi-line defns.
-	 * @param t
-	 * 		The default status.
+	 * Enable performance info.
 	 */
-	public ReplOpts(int p, int s, boolean m, StageStatus t, boolean d) {
-		defPrior = p;
-		defStage = s;
+	public boolean isPerf = false;
 
-		defMulti = m;
+	public PrintStream outStream = System.out;
+	public PrintStream errStream = System.err;
 
-		defStatus = t;
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
 
-		isDebug = d;
+		if (!getClass().equals(o.getClass())) return false;
+
+		ReplOpts ro = (ReplOpts)o;
+
+		if (isPerf != ro.isPerf) return false;
+
+		if (isDebug != ro.isDebug) return false;
+		if (isTrace != ro.isTrace) return false;
+
+		if (defPrior != ro.defPrior) return false;
+		if (defStage != ro.defStage) return false;
+		if (defMulti != ro.defMulti) return false;
+
+		if (defStatus != ro.defStatus) return false;
+
+		return true;
 	}
 }
