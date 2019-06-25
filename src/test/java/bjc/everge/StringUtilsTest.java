@@ -28,6 +28,13 @@ public class StringUtilsTest {
 		assertSplitsTo("a /  b/c", "/", " ", "a", "/ ", "b/c");
 	}
 
+	@Test
+	public void testEdgeSplit() {
+		// Starting with the delimiter doesn't create a blank string
+		assertSplitsTo("/a", "|", "/", "", "a");
+		assertSplitsTo("a/", "|", "/", "a");
+	}
+
 	private void assertSplitsTo(String inp, String esc, String splat, String... right) {
 		try {
 			String[] lst = StringUtils.escapeSplit(esc, splat, inp);
