@@ -6,14 +6,21 @@ import java.util.Scanner;
 
 import java.util.function.UnaryOperator;
 
+import bjc.everge.ControlledString.Control;
+
 /**
  * String pairs for replacements.
  *
  * @author Ben Culkin
  */
 public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
+	// Line number we read this pair from
 	private int lno;
+
+	// Stage this pair is in
 	private int stage;
+
+	// Status of this pair with regards to doing staging stuff
 	private StageStatus stat = StageStatus.BOTH;
 
 	/**
@@ -27,6 +34,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Defaults to the 'find' string.
 	 */
 	public String name;
+
 	/**
 	 * The string to look for.
 	 */
@@ -159,6 +167,21 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		return readList(detals, scn, errs, new ReplOpts());
 	}
 
+	/**
+	 * Read a list of replacement pairs from an input source, adding them to
+	 * an existing list.
+	 *
+	 * @param detals
+	 * 	The list to add the replacements to.
+	 * @param scn
+	 * 	The source to read the replacements from.
+	 * @param errs
+	 * 	The list to stick errors in.
+	 * @param ropts
+	 * 	The options to use when reading the pairs.
+	 * @return
+	 * 	The list of replacements.
+	 */
 	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
 			List<ReplError> errs, ReplOpts ropts) {
 		IntHolder lno = new IntHolder();
@@ -186,9 +209,9 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			ReplPair rp = new ReplPair();
 
 			rp.priority = ropts.defPrior;
-			rp.stat = ropts.defStatus;
-			rp.lno = lno.get();
-			rp.stage = ropts.defStage;
+			rp.stat     = ropts.defStatus;
+			rp.lno      = lno.get();
+			rp.stage    = ropts.defStage;
 
 			boolean isMulti = ropts.defMulti;
 
