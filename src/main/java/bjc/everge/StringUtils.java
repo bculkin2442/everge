@@ -20,12 +20,14 @@ public class StringUtils {
 	 * @param escape
 	 * 		The escape that stops splitting.
 	 * @param splat
-	 * 		The string to split on.
+	 * 		The string to split on. If this starts with the escape sequence, things will work
+	 * 		poorly.
 	 * @param inp
 	 * 		The string to split.
 	 * @return The string split as specified above.
 	 */
 	public static String[] escapeSplit(String escape, String splat, String inp) {
+
 		/*
 		 * Special case some stuffs.
 		 */
@@ -47,50 +49,141 @@ public class StringUtils {
 		List<String> ret = new ArrayList<>();
 
 		String wrk = inp;
-		int idx = wrk.indexOf(splat);
+		int sidx = wrk.indexOf(splat);
+		int eidx = wrk.indexOf(escape);
 
-		if (isDebug) {
-			System.err.printf("[DEBUG] 'hard' escapeSplit: (%s) (%s) (%s) init: %d\n",
-					escape, splat, inp, idx);
-		}
+		boolean hadEscape = false;
 
-		while (idx != -1) {
-			boolean hasEscape = wrk.regionMatches(idx - 1, escape, 0, escape.length());
+		while (sidx != -1 || eidx != -1) {
+			if (eidx > 0 && eidx < sidx) {
+				if (isDebug) System.err.printf("[TRACE] Considering escape\n");
 
-			while (idx != -1 && hasEscape) {
-				int oidx = wrk.indexOf(splat, idx + 1);
+				/*
+				 * We potentially have an escaped sequence:
+				 * 	- either an escaped split
+				 * 	- or an escaped escape
+				 */
+				// Check for an escaped split
+				if (wrk.regionMatches(eidx + escape.length(), splat, 0, splat.length())) {
+					// Skip over it
+					int ofst = eidx + splat.length();
 
-				if (isDebug) {
-					System.err.printf("[TRACE] idx: %d, oidx: %d\n", idx, oidx);
+					// Slice out the escape
+					{
+						String s1 = wrk.substring(0, eidx);
+						String s2 = wrk.substring(eidx + escape.length());
+
+						String s3 = wrk.substring(eidx, eidx + escape.length());
+
+						if (isDebug) {
+							System.err.printf("[TRACE] Skip esc. split (%s)/(%s); (%s)\n",
+									s1, s2, s3);
+						}
+
+						wrk = s1 + s2;
+					}
+
+					sidx = wrk.indexOf(splat,  ofst);
+					eidx = wrk.indexOf(escape, ofst);
+
+					if (isDebug) {
+						System.err.printf("[TRACE] After esc. split (%s) %d/%d\n",
+								wrk, sidx, eidx);
+					}
+
+					hadEscape = false;
+					continue;
 				}
 
-				idx = oidx;
+				// Check for an escaped escape
+				if (wrk.regionMatches(eidx + escape.length(), escape, 0, escape.length())) {
+					// Skip over it
+					int ofst = eidx + escape.length();
 
-				hasEscape = wrk.regionMatches(idx - 1, escape, 0, escape.length());
+					// Slice out the escape
+					{
+						String s1 = wrk.substring(0, eidx);
+						String s2 = wrk.substring(eidx + escape.length());
+
+						String s3 = wrk.substring(eidx, eidx + escape.length());
+						if (isDebug) {
+							System.err.printf("[TRACE] Skip esc. escape (%s)/(%s); (%s)\n",
+								s1, s2, s3);
+						}
+
+						wrk = s1 + s2;
+					}
+
+					sidx = wrk.indexOf(splat,  ofst);
+					eidx = wrk.indexOf(escape, ofst);
+
+					if (isDebug) {
+						System.err.printf("[TRACE] After esc. escape (%s)/(%s) %d/%d\n",
+								wrk, wrk.substring(ofst), sidx, eidx);
+					}
+
+					hadEscape = true;
+					continue;
+				}
 			}
-		
-			if (idx == -1) {
+
+			boolean hasEscape = false;
+
+			{
+				boolean tmp = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());
+
+				hasEscape = hadEscape ? false : tmp;
+			}
+
+			while (sidx != -1 && hasEscape) {
+				int oidx = wrk.indexOf(splat, sidx + escape.length());
+
+				if (isDebug) {
+					String s1 = wrk.substring(0, sidx);
+					String s2 = wrk.substring(sidx, sidx + escape.length());
+					String s3 = wrk.substring(sidx + escape.length());
+				}
+
+				if (oidx == -1) break;
+
+				{
+					String s1 = wrk.substring(0, oidx);
+					String s2 = wrk.substring(oidx + escape.length());
+
+					wrk = s1 + s2;
+				}
+
+				sidx = oidx;
+
+				hasEscape = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());
+			}
+
+			if (sidx == -1) {
 				break;
 			}
 
+			String tmp = wrk.substring(0, sidx);
+
 			if (isDebug) {
-				System.err.printf("[TRACE] sliced string into (%s) and (%s) at %d\n",
-						wrk.substring(0, idx), wrk.substring(idx), idx);
+				System.err.printf("[TRACE] Adding (%s) to returned splits; (%s)\n",
+					tmp, wrk.substring(sidx));
 			}
 
-			String tmp = wrk.substring(0, idx);
 			ret.add(tmp);
 			if (!tmp.equals("") && wrk.endsWith(tmp)) {
 				wrk = "";
 			} else {
-				wrk = wrk.substring(idx + splat.length());
+				if (wrk.indexOf(splat, sidx) != -1) {
+					wrk = wrk.substring(sidx + splat.length());
+				} else {
+					wrk = wrk.substring(sidx);
+				}
 			}
 
-			idx = wrk.indexOf(splat);
-		}
+			sidx = wrk.indexOf(splat);
+			eidx = wrk.indexOf(escape);
 
-		if (isDebug) {
-			System.err.printf("\t[TRACE] Remnant is (%s) for string (%s)\n", wrk, inp);
+			hadEscape = false;
 		}
 
 		if (!wrk.equals("")) ret.add(wrk);

@@ -25,7 +25,20 @@ public class StringUtilsTest {
 
 	@Test
 	public void testEscapeSplit() {
-		assertSplitsTo("a /  b/c", "/", " ", "a", "/ ", "b/c");
+		assertSplitsTo("a|/||b/c", "|", "/", "a/|b", "c");
+
+		assertSplitsTo("a||/b", "|", "/", "a|", "b");
+	}
+
+	@Test
+	public void testLongSplit() {
+		assertSplitsTo("a||b||c", " ", "||", "a", "b", "c");
+
+		assertSplitsTo("a&&||b||c", "&&", "||", "a||b", "c");
+
+		assertSplitsTo("a&&&&||b||c", "&&", "||", "a&&", "b", "c");
+
+		assertSplitsTo("a&&&&&&||b||c", "&&", "||", "a&&||b", "c");
 	}
 
 	@Test
@@ -36,8 +49,24 @@ public class StringUtilsTest {
 	}
 
 	private void assertSplitsTo(String inp, String esc, String splat, String... right) {
+		assertSplitsTo(false, inp, esc, splat, right);
+	}
+
+	private void assertSplitsTo(boolean doLog, String inp, String esc, String splat, String... right) {
 		try {
+			if (doLog) StringUtils.isDebug = true;
+
 			String[] lst = StringUtils.escapeSplit(esc, splat, inp);
+
+			if (doLog) {
+				System.err.printf("[TRACE] Returned ");
+
+				for (String str : lst) {
+					System.err.printf("(%s) ", str);
+				}
+
+				System.err.println();
+			}
 
 			assertArrayEquals(right, lst);
 		} catch (Exception ex) {
@@ -46,6 +75,8 @@ public class StringUtilsTest {
 			System.err.println();
 
 			assertTrue(false);
+		} finally {
+			if (doLog) StringUtils.isDebug = false;
 		}
 	}
 }
