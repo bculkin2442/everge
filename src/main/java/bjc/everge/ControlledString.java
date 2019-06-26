@@ -130,7 +130,47 @@ public class ControlledString {
 	 */
 	public static ControlledString parse(String lne, String contInd, String contSep,
 			String contArg, String contEsc) {
-		ControlledString cs = new ControlledString(lne);
+		if (!lne.startsWith(contInd)) {
+			return new ControlledString(lne);
+		}
+
+		String tmp = lne.substring(2);
+
+		String[] bits = StringUtils.escapeSplit(contEsc, contInd, lne);
+
+		if (bits.length < 2) {
+			String msg = "Did not find control terminator (%s) where it should be";
+			msg = String.format(msg, contInd);
+
+			throw new IllegalArgumentException(msg);
+		}
+
+		ControlledString cs = new ControlledString(bits[0]);
+
+		bits = StringUtils.escapeSplit(contEsc, contSep, bits[1]);
+
+		cs.controls = new Control[bits.length];
+
+		for (int i = 0; i < bits.length; i++) {
+			String bit = bits[i];
+
+			String[] bots = StringUtils.escapeSplit(contEsc, contArg, bit);
+
+			Control cont = new Control(bots[0]);
+
+			if (cont.name.length() > 1) {
+				cont.name = cont.name.toUpperCase();
+			}
+
+			if (bots.length > 1) {
+				cont.args = new String[bots.length - 1];
+				for (int j = 1; j < bots.length; j++) {
+					cont.args[j - 1] = bots[j];
+				}
+			}
+
+			cs.controls[i] = cont;
+		}
 
 		return cs;
 	}
