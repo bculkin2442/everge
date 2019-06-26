@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReplError.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">ReplError.java</span></div><h1>ReplError.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+/**
+ * Represents an error encountered parsing ReplPairs
+ *
+ * @author Ben Culkin
+ */
+public class ReplError {
+	/**
+	 * The line the error occured on.
+	 */
+	public int line;
+	/**
+	 * The number of pairs we have processed so far.
+	 */
+	public int numPairs;
+
+	/**
+	 * The text of the line we errored on.
+	 */
+	public String txt;
+	/**
+	 * The message of the error.
+	 */
+	public String msg;
+
+	/**
+	 * Create a new ReplPair parse error.
+	 *
+	 * @param lne
+	 * 	The line the error occured on.
+	 * @param nPairs
+	 * 	The number of pairs processed up to this point.
+	 * @param msg
+	 * 	The message detailing the error.
+	 * @param txt
+	 * 	The text that caused the error.
+	 */
+	public ReplError(IntHolder lne, IntHolder nPairs, String msg, String txt) {
+<span class="fc" id="L40">		this(lne.get(), nPairs.get(), msg, txt);</span>
+<span class="fc" id="L41">	}</span>
+
+	/**
+	 * Create a new ReplPair parse error.
+	 *
+	 * @param lne
+	 * 	The line the error occured on.
+	 * @param nPairs
+	 * 	The number of pairs processed up to this point.
+	 * @param msg
+	 * 	The message detailing the error.
+	 * @param txt
+	 * 	The text that caused the error.
+	 */
+<span class="fc" id="L55">	public ReplError(int lne, int nPairs, String msg, String txt) {</span>
+<span class="fc" id="L56">		line = lne;</span>
+<span class="fc" id="L57">		numPairs = nPairs;</span>
+
+<span class="fc" id="L59">		this.txt = txt;</span>
+<span class="fc" id="L60">		this.msg = msg;</span>
+<span class="fc" id="L61">	}</span>
+
+	@Override
+	public String toString() {
+		String errString;
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
+<span class="nc" id="L68">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
+
+<span class="nc" id="L70">		return String.format(&quot;line %d, pair %d:%s\n\t%s&quot;, line, numPairs, msg, errString);</span>
+	}
+
+	public String toPrintString() {
+<span class="nc" id="L74">		return toPrintString(&quot;&quot;);</span>
+	}
+
+	public String toPrintString(String hdr) {
+		String errString;
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
+<span class="nc" id="L81">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
+
+<span class="fc" id="L83">		return String.format(&quot;[ERROR] line %d, pair %d: %s\n%s\tContext: %s&quot;,</span>
+<span class="fc" id="L84">				line, numPairs, msg, hdr, errString);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

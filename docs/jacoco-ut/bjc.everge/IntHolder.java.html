@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntHolder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">IntHolder.java</span></div><h1>IntHolder.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+/**
+ * Utility class for ints by ref.
+ *
+ * @author Ben Culkin
+ */
+public class IntHolder {
+	/**
+	 * The int value.
+	 */
+	public int val;
+
+	/**
+	 * Create a new int-holder set to 0.
+	 */
+<span class="fc" id="L17">	public IntHolder() {</span>
+<span class="fc" id="L18">		val = 0;</span>
+<span class="fc" id="L19">	}</span>
+
+	/**
+	 * Create a new int-holder set to a value.
+	 *
+	 * @param i
+	 * 		The value to set the int to.
+	 */
+<span class="nc" id="L27">	public IntHolder(int i) {</span>
+<span class="nc" id="L28">		val = i;</span>
+<span class="nc" id="L29">	}</span>
+
+	/**
+	 * Increment the value by one, and return it.
+	 *
+	 * @return The value of the holder.
+	 */
+	public int incr() {
+<span class="fc" id="L37">		return incr(1);</span>
+	}
+
+	/**
+	 * Increment the value by an amount and return it.
+	 *
+	 * @param i
+	 * 		The amount to increment by.
+	 *
+	 * @return The value of the holder.
+	 */
+	public int incr(int i) {
+<span class="fc" id="L49">		val += 1;</span>
+
+<span class="fc" id="L51">		return val;</span>
+	}
+
+	/**
+	 * Get the value.
+	 *
+	 * @return The value.
+	 */
+	public int get() {
+<span class="fc" id="L60">		return val;</span>
+	}
+
+	public void set(int i) {
+<span class="nc" id="L64">		val = i;</span>
+<span class="nc" id="L65">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

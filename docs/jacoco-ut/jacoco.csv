@@ -1,0 +1,13 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+everge,bjc.everge,ControlledString.Control,18,0,0,0,9,0,3,0,3,0
+everge,bjc.everge,Everge.InputStatus,0,34,0,0,0,4,0,1,0,1
+everge,bjc.everge,StringUtils,190,270,17,37,24,56,16,14,1,2
+everge,bjc.everge,ReplOpts,66,30,18,0,11,10,10,1,1,1
+everge,bjc.everge,ReplPair,800,822,87,99,138,198,73,50,2,15
+everge,bjc.everge,ReplError,72,60,7,1,7,11,6,3,2,3
+everge,bjc.everge,ReplParseException,59,69,6,6,11,16,7,3,2,2
+everge,bjc.everge,StageStatus,0,34,0,0,0,4,0,1,0,1
+everge,bjc.everge,Everge,534,319,54,29,124,75,41,14,2,6
+everge,bjc.everge,IntHolder,10,22,0,0,5,7,2,4,2,4
+everge,bjc.everge,ControlledString,159,0,14,0,35,0,12,0,5,0
+everge,bjc.everge,ReplSet,105,0,6,0,24,0,9,0,6,0

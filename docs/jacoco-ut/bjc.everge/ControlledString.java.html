@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ControlledString.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">ControlledString.java</span></div><h1>ControlledString.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+/**
+ * Represents a string with a set of control flags attached to it.
+ *
+ * @author Ben Culkin
+ */
+public class ControlledString {
+	/**
+	 * Represents a single control (a key-values pair)
+	 *
+	 * @author Ben Culkin
+	 */
+	public static class Control {
+		/**
+		 * The name of the control.
+		 */
+		public String name;
+
+		/**
+		 * The arguments to the control.
+		 */
+		public String[] args;
+
+		/**
+		 * Create a new blank control.
+		 */
+<span class="nc" id="L28">		public Control() {</span>
+
+<span class="nc" id="L30">		}</span>
+
+		/**
+		 * Create a new argless control.
+		 *
+		 * @param nam
+		 * 	The name of the control.
+		 */
+<span class="nc" id="L38">		public Control(String nam) {</span>
+<span class="nc" id="L39">			name = nam;</span>
+<span class="nc" id="L40">		}</span>
+
+		/**
+		 * Create a new control.
+		 *
+		 * @param nam
+		 * 	The name of the control.
+		 * @param ars
+		 * 	The arguments of the control.
+		 */
+<span class="nc" id="L50">		public Control(String nam, String... ars) {</span>
+<span class="nc" id="L51">			name = nam;</span>
+<span class="nc" id="L52">			args = ars;</span>
+<span class="nc" id="L53">		}</span>
+	}
+
+	/**
+	 * The string the controls apply to.
+	 */
+	public String strang;
+
+	/**
+	 * The controls that apply to the string.
+	 */
+	public Control[] controls;
+
+	/**
+	 * Create a new blank controlled string.
+	 */
+<span class="nc" id="L69">	public ControlledString() {</span>
+<span class="nc" id="L70">		controls = new Control[0];</span>
+<span class="nc" id="L71">	}</span>
+
+	/**
+	 * Create a new controlled string without any controls.
+	 *
+	 * @param strung
+	 * 	The string to use.
+	 */
+<span class="nc" id="L79">	public ControlledString(String strung) {</span>
+<span class="nc" id="L80">		strang = strung;</span>
+
+<span class="nc" id="L82">		controls = new Control[0];</span>
+<span class="nc" id="L83">	}</span>
+
+	/**
+	 * Create a new controlled string.
+	 *
+	 * @param strung
+	 * 	The string to use.
+	 * @param controls
+	 * 	The controls that apply to the string.
+	 */
+<span class="nc" id="L93">	public ControlledString(String strung, Control... controls) {</span>
+<span class="nc" id="L94">		strang = strung;</span>
+
+<span class="nc" id="L96">		controls = controls;</span>
+<span class="nc" id="L97">	}</span>
+
+	/**
+	 * Check if the string has controls.
+	 *
+	 * @return Whether or not the string has controls.
+	 */
+	public boolean hasControls() {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">		return controls.length &gt; 0;</span>
+	}
+
+	/**
+	 * Parse a controlled string from a regular string.
+	 *
+	 * The controls must be parsed from the beginning of the string, and are indicated by occurances
+	 * of contInd that bracket them from the string. The individual controls are delimited by
+	 * instances of contSep, with arguments to them being separated by occurances of contArg.
+	 *
+	 * Each of those separators (which must be regular strings, not regexes or anything) may be
+	 * escaped by preceeding them with a copy of contEsc.
+	 *
+	 * @param lne
+	 * 	The string to parse frmo.
+	 * @param contInd
+	 * 	The indicator for whether or not there are controls.
+	 * @param contSep
+	 * 	The separator of individual controls.
+	 * @param contArg
+	 * 	The separator of control arguments.
+	 * @param contEsc
+	 * 	The escape string for each of the separators/indicators.
+	 *
+	 * @return A parsed control string.
+	 */
+	public static ControlledString parse(String lne, String contInd, String contSep,
+			String contArg, String contEsc) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">		if (!lne.startsWith(contInd)) {</span>
+<span class="nc" id="L134">			return new ControlledString(lne);</span>
+		}
+
+<span class="nc" id="L137">		String tmp = lne.substring(2);</span>
+
+<span class="nc" id="L139">		String[] bits = StringUtils.escapeSplit(contEsc, contInd, lne);</span>
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">		if (bits.length &lt; 2) {</span>
+<span class="nc" id="L142">			String msg = &quot;Did not find control terminator (%s) where it should be&quot;;</span>
+<span class="nc" id="L143">			msg = String.format(msg, contInd);</span>
+
+<span class="nc" id="L145">			throw new IllegalArgumentException(msg);</span>
+		}
+
+<span class="nc" id="L148">		ControlledString cs = new ControlledString(bits[0]);</span>
+
+<span class="nc" id="L150">		bits = StringUtils.escapeSplit(contEsc, contSep, bits[1]);</span>
+
+<span class="nc" id="L152">		cs.controls = new Control[bits.length];</span>
+
+<span class="nc bnc" id="L154" title="All 2 branches missed.">		for (int i = 0; i &lt; bits.length; i++) {</span>
+<span class="nc" id="L155">			String bit = bits[i];</span>
+
+<span class="nc" id="L157">			String[] bots = StringUtils.escapeSplit(contEsc, contArg, bit);</span>
+
+<span class="nc" id="L159">			Control cont = new Control(bots[0]);</span>
+
+<span class="nc bnc" id="L161" title="All 2 branches missed.">			if (cont.name.length() &gt; 1) {</span>
+<span class="nc" id="L162">				cont.name = cont.name.toUpperCase();</span>
+			}
+
+<span class="nc bnc" id="L165" title="All 2 branches missed.">			if (bots.length &gt; 1) {</span>
+<span class="nc" id="L166">				cont.args = new String[bots.length - 1];</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">				for (int j = 1; j &lt; bots.length; j++) {</span>
+<span class="nc" id="L168">					cont.args[j - 1] = bots[j];</span>
+				}
+			}
+
+<span class="nc" id="L172">			cs.controls[i] = cont;</span>
+		}
+
+<span class="nc" id="L175">		return cs;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

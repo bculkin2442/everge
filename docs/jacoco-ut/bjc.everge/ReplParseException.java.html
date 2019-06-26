@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReplParseException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">ReplParseException.java</span></div><h1>ReplParseException.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReplParseException extends RuntimeException {
+	public List&lt;ReplError&gt; errs;
+
+	public ReplParseException(String msg) {
+<span class="nc" id="L10">		this(msg, new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L11">	}</span>
+
+	public ReplParseException(String msg, List&lt;ReplError&gt; errs) {
+<span class="fc" id="L14">		super(msg);</span>
+
+<span class="fc" id="L16">		this.errs = errs;</span>
+<span class="fc" id="L17">	}</span>
+
+	@Override
+	public String toString() {
+		String errString;
+<span class="nc bnc" id="L22" title="All 2 branches missed.">		if (errs.size() == 0) errString = &quot;An error&quot;;</span>
+<span class="nc" id="L23">		else                  errString = &quot;Errors&quot;;</span>
+
+<span class="nc" id="L25">		return String.format(&quot;%s occured parsing replacement pairs: %s\n%s&quot;,</span>
+<span class="nc" id="L26">				errString, getMessage(), errs);</span>
+	}
+
+	public String toPrintString() {
+<span class="fc" id="L30">		StringBuilder errString = new StringBuilder(&quot;[ERROR] &quot;);</span>
+
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (errs.size() == 0) {</span>
+<span class="nc" id="L33">			errString.append(&quot;No specific errors&quot;);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		} else if (errs.size() == 1) {</span>
+<span class="fc" id="L35">			errString.append(&quot;An error&quot;);</span>
+		} else {
+<span class="nc" id="L37">			errString.append(errs.size());</span>
+<span class="nc" id="L38">			errString.append(&quot; errors&quot;);</span>
+		}
+
+<span class="fc" id="L41">		errString.append(&quot; occured parsing replacement pairs:&quot;);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (!getMessage().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L43">			errString.append(&quot; &quot;);</span>
+<span class="nc" id="L44">			errString.append(getMessage());</span>
+		}
+
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (errs.size() &gt; 0) {</span>
+<span class="fc" id="L48">			errString.append(&quot;\n\t&quot;);</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (ReplError err : errs) {</span>
+<span class="fc" id="L51">				errString.append(err.toPrintString(&quot;\t&quot;));</span>
+<span class="fc" id="L52">				errString.append(&quot;\n\t&quot;);</span>
+<span class="fc" id="L53">			}</span>
+		}
+
+<span class="fc" id="L56">		return errString.toString().trim();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

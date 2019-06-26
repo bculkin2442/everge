@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">StringUtils.java</span></div><h1>StringUtils.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.regex.Pattern;
+
+/**
+ * Utility methods for strings.
+ *
+ * @author Ben Culkin.
+ */
+<span class="nc" id="L14">public class StringUtils {</span>
+<span class="fc" id="L15">	public static boolean isDebug = false;</span>
+
+	/**
+	 * Split a string on every occurance of a string not preceeded by an escape.
+	 *
+	 * @param escape
+	 * 		The escape that stops splitting.
+	 * @param splat
+	 * 		The string to split on. If this starts with the escape sequence, things will work
+	 * 		poorly.
+	 * @param inp
+	 * 		The string to split.
+	 * @return The string split as specified above.
+	 */
+	public static String[] escapeSplit(String escape, String splat, String inp) {
+
+		/*
+		 * Special case some stuffs.
+		 */
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">		if (inp == null || inp.equals(&quot;&quot;)) {</span>
+			// No input
+<span class="nc" id="L36">			return new String[] {inp};</span>
+		}
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (!inp.contains(splat)) {</span>
+			// Input does not contain any delimiters
+<span class="fc" id="L41">			return new String[] {inp};</span>
+		}
+
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">		if (escape == null || escape.equals(&quot;&quot;)) {</span>
+			// No escape, so we can just split normally
+<span class="fc" id="L46">			return inp.split(Pattern.quote(splat));</span>
+		}
+
+<span class="fc" id="L49">		List&lt;String&gt; ret = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L51">		String wrk = inp;</span>
+<span class="fc" id="L52">		int sidx = wrk.indexOf(splat);</span>
+<span class="fc" id="L53">		int eidx = wrk.indexOf(escape);</span>
+
+<span class="fc" id="L55">		boolean hadEscape = false;</span>
+
+<span class="fc bfc" id="L57" title="All 4 branches covered.">		while (sidx != -1 || eidx != -1) {</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">			if (eidx &gt; 0 &amp;&amp; eidx &lt; sidx) {</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				if (isDebug) System.err.printf(&quot;[TRACE] Considering escape\n&quot;);</span>
+
+				/*
+				 * We potentially have an escaped sequence:
+				 * 	- either an escaped split
+				 * 	- or an escaped escape
+				 */
+				// Check for an escaped split
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				if (wrk.regionMatches(eidx + escape.length(), splat, 0, splat.length())) {</span>
+					// Skip over it
+<span class="fc" id="L69">					int ofst = eidx + splat.length();</span>
+
+					// Slice out the escape
+					{
+<span class="fc" id="L73">						String s1 = wrk.substring(0, eidx);</span>
+<span class="fc" id="L74">						String s2 = wrk.substring(eidx + escape.length());</span>
+
+<span class="fc" id="L76">						String s3 = wrk.substring(eidx, eidx + escape.length());</span>
+
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">						if (isDebug) {</span>
+<span class="nc" id="L79">							System.err.printf(&quot;[TRACE] Skip esc. split (%s)/(%s); (%s)\n&quot;,</span>
+									s1, s2, s3);
+						}
+
+<span class="fc" id="L83">						wrk = s1 + s2;</span>
+					}
+
+<span class="fc" id="L86">					sidx = wrk.indexOf(splat,  ofst);</span>
+<span class="fc" id="L87">					eidx = wrk.indexOf(escape, ofst);</span>
+
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">					if (isDebug) {</span>
+<span class="nc" id="L90">						System.err.printf(&quot;[TRACE] After esc. split (%s) %d/%d\n&quot;,</span>
+<span class="nc" id="L91">								wrk, sidx, eidx);</span>
+					}
+
+<span class="fc" id="L94">					hadEscape = false;</span>
+<span class="fc" id="L95">					continue;</span>
+				}
+
+				// Check for an escaped escape
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">				if (wrk.regionMatches(eidx + escape.length(), escape, 0, escape.length())) {</span>
+					// Skip over it
+<span class="fc" id="L101">					int ofst = eidx + escape.length();</span>
+
+					// Slice out the escape
+					{
+<span class="fc" id="L105">						String s1 = wrk.substring(0, eidx);</span>
+<span class="fc" id="L106">						String s2 = wrk.substring(eidx + escape.length());</span>
+
+<span class="fc" id="L108">						String s3 = wrk.substring(eidx, eidx + escape.length());</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">						if (isDebug) {</span>
+<span class="nc" id="L110">							System.err.printf(&quot;[TRACE] Skip esc. escape (%s)/(%s); (%s)\n&quot;,</span>
+								s1, s2, s3);
+						}
+
+<span class="fc" id="L114">						wrk = s1 + s2;</span>
+					}
+
+<span class="fc" id="L117">					sidx = wrk.indexOf(splat,  ofst);</span>
+<span class="fc" id="L118">					eidx = wrk.indexOf(escape, ofst);</span>
+
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">					if (isDebug) {</span>
+<span class="nc" id="L121">						System.err.printf(&quot;[TRACE] After esc. escape (%s)/(%s) %d/%d\n&quot;,</span>
+<span class="nc" id="L122">								wrk, wrk.substring(ofst), sidx, eidx);</span>
+					}
+
+<span class="fc" id="L125">					hadEscape = true;</span>
+<span class="fc" id="L126">					continue;</span>
+				}
+			}
+
+<span class="fc" id="L130">			boolean hasEscape = false;</span>
+
+			{
+<span class="fc" id="L133">				boolean tmp = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());</span>
+
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				hasEscape = hadEscape ? false : tmp;</span>
+			}
+
+<span class="pc bpc" id="L138" title="1 of 4 branches missed.">			while (sidx != -1 &amp;&amp; hasEscape) {</span>
+<span class="nc" id="L139">				int oidx = wrk.indexOf(splat, sidx + escape.length());</span>
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">				if (isDebug) {</span>
+<span class="nc" id="L142">					String s1 = wrk.substring(0, sidx);</span>
+<span class="nc" id="L143">					String s2 = wrk.substring(sidx, sidx + escape.length());</span>
+<span class="nc" id="L144">					String s3 = wrk.substring(sidx + escape.length());</span>
+				}
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">				if (oidx == -1) break;</span>
+
+				{
+<span class="nc" id="L150">					String s1 = wrk.substring(0, oidx);</span>
+<span class="nc" id="L151">					String s2 = wrk.substring(oidx + escape.length());</span>
+
+<span class="nc" id="L153">					wrk = s1 + s2;</span>
+				}
+
+<span class="nc" id="L156">				sidx = oidx;</span>
+
+<span class="nc" id="L158">				hasEscape = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());</span>
+<span class="nc" id="L159">			}</span>
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			if (sidx == -1) {</span>
+<span class="fc" id="L162">				break;</span>
+			}
+
+<span class="fc" id="L165">			String tmp = wrk.substring(0, sidx);</span>
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (isDebug) {</span>
+<span class="nc" id="L168">				System.err.printf(&quot;[TRACE] Adding (%s) to returned splits; (%s)\n&quot;,</span>
+<span class="nc" id="L169">					tmp, wrk.substring(sidx));</span>
+			}
+
+<span class="fc" id="L172">			ret.add(tmp);</span>
+<span class="pc bpc" id="L173" title="1 of 4 branches missed.">			if (!tmp.equals(&quot;&quot;) &amp;&amp; wrk.endsWith(tmp)) {</span>
+<span class="nc" id="L174">				wrk = &quot;&quot;;</span>
+			} else {
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (wrk.indexOf(splat, sidx) != -1) {</span>
+<span class="fc" id="L177">					wrk = wrk.substring(sidx + splat.length());</span>
+				} else {
+<span class="nc" id="L179">					wrk = wrk.substring(sidx);</span>
+				}
+			}
+
+<span class="fc" id="L183">			sidx = wrk.indexOf(splat);</span>
+<span class="fc" id="L184">			eidx = wrk.indexOf(escape);</span>
+
+<span class="fc" id="L186">			hadEscape = false;</span>
+<span class="fc" id="L187">		}</span>
+
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (!wrk.equals(&quot;&quot;)) ret.add(wrk);</span>
+
+<span class="fc" id="L191">		return ret.toArray(new String[0]);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
