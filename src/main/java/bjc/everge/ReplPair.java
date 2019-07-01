@@ -182,8 +182,10 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * @return
 	 * 	The list of replacements.
 	 */
-	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
-			List<ReplError> errs, ReplOpts ropts) {
+	public static List<ReplPair> readList(
+			List<ReplPair> detals, Scanner scn,
+			List<ReplError> errs, ReplOpts ropts) 
+	{
 		IntHolder lno = new IntHolder();
 		IntHolder pno = new IntHolder();
 
@@ -238,8 +240,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			} while (body.startsWith("#"));
 
 			if (body == null) {
-				String msg = 
-					"Ran out of input looking for replacement body for raw name '" + name + "'";
+				String msg = String.format(
+						"Ran out of input looking for replacement body for raw name '%s'", name);
 
 				errs.add(new ReplError(lno, pno, msg, null));
 				break;
@@ -253,7 +255,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 				String[] bodyBits = StringUtils.escapeSplit("|", "//", body);
 				if (bodyBits.length < 2) {
-					String msg = "Did not find control terminator (//) in body where it should be";
+					String msg =
+						"Did not find control terminator (//) in body where it should be";
 
 					errs.add(new ReplError(lno, pno, msg, body));
 					continue;
@@ -763,16 +766,11 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 	
 	private static ControlledString getControls(String lne, List<ReplError> errs,
-			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) {
-		if (!lne.startsWith("//")) {
-			return new ControlledString(lne);
-		}
-
-		String tmp = lne.substring(2);
-
-		String[] bits = StringUtils.escapeSplit("|", "//", lne);
-
-		if (bits.length < 2) {
+			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) 
+	{
+		try {
+			return ControlledString.parse(lne, "//", ";", "/", "|");
+		} catch (IllegalArgumentException iaex) {
 			String msg = "Did not find control terminator (//) in %s where it should be";
 			msg = String.format(msg, type);
 
@@ -781,34 +779,5 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			return null;
 		}
-
-		ControlledString cs = new ControlledString(bits[0]);
-
-		bits = StringUtils.escapeSplit("|", ";", bits[1]);
-
-		cs.controls = new Control[bits.length];
-
-		for (int i = 0; i < bits.length; i++) {
-			String bit = bits[i];
-
-			String[] bots = StringUtils.escapeSplit("|", "/", bit);
-
-			Control cont = new Control(bots[0]);
-
-			if (cont.name.length() > 1) {
-				cont.name = cont.name.toUpperCase();
-			}
-			
-			if (bots.length > 1) {
-				cont.args = new String[bots.length - 1];
-				for (int j = 1; j < bots.length; j++) {
-					cont.args[j - 1] = bots[j];
-				}
-			}
-
-			cs.controls[i] = cont;
-		}
-
-		return cs;
 	}
 }

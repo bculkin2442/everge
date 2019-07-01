@@ -129,7 +129,8 @@ public class ControlledString {
 	 * @return A parsed control string.
 	 */
 	public static ControlledString parse(String lne, String contInd, String contSep,
-			String contArg, String contEsc) {
+			String contArg, String contEsc) 
+	{
 		if (!lne.startsWith(contInd)) {
 			return new ControlledString(lne);
 		}
