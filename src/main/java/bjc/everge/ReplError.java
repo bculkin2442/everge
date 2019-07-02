@@ -7,7 +7,7 @@ package bjc.everge;
  */
 public class ReplError {
 	/**
-	 * The line the error occured on.
+	 * The line the error occurred on.
 	 */
 	public int line;
 	/**

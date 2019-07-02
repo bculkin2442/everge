@@ -52,7 +52,7 @@ public class ReplPairTest {
 
 	@Test
 	public void testReplaceExpOrder() {
-		assertMultiReplace("data/test/test5.rp", "a", "a", "aa", "ab");
+		assertMultiReplace(false, "data/test/test5.rp", "a", "a", "aa", "ab");
 	}
 
 	@Test

@@ -1,16 +1,16 @@
 # Basic staging test
 |//tf;df
-//s/1//a
+//S/1//a
 b
 
 b
 c
 
-//s/2//x
+//S/2//x
 y1
 
-//s/1;i//1
+//S/1;I//1
 2
 
-//e;p/2//y1
+//E;P/2//y1
 z

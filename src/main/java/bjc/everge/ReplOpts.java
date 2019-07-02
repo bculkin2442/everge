@@ -45,26 +45,32 @@ public class ReplOpts {
 
 	public PrintStream outStream = System.out;
 	public PrintStream errStream = System.err;
-
 	@Override
-	public boolean equals(Object o) {
-		if (o == null) return false;
-
-		if (!getClass().equals(o.getClass())) return false;
-
-		ReplOpts ro = (ReplOpts)o;
-
-		if (isPerf != ro.isPerf) return false;
-
-		if (isDebug != ro.isDebug) return false;
-		if (isTrace != ro.isTrace) return false;
-
-		if (defPrior != ro.defPrior) return false;
-		if (defStage != ro.defStage) return false;
-		if (defMulti != ro.defMulti) return false;
-
-		if (defStatus != ro.defStatus) return false;
-
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (defMulti ? 1231 : 1237);
+		result = prime * result + defPrior;
+		result = prime * result + defStage;
+		result = prime * result + ((defStatus == null) ? 0 : defStatus.hashCode());
+		result = prime * result + (isDebug ? 1231 : 1237);
+		result = prime * result + (isPerf ? 1231 : 1237);
+		result = prime * result + (isTrace ? 1231 : 1237);
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		ReplOpts other = (ReplOpts) obj;
+		if (defMulti != other.defMulti) return false;
+		if (defPrior != other.defPrior) return false;
+		if (defStage != other.defStage) return false;
+		if (defStatus != other.defStatus) return false;
+		if (isDebug != other.isDebug) return false;
+		if (isPerf != other.isPerf) return false;
+		if (isTrace != other.isTrace) return false;
 		return true;
 	}
 }

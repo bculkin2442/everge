@@ -1,29 +1,16 @@
 package bjc.everge;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 import java.nio.charset.Charset;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.*;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.regex.*;
 
 /**
  * Everge front-end application.
@@ -77,7 +64,13 @@ public class Everge {
 	private ReadWriteLock argLock = new ReentrantReadWriteLock();
 
 	// Input/output streams
+	/**
+	 * Stream to use for normal output.
+	 */
 	public PrintStream outStream = System.out;
+	/**
+	 * Stream to use for error output.
+	 */
 	public PrintStream errStream = System.err;
 
 	/**
@@ -226,8 +219,8 @@ public class Everge {
 
 								{
 									String msg = String.format(
-											"[ERROR] Encountered errors parsing data file'%s'\n",
-											argBody);
+											"[ERROR] Encountered %s parsing data file'%s'\n",
+											errString, argBody);
 									sb.append(msg);
 								}
 
@@ -348,13 +341,13 @@ public class Everge {
 					String msg = String.format("[ERROR] File '%s' is not readable\n", fle);
 					errs.add(msg);
 					return false;
-				} else {
-					byte[] inp = Files.readAllBytes(pth);
-
-					String strang = new String(inp, Charset.forName("UTF-8"));
-
-					processString(strang);
 				}
+
+				byte[] inp = Files.readAllBytes(pth);
+
+				String strang = new String(inp, Charset.forName("UTF-8"));
+
+				processString(strang);
 			} else if (inputStat == InputStatus.LINE) {
 				try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
 					while(scn.hasNextLine()) {

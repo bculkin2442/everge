@@ -6,8 +6,15 @@ import java.util.List;
 
 import org.junit.Test;
 
+import static bjc.everge.TestUtils.*;
+
 import static org.junit.Assert.*;
 
+/**
+ * Test for StringUtils.
+ *
+ * @author Ben Culkin
+ */
 public class StringUtilsTest {
 	@Test
 	public void testNullSplit() {
@@ -48,35 +55,4 @@ public class StringUtilsTest {
 		assertSplitsTo("a/", "|", "/", "a");
 	}
 
-	private void assertSplitsTo(String inp, String esc, String splat, String... right) {
-		assertSplitsTo(false, inp, esc, splat, right);
-	}
-
-	private void assertSplitsTo(boolean doLog, String inp, String esc, String splat, String... right) {
-		try {
-			if (doLog) StringUtils.isDebug = true;
-
-			String[] lst = StringUtils.escapeSplit(esc, splat, inp);
-
-			if (doLog) {
-				System.err.printf("[TRACE] Returned ");
-
-				for (String str : lst) {
-					System.err.printf("(%s) ", str);
-				}
-
-				System.err.println();
-			}
-
-			assertArrayEquals(right, lst);
-		} catch (Exception ex) {
-			System.err.println("EXCEPTION");
-			ex.printStackTrace();
-			System.err.println();
-
-			assertTrue(false);
-		} finally {
-			if (doLog) StringUtils.isDebug = false;
-		}
-	}
 }

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReplParseException extends RuntimeException {
+	/**
+	 * Serialization ID.
+	 */
+	private static final long serialVersionUID = 4752304282380556849L;
 	public List<ReplError> errs;
 
 	public ReplParseException(String msg) {

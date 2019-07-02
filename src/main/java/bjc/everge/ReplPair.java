@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.function.UnaryOperator;
 
 import bjc.everge.ControlledString.Control;
+import bjc.everge.ControlledString.ParseStrings;
 
 /**
  * String pairs for replacements.
@@ -248,37 +249,12 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			}
 
 			isMulti = ropts.defMulti;
-
+			
+			ControlledString cs = getControls(body, errs, ropts, lno, pno, "body");
 			// Body has attached controls, process them.
-			if (body.startsWith("//")) {
-				body = body.substring(2);
-
-				String[] bodyBits = StringUtils.escapeSplit("|", "//", body);
-				if (bodyBits.length < 2) {
-					String msg =
-						"Did not find control terminator (//) in body where it should be";
-
-					errs.add(new ReplError(lno, pno, msg, body));
-					continue;
-				}
-
-				String contBody = bodyBits[0];
-				String actBody  = bodyBits[1];
-
-				// Split out each control
-				String[] bits = StringUtils.escapeSplit("|", ";", actBody);
-
-				for (String bit : bits) {
-					String bitHead = bit.toUpperCase();
-					String bitBody = bit;
-
-					String[] bots = StringUtils.escapeSplit("|", "/", bit);
-					if (bots.length > 1) {
-						bitHead = bots[0].toUpperCase();
-						bitBody = bots[1];
-					}
-
-					switch (bitHead) {
+			if (cs.hasControls()) {
+				for (Control cont : cs.controls) {
+					switch (cont.name) {
 					case "MULTITRUE":
 					case "MULTIT":
 					case "MT":
@@ -291,15 +267,23 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 						break;
 					case "MULTI":
 					case "M":
-						isMulti = Boolean.parseBoolean(bitBody);
+						if (cont.count() != 1) {
+							String errMsg = String.format("Expected one multi flag (got %d)", cont.count());
+							errs.add(new ReplError(lno, pno, errMsg, body));
+						} else {
+							isMulti = Boolean.parseBoolean(cont.get(0));
+						}
 						break;
 					default: 
-						errs.add(new ReplError(lno, pno, String.format("Invalid control name '%s'", bitHead), body));
+						{
+							String errMsg = String.format("Invalid control name '%s'", cont.name);
+							errs.add(new ReplError(lno, pno, errMsg, body));
+						}
 						break;
 					}
 				}
 
-				body = actBody;
+				body = cs.strang;
 			}
 
 			if (isMulti) {
@@ -473,7 +457,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		if (!find.equals(name)) nameStr = String.format("(%s)", name);
 
-		return String.format("%ss/%s/%s/p(%d)", nameStr, find, replace, priority);
+		return String.format("%ss/(%s)/(%s)/p(%d)", nameStr, find, replace, priority);
 	}
 
 	@Override
@@ -482,140 +466,162 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		return rp.priority - this.priority;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((find == null) ? 0 : find.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + priority;
+		result = prime * result + ((replace == null) ? 0 : replace.hashCode());
+		result = prime * result + stage;
+		return result;
+	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o == null) return false;
-
-		if (!getClass().equals(o.getClass())) return false;
-
-		ReplPair ro = (ReplPair)o;
-
-		if (!find.equals(ro.find)) return false;
-		// lno is not a field we consider for equality
-		if (!name.equals(ro.name)) return false;
-		if (priority != ro.priority) return false;
-		if (!replace.equals(ro.name)) return false;
-		// stat is not a field we consider for equality
-
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		ReplPair other = (ReplPair) obj;
+		if (find == null) {
+			if (other.find != null) return false;
+		} else if (!find.equals(other.find)) return false;
+		if (name == null) {
+			if (other.name != null) return false;
+		} else if (!name.equals(other.name)) return false;
+		if (priority != other.priority) return false;
+		if (replace == null) {
+			if (other.replace != null) return false;
+		} else if (!replace.equals(other.replace)) return false;
+		if (stage != other.stage) return false;
 		return true;
 	}
 
 	private static String readName(String nam, Scanner scn, List<ReplError> errs,
 			ReplPair rp, ReplOpts ropts, IntHolder lno, IntHolder pno) {
-		String name = nam;
+		ControlledString cs = getControls(nam, errs, ropts, lno, pno, "name");
 
 		boolean isMulti = ropts.defMulti;
 
-		// Name has attached controls, process them.
-		if (name.startsWith("//")) {
-			name = name.substring(2);
+		String name = cs.strang;
 
-			String[] nameBits = StringUtils.escapeSplit("|", "//", name);
+		if (cs.hasControls()) {
+			for (Control cont : cs.controls) {
+				switch (cont.name) {
+					case "NAME":
+					case "N":
+						if (cont.count() != 1) {
+							String errMsg = String.format("One name argument was expected (got %d)",
+									cont.count());
 
-			if (nameBits.length < 2) {
-				String msg = "Did not find control terminator (//) in name where it should be";
-
-				errs.add(new ReplError(lno, pno, msg, name));
-				return null;
-			}
-
-			String contName = nameBits[0];
-			String actName  = nameBits[1];
-
-			// Split out each control
-			String[] bits = StringUtils.escapeSplit("|", ";", contName);
-
-			for (String bit : bits) {
-				String bitHead = bit.toUpperCase();
-				String bitBody = bit;
-
-				String[] bots = StringUtils.escapeSplit("|", "/", bit);
-
-				if (bots.length > 1) {
-					bitHead = bots[0].toUpperCase();
-					bitBody = bots[1];
-				}
-
-				switch (bitHead) {
-				case "NAME":
-				case "N":
-					rp.name = bitBody;
-					break;
-				case "PRIORITY":
-				case "PRIOR":
-				case "P":
-					try {
-						rp.priority = Integer.parseInt(bitBody);
-					} catch (NumberFormatException nfex) {
-						String errMsg = String.format("'%s' is not a valid priority (must be an integer)", bitBody);
-						errs.add(new ReplError(lno, pno, errMsg, name));
-					}
-					break;
-				case "STAGE":
-				case "S":
-					try {
-						int tmpStage = Integer.parseInt(bitBody);
-						if (tmpStage < 0) {
-							String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)", bitBody);
-							errs.add(new ReplError(lno, pno, errMsg, name));
-
-							break;
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						} else {
+							rp.name = cont.get(0);
 						}
-						rp.stage = tmpStage;
-					} catch (NumberFormatException nfex) {
-						String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)", bitBody);
-						errs.add(new ReplError(lno, pno, errMsg, name));
-					}
-					break;
-				case "MULTITRUE":
-				case "MULTIT":
-				case "MT":
-					isMulti = true;
-					break;
-				case "MULTIFALSE":
-				case "MULTIF":
-				case "MF":
-					isMulti = false;
-					break;
-				case "MULTI":
-				case "M":
-					isMulti = Boolean.parseBoolean(bitBody);
-					break;
-				case "INTERNAL":
-				case "INT":
-				case "I":
-					rp.stat = StageStatus.INTERNAL;
-					break;
-				case "EXTERNAL":
-				case "EXT":
-				case "E":
-					rp.stat = StageStatus.EXTERNAL;
-					break;
-				case "BOTH":
-				case "B":
-					rp.stat = StageStatus.BOTH;
-					break;
-				default: 
-					{
-						ReplError erd = new ReplError(lno, pno,
-								String.format("Unknown control name '%s' for name '%s'",
-									bitHead, name), name);
+						break;
+					case "PRIORITY":
+					case "PRIOR":
+					case "P":
+						try {
+							if (cont.count() != 1) {
+								String errMsg = String.format("One priority argument was expected (got %d",
+										cont.count());
 
-						errs.add(erd);
-					}
-					break;
+								errs.add(new ReplError(lno, pno, errMsg, nam));
+							} else {
+								rp.priority = Integer.parseInt(cont.get(0));
+							}
+						} catch (NumberFormatException nfex) {
+							String errMsg = String.format("'%s' is not a valid priority (must be an integer)",
+									cont.get(0));
+
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						}
+						break;
+					case "STAGE":
+					case "S":
+						try {
+							if (cont.count() != 1) {
+								String errMsg = String.format("One stage argument was expected (got %d",
+										cont.count());
+
+								errs.add(new ReplError(lno, pno, errMsg, nam));
+							} else {
+								int tmpStage = Integer.parseInt(cont.get(0));
+								if (tmpStage < 0) {
+									String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
+											cont.get(0));
+									errs.add(new ReplError(lno, pno, errMsg, nam));
+
+									break;
+								}
+								rp.stage = tmpStage;
+							}
+						} catch (NumberFormatException nfex) {
+							String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
+									cont.get(0));
+
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						}
+						break;
+					case "MULTITRUE":
+					case "MULTIT":
+					case "MT":
+						isMulti = true;
+						break;
+					case "MULTIFALSE":
+					case "MULTIF":
+					case "MF":
+						isMulti = false;
+						break;
+					case "MULTI":
+					case "M":
+						if (cont.count() != 1) {
+							String errMsg = String.format("One multi-flag argument was expected (got %d",
+									cont.count());
+
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						} else {
+							isMulti = Boolean.parseBoolean(cont.get(0));
+						}
+						break;
+					case "INTERNAL":
+					case "INT":
+					case "I":
+						rp.stat = StageStatus.INTERNAL;
+						break;
+					case "EXTERNAL":
+					case "EXT":
+					case "E":
+						rp.stat = StageStatus.EXTERNAL;
+						break;
+					case "BOTH":
+					case "B":
+						rp.stat = StageStatus.BOTH;
+						break;
+					default: 
+						{
+							String errMsg = String.format("Unknown control name '%s' for name '%s'",
+									cont.name, nam);
+
+							ReplError erd = new ReplError(lno, pno, errMsg, nam);
+
+							errs.add(erd);
+						}
+						break;
 				}
-
-				name = actName;
 			}
 
-			// Multi-line name with a trailer
-			if (isMulti) {
-				String tmp = readMultiLine(name, scn, ropts, errs, "name", lno);
-				if (tmp == null) return null;
-				name = tmp;
-			}
+			name = cs.strang;
+		}
+
+		// Multi-line name with a trailer
+		if (isMulti) {
+			String tmp = readMultiLine(name, scn, ropts, errs, "name", lno);
+			if (tmp == null) return null;
+			name = tmp;
 		}
 
 		return name;
@@ -623,59 +629,56 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 	private static void readGlobal(String nam, Scanner scn, List<ReplError> errs,
 			ReplOpts ropts, IntHolder lno, IntHolder pno) {
-		String name = nam.substring(3);
+		ControlledString cs = getControls(nam.substring(1), errs, ropts, lno, pno, "global");
 
-		// Split out each control
-		String[] bits = StringUtils.escapeSplit("|", ";", name);
-		if (ropts.isTrace) {
-			ropts.errStream.printf("\t[TRACE] Split control bits are: \n");
-			for (String bit : bits) {
-				ropts.errStream.printf("%s, ", bit);
-			}
-			ropts.errStream.println();
-		}
-		for (String bit : bits) {
-			String bitHead = bit.toUpperCase();
-			String bitBody = bit;
-
-			String[] bots = StringUtils.escapeSplit("|", "/", bit);
-			if (bots.length > 1) {
-				bitHead = bots[0];
-				bitBody = bots[1];
-			}
-
-			switch (bitHead) {
+		for (Control cont : cs.controls) {
+			switch (cont.name) {
 			case "PRIORITY":
 			case "PRIOR":
 			case "P":
 				try {
-					int tmp = Integer.parseInt(bitBody);
-					ropts.defPrior = tmp;
+					if (cont.count() != 1) {
+						String errMsg = String.format("Must specify 1 priority (%d specified)",
+								cont.count());
+
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					} else {
+						int tmp = Integer.parseInt(cont.get(0));
+						ropts.defPrior = tmp;
+					}
 				} catch (NumberFormatException nfex) {
 					String errMsg = String.format("'%s' is not a valid priority (must be an integer)",
-							bitBody);
+							cont.get(0));
 
-					errs.add(new ReplError(lno, pno, errMsg, name));
+					errs.add(new ReplError(lno, pno, errMsg, nam));
 				}
 				break;
 			case "STAGE":
 			case "S":
 				try {
-					int tmpStage = Integer.parseInt(bitBody);
+					if (cont.count() != 1) {
+						String errMsg = String.format("Must specify 1 stage (%d specified)",
+								cont.count());
 
-					if (tmpStage < 0) {
-						String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
-								bitBody);
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					} else {
+						int tmpStage = Integer.parseInt(cont.get(0));
 
-						errs.add(new ReplError(lno, pno, errMsg, name));
-						break;
+						if (tmpStage < 0) {
+							String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
+									cont.get(0));
+
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+							break;
+						}
+
+						ropts.defStage = tmpStage;
 					}
-					ropts.defStage = tmpStage;
 				} catch (NumberFormatException nfex) {
 					String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
-							bitBody);
+							cont.get(0));
 
-					errs.add(new ReplError(lno, pno, errMsg, name));
+					errs.add(new ReplError(lno, pno, errMsg, nam));
 				}
 				break;
 			case "MULTITRUE":
@@ -690,7 +693,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				break;
 			case "MULTI":
 			case "M":
-				ropts.defMulti = Boolean.parseBoolean(bitBody);
+				if (cont.count() != 1) {
+					String errMsg = String.format("Must specify 1 multi-flag (%d specified)",
+							cont.count());
+
+					errs.add(new ReplError(lno, pno, errMsg, nam));
+				} else {
+					ropts.defMulti = Boolean.parseBoolean(cont.get(0));
+				}
 				break;
 			case "INTERNAL":
 			case "INT":
@@ -718,7 +728,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				break;
 			case "DEBUG":
 			case "D":
-				ropts.isDebug = Boolean.parseBoolean(bitBody);
+				if (cont.count() != 1) {
+					String errMsg = String.format("Must specify 1 debug flag (%d specified)",
+							cont.count());
+
+					errs.add(new ReplError(lno, pno, errMsg, nam));
+				} else {
+					ropts.isDebug = Boolean.parseBoolean(cont.get(0));
+				}
 				break;
 			case "TRACETRUE":
 			case "TRACET":
@@ -732,7 +749,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				break;
 			case "TRACE":
 			case "T":
-				ropts.isTrace = Boolean.parseBoolean(bitBody);
+				if (cont.count() != 1) {
+					String errMsg = String.format("Must specify 1 trace flag (%d specified)",
+							cont.count());
+
+					errs.add(new ReplError(lno, pno, errMsg, nam));
+				} else {
+					ropts.isTrace = Boolean.parseBoolean(cont.get(0));
+				}
 				break;
 			case "PERFTRUE":
 			case "PERFT":
@@ -746,20 +770,26 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				break;
 			case "PERF":
 			case "PRF":
-				ropts.isPerf = Boolean.parseBoolean(bitBody);
+				if (cont.count() != 1) {
+					String errMsg = String.format("Must specify 1 perf. flag (%d specified)",
+							cont.count());
+
+					errs.add(new ReplError(lno, pno, errMsg, nam));
+				} else {
+					ropts.isPerf = Boolean.parseBoolean(cont.get(0));
+				}
 				break;
 			default: 
 				{
-					String msg = String.format("Invalid global control name '%s'", bitHead);
-					ReplError err = new ReplError(lno, pno, msg, name);
+					String msg = String.format("Invalid global control name '%s'", cont.name);
+					ReplError err = new ReplError(lno, pno, msg, nam);
 					errs.add(err);
 				}
 				break;
 			}
 
 			if (ropts.isTrace) 
-				ropts.errStream.printf("\t[TRACE] Processed global control '%s':'%s'\n", 
-						bitHead, bitBody);
+				ropts.errStream.printf("\t[TRACE] Processed global control '%s'\n", cont);
 		}
 
 		return;
@@ -769,7 +799,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) 
 	{
 		try {
-			return ControlledString.parse(lne, "//", ";", "/", "|");
+			return ControlledString.parse(lne, new ParseStrings("//", ";", "/", "|"));
 		} catch (IllegalArgumentException iaex) {
 			String msg = "Did not find control terminator (//) in %s where it should be";
 			msg = String.format(msg, type);
