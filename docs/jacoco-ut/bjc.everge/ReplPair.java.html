@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.function.UnaryOperator;
 
 import bjc.everge.ControlledString.Control;
+import bjc.everge.ControlledString.ParseStrings;
 
 /**
  * String pairs for replacements.
@@ -21,7 +22,7 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	private int stage;
 
 	// Status of this pair with regards to doing staging stuff
-<span class="fc" id="L24">	private StageStatus stat = StageStatus.BOTH;</span>
+<span class="fc" id="L25">	private StageStatus stat = StageStatus.BOTH;</span>
 
 	/**
 	 * The priority for this replacement.
@@ -49,8 +50,8 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * Create a new blank replacement pair.
 	 */
 	public ReplPair() {
-<span class="fc" id="L52">		this(&quot;&quot;, &quot;&quot;, 1, null);</span>
-<span class="fc" id="L53">	}</span>
+<span class="fc" id="L53">		this(&quot;&quot;, &quot;&quot;, 1, null);</span>
+<span class="fc" id="L54">	}</span>
 
 	/**
 	 * Create a new replacement pair with a priority of 1.
@@ -61,8 +62,8 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The string to replace.
 	 */
 	public ReplPair(String f, String r) {
-<span class="fc" id="L64">		this(f, r, 1);</span>
-<span class="fc" id="L65">	}</span>
+<span class="fc" id="L65">		this(f, r, 1);</span>
+<span class="fc" id="L66">	}</span>
 
 	/**
 	 * Create a new named replacement pair with a priority of 1.
@@ -75,8 +76,8 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The name of the replacement pair.
 	 */
 	public ReplPair(String f, String r, String n) {
-<span class="nc" id="L78">		this(f, r, 1, n);</span>
-<span class="nc" id="L79">	}</span>
+<span class="nc" id="L79">		this(f, r, 1, n);</span>
+<span class="nc" id="L80">	}</span>
 
 	/**
 	 * Create a new replacement pair with a set priority.
@@ -89,8 +90,8 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The priority for the replacement.
 	 */
 	public ReplPair(String f, String r, int p) {
-<span class="fc" id="L92">		this(f, r, p, f);</span>
-<span class="fc" id="L93">	}</span>
+<span class="fc" id="L93">		this(f, r, p, f);</span>
+<span class="fc" id="L94">	}</span>
 
 	/**
 	 * Create a new replacement pair with a set priority and name.
@@ -104,14 +105,14 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * @param p
 	 * 	The priority for the replacement.
 	 */
-<span class="fc" id="L107">	public ReplPair(String f, String r, int p, String n) {</span>
-<span class="fc" id="L108">		find    = f;</span>
-<span class="fc" id="L109">		replace = r;</span>
+<span class="fc" id="L108">	public ReplPair(String f, String r, int p, String n) {</span>
+<span class="fc" id="L109">		find    = f;</span>
+<span class="fc" id="L110">		replace = r;</span>
 
-<span class="fc" id="L111">		name = n;</span>
+<span class="fc" id="L112">		name = n;</span>
 
-<span class="fc" id="L113">		priority = p;</span>
-<span class="fc" id="L114">	}</span>
+<span class="fc" id="L114">		priority = p;</span>
+<span class="fc" id="L115">	}</span>
 
 	/**
 	 * Read a list of replacement pairs from an input source.
@@ -122,9 +123,9 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The list of replacements.
 	 */
 	public static List&lt;ReplPair&gt; readList(Scanner scn) {
-<span class="fc" id="L125">		List&lt;ReplPair&gt; lst = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L126">		List&lt;ReplPair&gt; lst = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L127">		return readList(lst, scn);</span>
+<span class="fc" id="L128">		return readList(lst, scn);</span>
 	}
 
 	/**
@@ -139,15 +140,15 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The list of replacements.
 	 */
 	public static List&lt;ReplPair&gt; readList(List&lt;ReplPair&gt; detals, Scanner scn) {
-<span class="fc" id="L142">		List&lt;ReplError&gt; errList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L143">		List&lt;ReplError&gt; errList = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L144">		List&lt;ReplPair&gt; rplPar = readList(detals, scn, errList);</span>
+<span class="fc" id="L145">		List&lt;ReplPair&gt; rplPar = readList(detals, scn, errList);</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (errList.size() != 0) {</span>
-<span class="fc" id="L147">			throw new ReplParseException(&quot;&quot;, errList);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (errList.size() != 0) {</span>
+<span class="fc" id="L148">			throw new ReplParseException(&quot;&quot;, errList);</span>
 		}
 
-<span class="fc" id="L150">		return rplPar;</span>
+<span class="fc" id="L151">		return rplPar;</span>
 	}
 
 	/**
@@ -164,7 +165,7 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * 	The list of replacements.
 	 */
 	public static List&lt;ReplPair&gt; readList(List&lt;ReplPair&gt; detals, Scanner scn, List&lt;ReplError&gt; errs) {
-<span class="fc" id="L167">		return readList(detals, scn, errs, new ReplOpts());</span>
+<span class="fc" id="L168">		return readList(detals, scn, errs, new ReplOpts());</span>
 	}
 
 	/**
@@ -182,634 +183,632 @@ public class ReplPair implements Comparable&lt;ReplPair&gt;, UnaryOperator&lt;St
 	 * @return
 	 * 	The list of replacements.
 	 */
-	public static List&lt;ReplPair&gt; readList(List&lt;ReplPair&gt; detals, Scanner scn,
-			List&lt;ReplError&gt; errs, ReplOpts ropts) {
-<span class="fc" id="L187">		IntHolder lno = new IntHolder();</span>
-<span class="fc" id="L188">		IntHolder pno = new IntHolder();</span>
+	public static List&lt;ReplPair&gt; readList(
+			List&lt;ReplPair&gt; detals, Scanner scn,
+			List&lt;ReplError&gt; errs, ReplOpts ropts) 
+	{
+<span class="fc" id="L190">		IntHolder lno = new IntHolder();</span>
+<span class="fc" id="L191">		IntHolder pno = new IntHolder();</span>
 
-<span class="fc" id="L190">		List&lt;List&lt;ReplPair&gt;&gt; stages = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L191">		stages.add(new ArrayList&lt;ReplPair&gt;());</span>
+<span class="fc" id="L193">		List&lt;List&lt;ReplPair&gt;&gt; stages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L194">		stages.add(new ArrayList&lt;ReplPair&gt;());</span>
 
 		// For every line in the source...
-<span class="fc bfc" id="L194" title="All 2 branches covered.">		while (scn.hasNextLine()) {</span>
-<span class="fc" id="L195">			String name = scn.nextLine().trim();</span>
-<span class="fc" id="L196">			lno.incr();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		while (scn.hasNextLine()) {</span>
+<span class="fc" id="L198">			String name = scn.nextLine().trim();</span>
+<span class="fc" id="L199">			lno.incr();</span>
 
 			// If its commented or blank, skip it
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (name.equals(&quot;&quot;))      continue;</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (name.startsWith(&quot;#&quot;)) continue;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">			if (name.equals(&quot;&quot;))      continue;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (name.startsWith(&quot;#&quot;)) continue;</span>
 
 			// Global control. Process it.
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (name.startsWith(&quot;|//&quot;)) {</span>
-<span class="fc" id="L204">				readGlobal(name, scn, errs, ropts, lno, pno);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			if (name.startsWith(&quot;|//&quot;)) {</span>
+<span class="fc" id="L207">				readGlobal(name, scn, errs, ropts, lno, pno);</span>
 
-<span class="fc" id="L206">				continue;</span>
+<span class="fc" id="L209">				continue;</span>
 			}
 
-<span class="fc" id="L209">			ReplPair rp = new ReplPair();</span>
+<span class="fc" id="L212">			ReplPair rp = new ReplPair();</span>
 
-<span class="fc" id="L211">			rp.priority = ropts.defPrior;</span>
-<span class="fc" id="L212">			rp.stat     = ropts.defStatus;</span>
-<span class="fc" id="L213">			rp.lno      = lno.get();</span>
-<span class="fc" id="L214">			rp.stage    = ropts.defStage;</span>
+<span class="fc" id="L214">			rp.priority = ropts.defPrior;</span>
+<span class="fc" id="L215">			rp.stat     = ropts.defStatus;</span>
+<span class="fc" id="L216">			rp.lno      = lno.get();</span>
+<span class="fc" id="L217">			rp.stage    = ropts.defStage;</span>
 
-<span class="fc" id="L216">			boolean isMulti = ropts.defMulti;</span>
+<span class="fc" id="L219">			boolean isMulti = ropts.defMulti;</span>
 
 			{
-<span class="fc" id="L219">				String tmpName = readName(name, scn, errs, rp, ropts, lno, pno);</span>
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">				if (tmpName == null) continue;</span>
-<span class="fc" id="L221">				name = tmpName;</span>
+<span class="fc" id="L222">				String tmpName = readName(name, scn, errs, rp, ropts, lno, pno);</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">				if (tmpName == null) continue;</span>
+<span class="fc" id="L224">				name = tmpName;</span>
 			}
 
-<span class="fc" id="L224">			rp.find = name;</span>
-<span class="pc bpc" id="L225" title="1 of 2 branches missed.">			if (rp.name == null) rp.name = name;</span>
+<span class="fc" id="L227">			rp.find = name;</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">			if (rp.name == null) rp.name = name;</span>
 
 			// We started to process the pair, mark it as being
 			// started
-<span class="fc" id="L229">			pno.incr();</span>
-<span class="fc" id="L230">			String body = null;</span>
+<span class="fc" id="L232">			pno.incr();</span>
+<span class="fc" id="L233">			String body = null;</span>
 
 			// Read in the next uncommented line
 			do {
-<span class="fc bfc" id="L234" title="All 2 branches covered.">				if (!scn.hasNextLine()) break; </span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">				if (!scn.hasNextLine()) break; </span>
 
-<span class="fc" id="L236">				body = scn.nextLine().trim();</span>
-<span class="fc" id="L237">				lno.incr();</span>
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">			} while (body.startsWith(&quot;#&quot;));</span>
+<span class="fc" id="L239">				body = scn.nextLine().trim();</span>
+<span class="fc" id="L240">				lno.incr();</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">			} while (body.startsWith(&quot;#&quot;));</span>
 
-<span class="fc bfc" id="L240" title="All 2 branches covered.">			if (body == null) {</span>
-<span class="fc" id="L241">				String msg = </span>
-					&quot;Ran out of input looking for replacement body for raw name '&quot; + name + &quot;'&quot;;
+<span class="fc bfc" id="L243" title="All 2 branches covered.">			if (body == null) {</span>
+<span class="fc" id="L244">				String msg = String.format(</span>
+						&quot;Ran out of input looking for replacement body for raw name '%s'&quot;, name);
 
-<span class="fc" id="L244">				errs.add(new ReplError(lno, pno, msg, null));</span>
-<span class="fc" id="L245">				break;</span>
+<span class="fc" id="L247">				errs.add(new ReplError(lno, pno, msg, null));</span>
+<span class="fc" id="L248">				break;</span>
 			}
 
-<span class="fc" id="L248">			isMulti = ropts.defMulti;</span>
-
+<span class="fc" id="L251">			isMulti = ropts.defMulti;</span>
+			
+<span class="fc" id="L253">			ControlledString cs = getControls(body, errs, ropts, lno, pno, &quot;body&quot;);</span>
 			// Body has attached controls, process them.
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">			if (body.startsWith(&quot;//&quot;)) {</span>
-<span class="nc" id="L252">				body = body.substring(2);</span>
-
-<span class="nc" id="L254">				String[] bodyBits = StringUtils.escapeSplit(&quot;|&quot;, &quot;//&quot;, body);</span>
-<span class="nc bnc" id="L255" title="All 2 branches missed.">				if (bodyBits.length &lt; 2) {</span>
-<span class="nc" id="L256">					String msg = &quot;Did not find control terminator (//) in body where it should be&quot;;</span>
-
-<span class="nc" id="L258">					errs.add(new ReplError(lno, pno, msg, body));</span>
-<span class="nc" id="L259">					continue;</span>
-				}
-
-<span class="nc" id="L262">				String contBody = bodyBits[0];</span>
-<span class="nc" id="L263">				String actBody  = bodyBits[1];</span>
-
-				// Split out each control
-<span class="nc" id="L266">				String[] bits = StringUtils.escapeSplit(&quot;|&quot;, &quot;;&quot;, actBody);</span>
-
-<span class="nc bnc" id="L268" title="All 2 branches missed.">				for (String bit : bits) {</span>
-<span class="nc" id="L269">					String bitHead = bit.toUpperCase();</span>
-<span class="nc" id="L270">					String bitBody = bit;</span>
-
-<span class="nc" id="L272">					String[] bots = StringUtils.escapeSplit(&quot;|&quot;, &quot;/&quot;, bit);</span>
-<span class="nc bnc" id="L273" title="All 2 branches missed.">					if (bots.length &gt; 1) {</span>
-<span class="nc" id="L274">						bitHead = bots[0].toUpperCase();</span>
-<span class="nc" id="L275">						bitBody = bots[1];</span>
-					}
-
-<span class="nc bnc" id="L278" title="All 4 branches missed.">					switch (bitHead) {</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">			if (cs.hasControls()) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">				for (Control cont : cs.controls) {</span>
+<span class="nc bnc" id="L257" title="All 4 branches missed.">					switch (cont.name) {</span>
 					case &quot;MULTITRUE&quot;:
 					case &quot;MULTIT&quot;:
 					case &quot;MT&quot;:
-<span class="nc" id="L282">						isMulti = true;</span>
-<span class="nc" id="L283">						break;</span>
+<span class="nc" id="L261">						isMulti = true;</span>
+<span class="nc" id="L262">						break;</span>
 					case &quot;MULTIFALSE&quot;:
 					case &quot;MULTIF&quot;:
 					case &quot;MF&quot;:
-<span class="nc" id="L287">						isMulti = false;</span>
-<span class="nc" id="L288">						break;</span>
+<span class="nc" id="L266">						isMulti = false;</span>
+<span class="nc" id="L267">						break;</span>
 					case &quot;MULTI&quot;:
 					case &quot;M&quot;:
-<span class="nc" id="L291">						isMulti = Boolean.parseBoolean(bitBody);</span>
-<span class="nc" id="L292">						break;</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">						if (cont.count() != 1) {</span>
+<span class="nc" id="L271">							String errMsg = String.format(&quot;Expected one multi flag (got %d)&quot;, cont.count());</span>
+<span class="nc" id="L272">							errs.add(new ReplError(lno, pno, errMsg, body));</span>
+<span class="nc" id="L273">						} else {</span>
+<span class="nc" id="L274">							isMulti = Boolean.parseBoolean(cont.get(0));</span>
+						}
+<span class="nc" id="L276">						break;</span>
 					default: 
-<span class="nc" id="L294">						errs.add(new ReplError(lno, pno, String.format(&quot;Invalid control name '%s'&quot;, bitHead), body));</span>
+						{
+<span class="nc" id="L279">							String errMsg = String.format(&quot;Invalid control name '%s'&quot;, cont.name);</span>
+<span class="nc" id="L280">							errs.add(new ReplError(lno, pno, errMsg, body));</span>
+						}
 						break;
 					}
 				}
 
-<span class="nc" id="L299">				body = actBody;</span>
+<span class="nc" id="L286">				body = cs.strang;</span>
 			}
 
-<span class="fc bfc" id="L302" title="All 2 branches covered.">			if (isMulti) {</span>
-<span class="fc" id="L303">				String tmp = readMultiLine(body, scn, ropts, errs, &quot;body&quot;, lno);</span>
-<span class="pc bpc" id="L304" title="1 of 2 branches missed.">				if (tmp == null) continue;</span>
-<span class="fc" id="L305">				body = tmp;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">			if (isMulti) {</span>
+<span class="fc" id="L290">				String tmp = readMultiLine(body, scn, ropts, errs, &quot;body&quot;, lno);</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">				if (tmp == null) continue;</span>
+<span class="fc" id="L292">				body = tmp;</span>
 			}
 
-<span class="fc" id="L308">			rp.replace = body;</span>
+<span class="fc" id="L295">			rp.replace = body;</span>
 
-<span class="fc" id="L310">			List&lt;ReplPair&gt; stageList = null;</span>
-<span class="pc bpc" id="L311" title="1 of 4 branches missed.">			if (rp.stage == 0 || stages.size() &lt; (rp.stage - 1)) {</span>
-<span class="fc" id="L312">				stageList = stages.get(rp.stage);</span>
+<span class="fc" id="L297">			List&lt;ReplPair&gt; stageList = null;</span>
+<span class="pc bpc" id="L298" title="1 of 4 branches missed.">			if (rp.stage == 0 || stages.size() &lt; (rp.stage - 1)) {</span>
+<span class="fc" id="L299">				stageList = stages.get(rp.stage);</span>
 
-<span class="pc bpc" id="L314" title="1 of 2 branches missed.">				if (stageList == null) {</span>
-<span class="nc" id="L315">					stageList = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">				if (stageList == null) {</span>
+<span class="nc" id="L302">					stageList = new ArrayList&lt;&gt;();</span>
 
-<span class="nc" id="L317">					stages.add(rp.stage, stageList);</span>
+<span class="nc" id="L304">					stages.add(rp.stage, stageList);</span>
 				}
 			} else {
-<span class="fc bfc" id="L320" title="All 2 branches covered.">				for (int i = stages.size(); i &lt;= rp.stage; i++) {</span>
-<span class="fc" id="L321">					stages.add(new ArrayList&lt;&gt;());</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">				for (int i = stages.size(); i &lt;= rp.stage; i++) {</span>
+<span class="fc" id="L308">					stages.add(new ArrayList&lt;&gt;());</span>
 				}
 
-<span class="fc" id="L324">				stageList = stages.get(rp.stage);</span>
+<span class="fc" id="L311">				stageList = stages.get(rp.stage);</span>
 			}
 
-<span class="pc bpc" id="L327" title="1 of 2 branches missed.">			if (ropts.isTrace) {</span>
-<span class="nc" id="L328">				ropts.errStream.printf(&quot;\t[DEBUG] Stage %d: Added %s\n\t\tContents: %s\n&quot;,</span>
-<span class="nc" id="L329">						rp.stage, rp, stageList);</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">			if (ropts.isTrace) {</span>
+<span class="nc" id="L315">				ropts.errStream.printf(&quot;\t[DEBUG] Stage %d: Added %s\n\t\tContents: %s\n&quot;,</span>
+<span class="nc" id="L316">						rp.stage, rp, stageList);</span>
 			}
 
-<span class="fc" id="L332">			stageList.add(rp);</span>
-<span class="fc" id="L333">		}</span>
+<span class="fc" id="L319">			stageList.add(rp);</span>
+<span class="fc" id="L320">		}</span>
 
 		// Special-case one-stage processing.
-<span class="fc bfc" id="L336" title="All 2 branches covered.">		if (stages.size() == 1) {</span>
-<span class="pc bpc" id="L337" title="1 of 2 branches missed.">			if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Executing single-stage bypass\n&quot;);</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">		if (stages.size() == 1) {</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">			if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Executing single-stage bypass\n&quot;);</span>
 
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (ReplPair rp : stages.iterator().next()) {</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">				if (rp.stat == StageStatus.INTERNAL) {</span>
-<span class="nc bnc" id="L341" title="All 2 branches missed.">					if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Excluding internal RP %s\n&quot;, rp);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">			for (ReplPair rp : stages.iterator().next()) {</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">				if (rp.stat == StageStatus.INTERNAL) {</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">					if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Excluding internal RP %s\n&quot;, rp);</span>
 
 					continue;
 				}
 
-<span class="fc" id="L346">				detals.add(rp);</span>
-<span class="fc" id="L347">			}</span>
+<span class="fc" id="L333">				detals.add(rp);</span>
+<span class="fc" id="L334">			}</span>
 
-<span class="fc" id="L349">			detals.sort(null);</span>
+<span class="fc" id="L336">			detals.sort(null);</span>
 
-<span class="fc" id="L351">			return detals;</span>
+<span class="fc" id="L338">			return detals;</span>
 		}
 
 		// Handle stages
-<span class="fc" id="L355">		List&lt;ReplPair&gt; tmpList = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L356">		tmpList.addAll(detals);</span>
+<span class="fc" id="L342">		List&lt;ReplPair&gt; tmpList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L343">		tmpList.addAll(detals);</span>
 
-<span class="pc bpc" id="L358" title="1 of 2 branches missed.">		if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Stages: %s\n&quot;, stages);</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">		if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Stages: %s\n&quot;, stages);</span>
 
-<span class="fc" id="L360">		int procStg = 0;</span>
-<span class="fc bfc" id="L361" title="All 2 branches covered.">		for (List&lt;ReplPair&gt; stageList : stages) {</span>
-<span class="fc" id="L362">			procStg += 1;</span>
-<span class="fc" id="L363">			List&lt;ReplPair&gt; curStage = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L347">		int procStg = 0;</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">		for (List&lt;ReplPair&gt; stageList : stages) {</span>
+<span class="fc" id="L349">			procStg += 1;</span>
+<span class="fc" id="L350">			List&lt;ReplPair&gt; curStage = new ArrayList&lt;&gt;();</span>
 
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">			if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Staging stage %d of %d: %s\n&quot;,</span>
-<span class="nc" id="L366">					procStg, stageList.size(), stageList);</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">			if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Staging stage %d of %d: %s\n&quot;,</span>
+<span class="nc" id="L353">					procStg, stageList.size(), stageList);</span>
 
-<span class="fc bfc" id="L368" title="All 2 branches covered.">			for (ReplPair rp : stageList) {</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">			for (ReplPair rp : stageList) {</span>
 				// Process through every pair in the previous
 				// stages
-<span class="fc bfc" id="L371" title="All 2 branches covered.">				for (ReplPair curPar : tmpList) {</span>
-<span class="fc" id="L372">					String tmp = rp.replace.replaceAll(curPar.find, curPar.replace);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">				for (ReplPair curPar : tmpList) {</span>
+<span class="fc" id="L359">					String tmp = rp.replace.replaceAll(curPar.find, curPar.replace);</span>
 
-<span class="pc bpc" id="L374" title="3 of 4 branches missed.">					if (ropts.isTrace &amp;&amp; !rp.replace.equals(tmp)) {</span>
-<span class="nc" id="L375">						ropts.errStream.printf(&quot;\t[DEBUG] Staged '%s' -&gt; '%s'\t%s\n&quot;,</span>
+<span class="pc bpc" id="L361" title="3 of 4 branches missed.">					if (ropts.isTrace &amp;&amp; !rp.replace.equals(tmp)) {</span>
+<span class="nc" id="L362">						ropts.errStream.printf(&quot;\t[DEBUG] Staged '%s' -&gt; '%s'\t%s\n&quot;,</span>
 							rp.replace, tmp, curPar);
 					}
 
-<span class="fc" id="L379">					rp.replace = tmp;</span>
-<span class="fc" id="L380">				}</span>
+<span class="fc" id="L366">					rp.replace = tmp;</span>
+<span class="fc" id="L367">				}</span>
 
 				// If we're external; add straight to the output
-<span class="fc bfc" id="L383" title="All 2 branches covered.">				if (rp.stat == StageStatus.EXTERNAL) {</span>
-<span class="pc bpc" id="L384" title="1 of 2 branches missed.">					if (ropts.isTrace) {</span>
-<span class="nc" id="L385">						ropts.errStream.printf(&quot;\t[DEBUG] Skipped external for staging: %s\n&quot;,</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">				if (rp.stat == StageStatus.EXTERNAL) {</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">					if (ropts.isTrace) {</span>
+<span class="nc" id="L372">						ropts.errStream.printf(&quot;\t[DEBUG] Skipped external for staging: %s\n&quot;,</span>
 								rp);
 					}
 
-<span class="fc" id="L389">					detals.add(rp);</span>
+<span class="fc" id="L376">					detals.add(rp);</span>
 				} else {
-<span class="pc bpc" id="L391" title="1 of 2 branches missed.">					if (ropts.isTrace) {</span>
-<span class="nc" id="L392">						ropts.errStream.printf(&quot;\t[DEBUG] Added to stage %d: %s\n\t\tContents: %s\n&quot;,</span>
-<span class="nc" id="L393">								procStg, rp, curStage);</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">					if (ropts.isTrace) {</span>
+<span class="nc" id="L379">						ropts.errStream.printf(&quot;\t[DEBUG] Added to stage %d: %s\n\t\tContents: %s\n&quot;,</span>
+<span class="nc" id="L380">								procStg, rp, curStage);</span>
 					}
 
-<span class="fc" id="L396">					curStage.add(rp);</span>
+<span class="fc" id="L383">					curStage.add(rp);</span>
 				}
-<span class="fc" id="L398">			}</span>
+<span class="fc" id="L385">			}</span>
 			
-<span class="fc" id="L400">			tmpList.addAll(curStage);</span>
-<span class="fc" id="L401">			tmpList.sort(null);</span>
-<span class="fc" id="L402">		}</span>
+<span class="fc" id="L387">			tmpList.addAll(curStage);</span>
+<span class="fc" id="L388">			tmpList.sort(null);</span>
+<span class="fc" id="L389">		}</span>
 
 		// Copy over to output, excluding internals
-<span class="fc bfc" id="L405" title="All 2 branches covered.">		for (ReplPair rp : tmpList) {</span>
-<span class="fc bfc" id="L406" title="All 2 branches covered.">			if (rp.stat == StageStatus.INTERNAL) {</span>
-<span class="pc bpc" id="L407" title="1 of 2 branches missed.">				if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Excluded internal: %s\n&quot;, rp);</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">		for (ReplPair rp : tmpList) {</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">			if (rp.stat == StageStatus.INTERNAL) {</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">				if (ropts.isTrace) ropts.errStream.printf(&quot;\t[DEBUG] Excluded internal: %s\n&quot;, rp);</span>
 
 				continue;
 			}
 
-<span class="fc" id="L412">			detals.add(rp);</span>
-<span class="fc" id="L413">		}</span>
+<span class="fc" id="L399">			detals.add(rp);</span>
+<span class="fc" id="L400">		}</span>
 
-<span class="fc" id="L415">		detals.sort(null);</span>
+<span class="fc" id="L402">		detals.sort(null);</span>
 
-<span class="pc bpc" id="L417" title="1 of 2 branches missed.">		if (ropts.isTrace) {</span>
-<span class="nc" id="L418">			ropts.errStream.printf(&quot;\t[DEBUG] Final output: %s\n&quot;, detals);</span>
+<span class="pc bpc" id="L404" title="1 of 2 branches missed.">		if (ropts.isTrace) {</span>
+<span class="nc" id="L405">			ropts.errStream.printf(&quot;\t[DEBUG] Final output: %s\n&quot;, detals);</span>
 		}
 
-<span class="fc" id="L421">		return detals;</span>
+<span class="fc" id="L408">		return detals;</span>
 	}
 
 	private static String readMultiLine(String lead, Scanner src, ReplOpts ropts,
 			List&lt;ReplError&gt; errs, String typ, IntHolder lno) {
-<span class="fc" id="L426">		String tmp = lead;</span>
+<span class="fc" id="L413">		String tmp = lead;</span>
 
-<span class="pc bpc" id="L428" title="3 of 4 branches missed.">		if (ropts.isTrace &amp;&amp; tmp.endsWith(&quot;\\&quot;)) </span>
-<span class="nc" id="L429">			ropts.errStream.printf(&quot;\t[TRACE] Starting multi-line parse for %s '%s'\n&quot;, typ, tmp);</span>
+<span class="pc bpc" id="L415" title="3 of 4 branches missed.">		if (ropts.isTrace &amp;&amp; tmp.endsWith(&quot;\\&quot;)) </span>
+<span class="nc" id="L416">			ropts.errStream.printf(&quot;\t[TRACE] Starting multi-line parse for %s '%s'\n&quot;, typ, tmp);</span>
 
-<span class="fc" id="L431">		boolean didMulti = tmp.endsWith(&quot;\\&quot;);</span>
-<span class="fc bfc" id="L432" title="All 2 branches covered.">		while (tmp.endsWith(&quot;\\&quot;)) {</span>
-<span class="fc" id="L433">			boolean incNL = tmp.endsWith(&quot;|\\&quot;);</span>
+<span class="fc" id="L418">		boolean didMulti = tmp.endsWith(&quot;\\&quot;);</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">		while (tmp.endsWith(&quot;\\&quot;)) {</span>
+<span class="fc" id="L420">			boolean incNL = tmp.endsWith(&quot;|\\&quot;);</span>
 
-<span class="pc bpc" id="L435" title="1 of 2 branches missed.">			if (!src.hasNextLine()) break;</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">			if (!src.hasNextLine()) break;</span>
 
-<span class="fc" id="L437">			String nxt = src.nextLine().trim();</span>
-<span class="fc" id="L438">			lno.incr();</span>
+<span class="fc" id="L424">			String nxt = src.nextLine().trim();</span>
+<span class="fc" id="L425">			lno.incr();</span>
 
-<span class="fc bfc" id="L440" title="All 2 branches covered.">			if (nxt.startsWith(&quot;#&quot;)) continue;</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">			if (nxt.startsWith(&quot;#&quot;)) continue;</span>
 
-<span class="fc bfc" id="L442" title="All 2 branches covered.">			String nlStr = incNL ? &quot;\n&quot; : &quot;&quot;;</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">			String nlStr = incNL ? &quot;\n&quot; : &quot;&quot;;</span>
 
-<span class="pc bpc" id="L444" title="1 of 2 branches missed.">			if (tmp.endsWith(&quot;\\&quot;)) {</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">				if (incNL) {</span>
-<span class="fc" id="L446">					tmp = tmp.substring(0, tmp.length() - 2);</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">			if (tmp.endsWith(&quot;\\&quot;)) {</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">				if (incNL) {</span>
+<span class="fc" id="L433">					tmp = tmp.substring(0, tmp.length() - 2);</span>
 				} else {
-<span class="fc" id="L448">					tmp = tmp.substring(0, tmp.length() - 1);</span>
+<span class="fc" id="L435">					tmp = tmp.substring(0, tmp.length() - 1);</span>
 				}
 			}
 
-<span class="fc" id="L452">			tmp = String.format(&quot;%s%s%s&quot;, tmp, nlStr, nxt);</span>
-<span class="fc" id="L453">		}</span>
+<span class="fc" id="L439">			tmp = String.format(&quot;%s%s%s&quot;, tmp, nlStr, nxt);</span>
+<span class="fc" id="L440">		}</span>
 
-<span class="pc bpc" id="L455" title="3 of 4 branches missed.">		if (ropts.isTrace &amp;&amp; didMulti)</span>
-<span class="nc" id="L456">			ropts.errStream.printf(&quot;\t[TRACE] Finished multi-line parse for %s:\n%s\n.\n&quot;,</span>
+<span class="pc bpc" id="L442" title="3 of 4 branches missed.">		if (ropts.isTrace &amp;&amp; didMulti)</span>
+<span class="nc" id="L443">			ropts.errStream.printf(&quot;\t[TRACE] Finished multi-line parse for %s:\n%s\n.\n&quot;,</span>
 					typ, tmp);
 
-<span class="fc" id="L459">		return tmp;</span>
+<span class="fc" id="L446">		return tmp;</span>
 	}
 
 	@Override
 	public String apply(String inp) {
-<span class="fc" id="L464">		return inp.replaceAll(find, replace);</span>
+<span class="fc" id="L451">		return inp.replaceAll(find, replace);</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="fc" id="L469">		String nameStr = &quot;&quot;;</span>
+<span class="fc" id="L456">		String nameStr = &quot;&quot;;</span>
 
-<span class="pc bpc" id="L471" title="1 of 2 branches missed.">		if (!find.equals(name)) nameStr = String.format(&quot;(%s)&quot;, name);</span>
+<span class="pc bpc" id="L458" title="1 of 2 branches missed.">		if (!find.equals(name)) nameStr = String.format(&quot;(%s)&quot;, name);</span>
 
-<span class="fc" id="L473">		return String.format(&quot;%ss/%s/%s/p(%d)&quot;, nameStr, find, replace, priority);</span>
+<span class="fc" id="L460">		return String.format(&quot;%ss/(%s)/(%s)/p(%d)&quot;, nameStr, find, replace, priority);</span>
 	}
 
 	@Override
 	public int compareTo(ReplPair rp) {
-<span class="fc bfc" id="L478" title="All 2 branches covered.">		if (this.priority == rp.priority) return this.lno - rp.lno;</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">		if (this.priority == rp.priority) return this.lno - rp.lno;</span>
 
-<span class="fc" id="L480">		return rp.priority - this.priority;</span>
+<span class="fc" id="L467">		return rp.priority - this.priority;</span>
+	}
+	
+	@Override
+	public int hashCode() {
+<span class="nc" id="L472">		final int prime = 31;</span>
+<span class="nc" id="L473">		int result = 1;</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">		result = prime * result + ((find == null) ? 0 : find.hashCode());</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">		result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="nc" id="L476">		result = prime * result + priority;</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">		result = prime * result + ((replace == null) ? 0 : replace.hashCode());</span>
+<span class="nc" id="L478">		result = prime * result + stage;</span>
+<span class="nc" id="L479">		return result;</span>
 	}
 
 	@Override
-	public boolean equals(Object o) {
-<span class="pc bpc" id="L485" title="1 of 2 branches missed.">		if (o == null) return false;</span>
-
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">		if (!getClass().equals(o.getClass())) return false;</span>
-
-<span class="fc" id="L489">		ReplPair ro = (ReplPair)o;</span>
-
-<span class="pc bpc" id="L491" title="1 of 2 branches missed.">		if (!find.equals(ro.find)) return false;</span>
-		// lno is not a field we consider for equality
-<span class="pc bpc" id="L493" title="1 of 2 branches missed.">		if (!name.equals(ro.name)) return false;</span>
-<span class="pc bpc" id="L494" title="1 of 2 branches missed.">		if (priority != ro.priority) return false;</span>
-<span class="pc bpc" id="L495" title="1 of 2 branches missed.">		if (!replace.equals(ro.name)) return false;</span>
-		// stat is not a field we consider for equality
-
-<span class="fc" id="L498">		return true;</span>
+	public boolean equals(Object obj) {
+<span class="pc bpc" id="L484" title="1 of 2 branches missed.">		if (this == obj) return true;</span>
+<span class="pc bpc" id="L485" title="1 of 2 branches missed.">		if (obj == null) return false;</span>
+<span class="pc bpc" id="L486" title="1 of 2 branches missed.">		if (getClass() != obj.getClass()) return false;</span>
+<span class="fc" id="L487">		ReplPair other = (ReplPair) obj;</span>
+<span class="pc bpc" id="L488" title="1 of 2 branches missed.">		if (find == null) {</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">			if (other.find != null) return false;</span>
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">		} else if (!find.equals(other.find)) return false;</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">		if (name == null) {</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">			if (other.name != null) return false;</span>
+<span class="pc bpc" id="L493" title="1 of 2 branches missed.">		} else if (!name.equals(other.name)) return false;</span>
+<span class="pc bpc" id="L494" title="1 of 2 branches missed.">		if (priority != other.priority) return false;</span>
+<span class="pc bpc" id="L495" title="1 of 2 branches missed.">		if (replace == null) {</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">			if (other.replace != null) return false;</span>
+<span class="pc bpc" id="L497" title="1 of 2 branches missed.">		} else if (!replace.equals(other.replace)) return false;</span>
+<span class="pc bpc" id="L498" title="1 of 2 branches missed.">		if (stage != other.stage) return false;</span>
+<span class="fc" id="L499">		return true;</span>
 	}
 
 	private static String readName(String nam, Scanner scn, List&lt;ReplError&gt; errs,
 			ReplPair rp, ReplOpts ropts, IntHolder lno, IntHolder pno) {
-<span class="fc" id="L503">		String name = nam;</span>
+<span class="fc" id="L504">		ControlledString cs = getControls(nam, errs, ropts, lno, pno, &quot;name&quot;);</span>
 
-<span class="fc" id="L505">		boolean isMulti = ropts.defMulti;</span>
+<span class="fc" id="L506">		boolean isMulti = ropts.defMulti;</span>
 
-		// Name has attached controls, process them.
-<span class="fc bfc" id="L508" title="All 2 branches covered.">		if (name.startsWith(&quot;//&quot;)) {</span>
-<span class="fc" id="L509">			name = name.substring(2);</span>
+<span class="fc" id="L508">		String name = cs.strang;</span>
 
-<span class="fc" id="L511">			String[] nameBits = StringUtils.escapeSplit(&quot;|&quot;, &quot;//&quot;, name);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">		if (cs.hasControls()) {</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">			for (Control cont : cs.controls) {</span>
+<span class="pc bpc" id="L512" title="6 of 10 branches missed.">				switch (cont.name) {</span>
+					case &quot;NAME&quot;:
+					case &quot;N&quot;:
+<span class="nc bnc" id="L515" title="All 2 branches missed.">						if (cont.count() != 1) {</span>
+<span class="nc" id="L516">							String errMsg = String.format(&quot;One name argument was expected (got %d)&quot;,</span>
+<span class="nc" id="L517">									cont.count());</span>
 
-<span class="pc bpc" id="L513" title="1 of 2 branches missed.">			if (nameBits.length &lt; 2) {</span>
-<span class="nc" id="L514">				String msg = &quot;Did not find control terminator (//) in name where it should be&quot;;</span>
-
-<span class="nc" id="L516">				errs.add(new ReplError(lno, pno, msg, name));</span>
-<span class="nc" id="L517">				return null;</span>
-			}
-
-<span class="fc" id="L520">			String contName = nameBits[0];</span>
-<span class="fc" id="L521">			String actName  = nameBits[1];</span>
-
-			// Split out each control
-<span class="fc" id="L524">			String[] bits = StringUtils.escapeSplit(&quot;|&quot;, &quot;;&quot;, contName);</span>
-
-<span class="fc bfc" id="L526" title="All 2 branches covered.">			for (String bit : bits) {</span>
-<span class="fc" id="L527">				String bitHead = bit.toUpperCase();</span>
-<span class="fc" id="L528">				String bitBody = bit;</span>
-
-<span class="fc" id="L530">				String[] bots = StringUtils.escapeSplit(&quot;|&quot;, &quot;/&quot;, bit);</span>
-
-<span class="fc bfc" id="L532" title="All 2 branches covered.">				if (bots.length &gt; 1) {</span>
-<span class="fc" id="L533">					bitHead = bots[0].toUpperCase();</span>
-<span class="fc" id="L534">					bitBody = bots[1];</span>
-				}
-
-<span class="pc bpc" id="L537" title="6 of 10 branches missed.">				switch (bitHead) {</span>
-				case &quot;NAME&quot;:
-				case &quot;N&quot;:
-<span class="nc" id="L540">					rp.name = bitBody;</span>
-<span class="nc" id="L541">					break;</span>
-				case &quot;PRIORITY&quot;:
-				case &quot;PRIOR&quot;:
-				case &quot;P&quot;:
-					try {
-<span class="fc" id="L546">						rp.priority = Integer.parseInt(bitBody);</span>
-<span class="nc" id="L547">					} catch (NumberFormatException nfex) {</span>
-<span class="nc" id="L548">						String errMsg = String.format(&quot;'%s' is not a valid priority (must be an integer)&quot;, bitBody);</span>
-<span class="nc" id="L549">						errs.add(new ReplError(lno, pno, errMsg, name));</span>
-<span class="fc" id="L550">					}</span>
-<span class="nc" id="L551">					break;</span>
-				case &quot;STAGE&quot;:
-				case &quot;S&quot;:
-					try {
-<span class="fc" id="L555">						int tmpStage = Integer.parseInt(bitBody);</span>
-<span class="pc bpc" id="L556" title="1 of 2 branches missed.">						if (tmpStage &lt; 0) {</span>
-<span class="nc" id="L557">							String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;, bitBody);</span>
-<span class="nc" id="L558">							errs.add(new ReplError(lno, pno, errMsg, name));</span>
-
-<span class="nc" id="L560">							break;</span>
+<span class="nc" id="L519">							errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L520">						} else {</span>
+<span class="nc" id="L521">							rp.name = cont.get(0);</span>
 						}
-<span class="fc" id="L562">						rp.stage = tmpStage;</span>
-<span class="nc" id="L563">					} catch (NumberFormatException nfex) {</span>
-<span class="nc" id="L564">						String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;, bitBody);</span>
-<span class="nc" id="L565">						errs.add(new ReplError(lno, pno, errMsg, name));</span>
-<span class="fc" id="L566">					}</span>
-<span class="nc" id="L567">					break;</span>
-				case &quot;MULTITRUE&quot;:
-				case &quot;MULTIT&quot;:
-				case &quot;MT&quot;:
-<span class="nc" id="L571">					isMulti = true;</span>
-<span class="nc" id="L572">					break;</span>
-				case &quot;MULTIFALSE&quot;:
-				case &quot;MULTIF&quot;:
-				case &quot;MF&quot;:
-<span class="nc" id="L576">					isMulti = false;</span>
-<span class="nc" id="L577">					break;</span>
-				case &quot;MULTI&quot;:
-				case &quot;M&quot;:
-<span class="nc" id="L580">					isMulti = Boolean.parseBoolean(bitBody);</span>
-<span class="nc" id="L581">					break;</span>
-				case &quot;INTERNAL&quot;:
-				case &quot;INT&quot;:
-				case &quot;I&quot;:
-<span class="fc" id="L585">					rp.stat = StageStatus.INTERNAL;</span>
-<span class="fc" id="L586">					break;</span>
-				case &quot;EXTERNAL&quot;:
-				case &quot;EXT&quot;:
-				case &quot;E&quot;:
-<span class="fc" id="L590">					rp.stat = StageStatus.EXTERNAL;</span>
-<span class="fc" id="L591">					break;</span>
-				case &quot;BOTH&quot;:
-				case &quot;B&quot;:
-<span class="nc" id="L594">					rp.stat = StageStatus.BOTH;</span>
-<span class="nc" id="L595">					break;</span>
-				default: 
-					{
-<span class="nc" id="L598">						ReplError erd = new ReplError(lno, pno,</span>
-<span class="nc" id="L599">								String.format(&quot;Unknown control name '%s' for name '%s'&quot;,</span>
-									bitHead, name), name);
+<span class="nc" id="L523">						break;</span>
+					case &quot;PRIORITY&quot;:
+					case &quot;PRIOR&quot;:
+					case &quot;P&quot;:
+						try {
+<span class="pc bpc" id="L528" title="1 of 2 branches missed.">							if (cont.count() != 1) {</span>
+<span class="nc" id="L529">								String errMsg = String.format(&quot;One priority argument was expected (got %d&quot;,</span>
+<span class="nc" id="L530">										cont.count());</span>
 
-<span class="nc" id="L602">						errs.add(erd);</span>
-					}
-					break;
+<span class="nc" id="L532">								errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L533">							} else {</span>
+<span class="fc" id="L534">								rp.priority = Integer.parseInt(cont.get(0));</span>
+							}
+<span class="nc" id="L536">						} catch (NumberFormatException nfex) {</span>
+<span class="nc" id="L537">							String errMsg = String.format(&quot;'%s' is not a valid priority (must be an integer)&quot;,</span>
+<span class="nc" id="L538">									cont.get(0));</span>
+
+<span class="nc" id="L540">							errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="fc" id="L541">						}</span>
+<span class="nc" id="L542">						break;</span>
+					case &quot;STAGE&quot;:
+					case &quot;S&quot;:
+						try {
+<span class="pc bpc" id="L546" title="1 of 2 branches missed.">							if (cont.count() != 1) {</span>
+<span class="nc" id="L547">								String errMsg = String.format(&quot;One stage argument was expected (got %d&quot;,</span>
+<span class="nc" id="L548">										cont.count());</span>
+
+<span class="nc" id="L550">								errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L551">							} else {</span>
+<span class="fc" id="L552">								int tmpStage = Integer.parseInt(cont.get(0));</span>
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">								if (tmpStage &lt; 0) {</span>
+<span class="nc" id="L554">									String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
+<span class="nc" id="L555">											cont.get(0));</span>
+<span class="nc" id="L556">									errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+
+<span class="nc" id="L558">									break;</span>
+								}
+<span class="fc" id="L560">								rp.stage = tmpStage;</span>
+							}
+<span class="nc" id="L562">						} catch (NumberFormatException nfex) {</span>
+<span class="nc" id="L563">							String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
+<span class="nc" id="L564">									cont.get(0));</span>
+
+<span class="nc" id="L566">							errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="fc" id="L567">						}</span>
+<span class="nc" id="L568">						break;</span>
+					case &quot;MULTITRUE&quot;:
+					case &quot;MULTIT&quot;:
+					case &quot;MT&quot;:
+<span class="nc" id="L572">						isMulti = true;</span>
+<span class="nc" id="L573">						break;</span>
+					case &quot;MULTIFALSE&quot;:
+					case &quot;MULTIF&quot;:
+					case &quot;MF&quot;:
+<span class="nc" id="L577">						isMulti = false;</span>
+<span class="nc" id="L578">						break;</span>
+					case &quot;MULTI&quot;:
+					case &quot;M&quot;:
+<span class="nc bnc" id="L581" title="All 2 branches missed.">						if (cont.count() != 1) {</span>
+<span class="nc" id="L582">							String errMsg = String.format(&quot;One multi-flag argument was expected (got %d&quot;,</span>
+<span class="nc" id="L583">									cont.count());</span>
+
+<span class="nc" id="L585">							errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L586">						} else {</span>
+<span class="nc" id="L587">							isMulti = Boolean.parseBoolean(cont.get(0));</span>
+						}
+<span class="nc" id="L589">						break;</span>
+					case &quot;INTERNAL&quot;:
+					case &quot;INT&quot;:
+					case &quot;I&quot;:
+<span class="fc" id="L593">						rp.stat = StageStatus.INTERNAL;</span>
+<span class="fc" id="L594">						break;</span>
+					case &quot;EXTERNAL&quot;:
+					case &quot;EXT&quot;:
+					case &quot;E&quot;:
+<span class="fc" id="L598">						rp.stat = StageStatus.EXTERNAL;</span>
+<span class="fc" id="L599">						break;</span>
+					case &quot;BOTH&quot;:
+					case &quot;B&quot;:
+<span class="nc" id="L602">						rp.stat = StageStatus.BOTH;</span>
+<span class="nc" id="L603">						break;</span>
+					default: 
+						{
+<span class="nc" id="L606">							String errMsg = String.format(&quot;Unknown control name '%s' for name '%s'&quot;,</span>
+									cont.name, nam);
+
+<span class="nc" id="L609">							ReplError erd = new ReplError(lno, pno, errMsg, nam);</span>
+
+<span class="nc" id="L611">							errs.add(erd);</span>
+						}
+						break;
 				}
-
-<span class="fc" id="L607">				name = actName;</span>
 			}
 
-			// Multi-line name with a trailer
-<span class="pc bpc" id="L611" title="1 of 2 branches missed.">			if (isMulti) {</span>
-<span class="nc" id="L612">				String tmp = readMultiLine(name, scn, ropts, errs, &quot;name&quot;, lno);</span>
-<span class="nc bnc" id="L613" title="All 2 branches missed.">				if (tmp == null) return null;</span>
-<span class="nc" id="L614">				name = tmp;</span>
-			}
+<span class="fc" id="L617">			name = cs.strang;</span>
 		}
 
-<span class="fc" id="L618">		return name;</span>
+		// Multi-line name with a trailer
+<span class="fc bfc" id="L621" title="All 2 branches covered.">		if (isMulti) {</span>
+<span class="fc" id="L622">			String tmp = readMultiLine(name, scn, ropts, errs, &quot;name&quot;, lno);</span>
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">			if (tmp == null) return null;</span>
+<span class="fc" id="L624">			name = tmp;</span>
+		}
+
+<span class="fc" id="L627">		return name;</span>
 	}
 
 	private static void readGlobal(String nam, Scanner scn, List&lt;ReplError&gt; errs,
 			ReplOpts ropts, IntHolder lno, IntHolder pno) {
-<span class="fc" id="L623">		String name = nam.substring(3);</span>
+<span class="fc" id="L632">		ControlledString cs = getControls(nam.substring(1), errs, ropts, lno, pno, &quot;global&quot;);</span>
 
-		// Split out each control
-<span class="fc" id="L626">		String[] bits = StringUtils.escapeSplit(&quot;|&quot;, &quot;;&quot;, name);</span>
-<span class="pc bpc" id="L627" title="1 of 2 branches missed.">		if (ropts.isTrace) {</span>
-<span class="nc" id="L628">			ropts.errStream.printf(&quot;\t[TRACE] Split control bits are: \n&quot;);</span>
-<span class="nc bnc" id="L629" title="All 2 branches missed.">			for (String bit : bits) {</span>
-<span class="nc" id="L630">				ropts.errStream.printf(&quot;%s, &quot;, bit);</span>
-			}
-<span class="nc" id="L632">			ropts.errStream.println();</span>
-		}
-<span class="fc bfc" id="L634" title="All 2 branches covered.">		for (String bit : bits) {</span>
-<span class="fc" id="L635">			String bitHead = bit.toUpperCase();</span>
-<span class="fc" id="L636">			String bitBody = bit;</span>
-
-<span class="fc" id="L638">			String[] bots = StringUtils.escapeSplit(&quot;|&quot;, &quot;/&quot;, bit);</span>
-<span class="fc bfc" id="L639" title="All 2 branches covered.">			if (bots.length &gt; 1) {</span>
-<span class="fc" id="L640">				bitHead = bots[0];</span>
-<span class="fc" id="L641">				bitBody = bots[1];</span>
-			}
-
-<span class="pc bpc" id="L644" title="13 of 18 branches missed.">			switch (bitHead) {</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">		for (Control cont : cs.controls) {</span>
+<span class="pc bpc" id="L635" title="13 of 18 branches missed.">			switch (cont.name) {</span>
 			case &quot;PRIORITY&quot;:
 			case &quot;PRIOR&quot;:
 			case &quot;P&quot;:
 				try {
-<span class="fc" id="L649">					int tmp = Integer.parseInt(bitBody);</span>
-<span class="fc" id="L650">					ropts.defPrior = tmp;</span>
-<span class="nc" id="L651">				} catch (NumberFormatException nfex) {</span>
-<span class="nc" id="L652">					String errMsg = String.format(&quot;'%s' is not a valid priority (must be an integer)&quot;,</span>
-							bitBody);
+<span class="pc bpc" id="L640" title="1 of 2 branches missed.">					if (cont.count() != 1) {</span>
+<span class="nc" id="L641">						String errMsg = String.format(&quot;Must specify 1 priority (%d specified)&quot;,</span>
+<span class="nc" id="L642">								cont.count());</span>
 
-<span class="nc" id="L655">					errs.add(new ReplError(lno, pno, errMsg, name));</span>
-<span class="fc" id="L656">				}</span>
-<span class="nc" id="L657">				break;</span>
+<span class="nc" id="L644">						errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L645">					} else {</span>
+<span class="fc" id="L646">						int tmp = Integer.parseInt(cont.get(0));</span>
+<span class="fc" id="L647">						ropts.defPrior = tmp;</span>
+					}
+<span class="nc" id="L649">				} catch (NumberFormatException nfex) {</span>
+<span class="nc" id="L650">					String errMsg = String.format(&quot;'%s' is not a valid priority (must be an integer)&quot;,</span>
+<span class="nc" id="L651">							cont.get(0));</span>
+
+<span class="nc" id="L653">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="fc" id="L654">				}</span>
+<span class="nc" id="L655">				break;</span>
 			case &quot;STAGE&quot;:
 			case &quot;S&quot;:
 				try {
-<span class="fc" id="L661">					int tmpStage = Integer.parseInt(bitBody);</span>
+<span class="pc bpc" id="L659" title="1 of 2 branches missed.">					if (cont.count() != 1) {</span>
+<span class="nc" id="L660">						String errMsg = String.format(&quot;Must specify 1 stage (%d specified)&quot;,</span>
+<span class="nc" id="L661">								cont.count());</span>
 
-<span class="pc bpc" id="L663" title="1 of 2 branches missed.">					if (tmpStage &lt; 0) {</span>
-<span class="nc" id="L664">						String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
-								bitBody);
+<span class="nc" id="L663">						errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L664">					} else {</span>
+<span class="fc" id="L665">						int tmpStage = Integer.parseInt(cont.get(0));</span>
 
-<span class="nc" id="L667">						errs.add(new ReplError(lno, pno, errMsg, name));</span>
-<span class="nc" id="L668">						break;</span>
+<span class="pc bpc" id="L667" title="1 of 2 branches missed.">						if (tmpStage &lt; 0) {</span>
+<span class="nc" id="L668">							String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
+<span class="nc" id="L669">									cont.get(0));</span>
+
+<span class="nc" id="L671">							errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L672">							break;</span>
+						}
+
+<span class="fc" id="L675">						ropts.defStage = tmpStage;</span>
 					}
-<span class="fc" id="L670">					ropts.defStage = tmpStage;</span>
-<span class="nc" id="L671">				} catch (NumberFormatException nfex) {</span>
-<span class="nc" id="L672">					String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
-							bitBody);
+<span class="nc" id="L677">				} catch (NumberFormatException nfex) {</span>
+<span class="nc" id="L678">					String errMsg = String.format(&quot;'%s' is not a valid stage (must be a positive integer)&quot;,</span>
+<span class="nc" id="L679">							cont.get(0));</span>
 
-<span class="nc" id="L675">					errs.add(new ReplError(lno, pno, errMsg, name));</span>
-<span class="fc" id="L676">				}</span>
-<span class="nc" id="L677">				break;</span>
+<span class="nc" id="L681">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="fc" id="L682">				}</span>
+<span class="nc" id="L683">				break;</span>
 			case &quot;MULTITRUE&quot;:
 			case &quot;MULTIT&quot;:
 			case &quot;MT&quot;:
-<span class="nc" id="L681">				ropts.defMulti = true;</span>
-<span class="nc" id="L682">				break;</span>
+<span class="nc" id="L687">				ropts.defMulti = true;</span>
+<span class="nc" id="L688">				break;</span>
 			case &quot;MULTIFALSE&quot;:
 			case &quot;MULTIF&quot;:
 			case &quot;MF&quot;:
-<span class="nc" id="L686">				ropts.defMulti = false;</span>
-<span class="nc" id="L687">				break;</span>
+<span class="nc" id="L692">				ropts.defMulti = false;</span>
+<span class="nc" id="L693">				break;</span>
 			case &quot;MULTI&quot;:
 			case &quot;M&quot;:
-<span class="fc" id="L690">				ropts.defMulti = Boolean.parseBoolean(bitBody);</span>
-<span class="fc" id="L691">				break;</span>
+<span class="pc bpc" id="L696" title="1 of 2 branches missed.">				if (cont.count() != 1) {</span>
+<span class="nc" id="L697">					String errMsg = String.format(&quot;Must specify 1 multi-flag (%d specified)&quot;,</span>
+<span class="nc" id="L698">							cont.count());</span>
+
+<span class="nc" id="L700">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L701">				} else {</span>
+<span class="fc" id="L702">					ropts.defMulti = Boolean.parseBoolean(cont.get(0));</span>
+				}
+<span class="fc" id="L704">				break;</span>
 			case &quot;INTERNAL&quot;:
 			case &quot;INT&quot;:
 			case &quot;I&quot;:
-<span class="nc" id="L695">				ropts.defStatus = StageStatus.INTERNAL;</span>
-<span class="nc" id="L696">				break;</span>
+<span class="nc" id="L708">				ropts.defStatus = StageStatus.INTERNAL;</span>
+<span class="nc" id="L709">				break;</span>
 			case &quot;EXTERNAL&quot;:
 			case &quot;EXT&quot;:
 			case &quot;E&quot;:
-<span class="nc" id="L700">				ropts.defStatus = StageStatus.EXTERNAL;</span>
-<span class="nc" id="L701">				break;</span>
+<span class="nc" id="L713">				ropts.defStatus = StageStatus.EXTERNAL;</span>
+<span class="nc" id="L714">				break;</span>
 			case &quot;BOTH&quot;:
 			case &quot;B&quot;:
-<span class="nc" id="L704">				ropts.defStatus = StageStatus.BOTH;</span>
-<span class="nc" id="L705">				break;</span>
+<span class="nc" id="L717">				ropts.defStatus = StageStatus.BOTH;</span>
+<span class="nc" id="L718">				break;</span>
 			case &quot;DEBUGTRUE&quot;:
 			case &quot;DEBUGT&quot;:
 			case &quot;DT&quot;:
-<span class="nc" id="L709">				ropts.isDebug = true;</span>
-<span class="nc" id="L710">				break;</span>
+<span class="nc" id="L722">				ropts.isDebug = true;</span>
+<span class="nc" id="L723">				break;</span>
 			case &quot;DEBUGFALSE&quot;:
 			case &quot;DEBUGF&quot;:
 			case &quot;DF&quot;:
-<span class="fc" id="L714">				ropts.isDebug = false;</span>
-<span class="fc" id="L715">				break;</span>
+<span class="fc" id="L727">				ropts.isDebug = false;</span>
+<span class="fc" id="L728">				break;</span>
 			case &quot;DEBUG&quot;:
 			case &quot;D&quot;:
-<span class="nc" id="L718">				ropts.isDebug = Boolean.parseBoolean(bitBody);</span>
-<span class="nc" id="L719">				break;</span>
+<span class="nc bnc" id="L731" title="All 2 branches missed.">				if (cont.count() != 1) {</span>
+<span class="nc" id="L732">					String errMsg = String.format(&quot;Must specify 1 debug flag (%d specified)&quot;,</span>
+<span class="nc" id="L733">							cont.count());</span>
+
+<span class="nc" id="L735">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L736">				} else {</span>
+<span class="nc" id="L737">					ropts.isDebug = Boolean.parseBoolean(cont.get(0));</span>
+				}
+<span class="nc" id="L739">				break;</span>
 			case &quot;TRACETRUE&quot;:
 			case &quot;TRACET&quot;:
 			case &quot;TT&quot;:
-<span class="nc" id="L723">				ropts.isTrace = true;</span>
-<span class="nc" id="L724">				break;</span>
+<span class="nc" id="L743">				ropts.isTrace = true;</span>
+<span class="nc" id="L744">				break;</span>
 			case &quot;TRACEFALSE&quot;:
 			case &quot;TRACEF&quot;:
 			case &quot;TF&quot;:
-<span class="fc" id="L728">				ropts.isTrace = false;</span>
-<span class="fc" id="L729">				break;</span>
+<span class="fc" id="L748">				ropts.isTrace = false;</span>
+<span class="fc" id="L749">				break;</span>
 			case &quot;TRACE&quot;:
 			case &quot;T&quot;:
-<span class="nc" id="L732">				ropts.isTrace = Boolean.parseBoolean(bitBody);</span>
-<span class="nc" id="L733">				break;</span>
+<span class="nc bnc" id="L752" title="All 2 branches missed.">				if (cont.count() != 1) {</span>
+<span class="nc" id="L753">					String errMsg = String.format(&quot;Must specify 1 trace flag (%d specified)&quot;,</span>
+<span class="nc" id="L754">							cont.count());</span>
+
+<span class="nc" id="L756">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L757">				} else {</span>
+<span class="nc" id="L758">					ropts.isTrace = Boolean.parseBoolean(cont.get(0));</span>
+				}
+<span class="nc" id="L760">				break;</span>
 			case &quot;PERFTRUE&quot;:
 			case &quot;PERFT&quot;:
 			case &quot;PRFT&quot;:
-<span class="nc" id="L737">				ropts.isPerf = true;</span>
-<span class="nc" id="L738">				break;</span>
+<span class="nc" id="L764">				ropts.isPerf = true;</span>
+<span class="nc" id="L765">				break;</span>
 			case &quot;PERFFALSE&quot;:
 			case &quot;PERFF&quot;:
 			case &quot;PRFF&quot;:
-<span class="nc" id="L742">				ropts.isPerf = false;</span>
-<span class="nc" id="L743">				break;</span>
+<span class="nc" id="L769">				ropts.isPerf = false;</span>
+<span class="nc" id="L770">				break;</span>
 			case &quot;PERF&quot;:
 			case &quot;PRF&quot;:
-<span class="nc" id="L746">				ropts.isPerf = Boolean.parseBoolean(bitBody);</span>
-<span class="nc" id="L747">				break;</span>
+<span class="nc bnc" id="L773" title="All 2 branches missed.">				if (cont.count() != 1) {</span>
+<span class="nc" id="L774">					String errMsg = String.format(&quot;Must specify 1 perf. flag (%d specified)&quot;,</span>
+<span class="nc" id="L775">							cont.count());</span>
+
+<span class="nc" id="L777">					errs.add(new ReplError(lno, pno, errMsg, nam));</span>
+<span class="nc" id="L778">				} else {</span>
+<span class="nc" id="L779">					ropts.isPerf = Boolean.parseBoolean(cont.get(0));</span>
+				}
+<span class="nc" id="L781">				break;</span>
 			default: 
 				{
-<span class="nc" id="L750">					String msg = String.format(&quot;Invalid global control name '%s'&quot;, bitHead);</span>
-<span class="nc" id="L751">					ReplError err = new ReplError(lno, pno, msg, name);</span>
-<span class="nc" id="L752">					errs.add(err);</span>
+<span class="nc" id="L784">					String msg = String.format(&quot;Invalid global control name '%s'&quot;, cont.name);</span>
+<span class="nc" id="L785">					ReplError err = new ReplError(lno, pno, msg, nam);</span>
+<span class="nc" id="L786">					errs.add(err);</span>
 				}
 				break;
 			}
 
-<span class="pc bpc" id="L757" title="1 of 2 branches missed.">			if (ropts.isTrace) </span>
-<span class="nc" id="L758">				ropts.errStream.printf(&quot;\t[TRACE] Processed global control '%s':'%s'\n&quot;, </span>
-						bitHead, bitBody);
+<span class="pc bpc" id="L791" title="1 of 2 branches missed.">			if (ropts.isTrace) </span>
+<span class="nc" id="L792">				ropts.errStream.printf(&quot;\t[TRACE] Processed global control '%s'\n&quot;, cont);</span>
 		}
 
-<span class="fc" id="L762">		return;</span>
+<span class="fc" id="L795">		return;</span>
 	}
 	
 	private static ControlledString getControls(String lne, List&lt;ReplError&gt; errs,
-			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) {
-<span class="nc bnc" id="L767" title="All 2 branches missed.">		if (!lne.startsWith(&quot;//&quot;)) {</span>
-<span class="nc" id="L768">			return new ControlledString(lne);</span>
+			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) 
+	{
+		try {
+<span class="fc" id="L802">			return ControlledString.parse(lne, new ParseStrings(&quot;//&quot;, &quot;;&quot;, &quot;/&quot;, &quot;|&quot;));</span>
+<span class="nc" id="L803">		} catch (IllegalArgumentException iaex) {</span>
+<span class="nc" id="L804">			String msg = &quot;Did not find control terminator (//) in %s where it should be&quot;;</span>
+<span class="nc" id="L805">			msg = String.format(msg, type);</span>
+
+<span class="nc" id="L807">			ReplError re = new ReplError(lno, pno, msg, lne);</span>
+<span class="nc" id="L808">			errs.add(re);</span>
+
+<span class="nc" id="L810">			return null;</span>
 		}
-
-<span class="nc" id="L771">		String tmp = lne.substring(2);</span>
-
-<span class="nc" id="L773">		String[] bits = StringUtils.escapeSplit(&quot;|&quot;, &quot;//&quot;, lne);</span>
-
-<span class="nc bnc" id="L775" title="All 2 branches missed.">		if (bits.length &lt; 2) {</span>
-<span class="nc" id="L776">			String msg = &quot;Did not find control terminator (//) in %s where it should be&quot;;</span>
-<span class="nc" id="L777">			msg = String.format(msg, type);</span>
-
-<span class="nc" id="L779">			ReplError re = new ReplError(lno, pno, msg, lne);</span>
-<span class="nc" id="L780">			errs.add(re);</span>
-
-<span class="nc" id="L782">			return null;</span>
-		}
-
-<span class="nc" id="L785">		ControlledString cs = new ControlledString(bits[0]);</span>
-
-<span class="nc" id="L787">		bits = StringUtils.escapeSplit(&quot;|&quot;, &quot;;&quot;, bits[1]);</span>
-
-<span class="nc" id="L789">		cs.controls = new Control[bits.length];</span>
-
-<span class="nc bnc" id="L791" title="All 2 branches missed.">		for (int i = 0; i &lt; bits.length; i++) {</span>
-<span class="nc" id="L792">			String bit = bits[i];</span>
-
-<span class="nc" id="L794">			String[] bots = StringUtils.escapeSplit(&quot;|&quot;, &quot;/&quot;, bit);</span>
-
-<span class="nc" id="L796">			Control cont = new Control(bots[0]);</span>
-
-<span class="nc bnc" id="L798" title="All 2 branches missed.">			if (cont.name.length() &gt; 1) {</span>
-<span class="nc" id="L799">				cont.name = cont.name.toUpperCase();</span>
-			}
-			
-<span class="nc bnc" id="L802" title="All 2 branches missed.">			if (bots.length &gt; 1) {</span>
-<span class="nc" id="L803">				cont.args = new String[bots.length - 1];</span>
-<span class="nc bnc" id="L804" title="All 2 branches missed.">				for (int j = 1; j &lt; bots.length; j++) {</span>
-<span class="nc" id="L805">					cont.args[j - 1] = bots[j];</span>
-				}
-			}
-
-<span class="nc" id="L809">			cs.controls[i] = cont;</span>
-		}
-
-<span class="nc" id="L812">		return cs;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

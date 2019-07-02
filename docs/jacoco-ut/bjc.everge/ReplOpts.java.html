@@ -45,27 +45,33 @@ import java.io.PrintStream;
 
 <span class="fc" id="L46">	public PrintStream outStream = System.out;</span>
 <span class="fc" id="L47">	public PrintStream errStream = System.err;</span>
-
 	@Override
-	public boolean equals(Object o) {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">		if (o == null) return false;</span>
-
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		if (!getClass().equals(o.getClass())) return false;</span>
-
-<span class="nc" id="L55">		ReplOpts ro = (ReplOpts)o;</span>
-
-<span class="nc bnc" id="L57" title="All 2 branches missed.">		if (isPerf != ro.isPerf) return false;</span>
-
-<span class="nc bnc" id="L59" title="All 2 branches missed.">		if (isDebug != ro.isDebug) return false;</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">		if (isTrace != ro.isTrace) return false;</span>
-
-<span class="nc bnc" id="L62" title="All 2 branches missed.">		if (defPrior != ro.defPrior) return false;</span>
-<span class="nc bnc" id="L63" title="All 2 branches missed.">		if (defStage != ro.defStage) return false;</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">		if (defMulti != ro.defMulti) return false;</span>
-
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (defStatus != ro.defStatus) return false;</span>
-
-<span class="nc" id="L68">		return true;</span>
+	public int hashCode() {
+<span class="nc" id="L50">		final int prime = 31;</span>
+<span class="nc" id="L51">		int result = 1;</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		result = prime * result + (defMulti ? 1231 : 1237);</span>
+<span class="nc" id="L53">		result = prime * result + defPrior;</span>
+<span class="nc" id="L54">		result = prime * result + defStage;</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">		result = prime * result + ((defStatus == null) ? 0 : defStatus.hashCode());</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">		result = prime * result + (isDebug ? 1231 : 1237);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">		result = prime * result + (isPerf ? 1231 : 1237);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		result = prime * result + (isTrace ? 1231 : 1237);</span>
+<span class="nc" id="L59">		return result;</span>
+	}
+	@Override
+	public boolean equals(Object obj) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		if (this == obj) return true;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">		if (obj == null) return false;</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">		if (getClass() != obj.getClass()) return false;</span>
+<span class="nc" id="L66">		ReplOpts other = (ReplOpts) obj;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">		if (defMulti != other.defMulti) return false;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		if (defPrior != other.defPrior) return false;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		if (defStage != other.defStage) return false;</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		if (defStatus != other.defStatus) return false;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (isDebug != other.isDebug) return false;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">		if (isPerf != other.isPerf) return false;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		if (isTrace != other.isTrace) return false;</span>
+<span class="nc" id="L74">		return true;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
