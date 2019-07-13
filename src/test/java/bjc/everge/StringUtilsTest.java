@@ -55,4 +55,9 @@ public class StringUtilsTest {
 		assertSplitsTo("a/", "|", "/", "a");
 	}
 
+	@Test
+	public void testSliceString() {
+		assertEquals("ac", StringUtils.sliceString("abc", 1, 2));
+		assertEquals("ac", StringUtils.sliceStringL("abc", 1, 1));
+	}
 }

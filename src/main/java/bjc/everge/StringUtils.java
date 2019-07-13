@@ -28,34 +28,46 @@ public class StringUtils {
 	 * @return The string split as specified above.
 	 */
 	public static String[] escapeSplit(String escape, String splat, String inp) {
-
 		/*
 		 * Special case some stuffs.
 		 */
+
+		// No input
 		if (inp == null || inp.equals("")) {
-			// No input
 			return new String[] {inp};
 		}
 
+		// Input does not contain any delimiters
 		if (!inp.contains(splat)) {
-			// Input does not contain any delimiters
 			return new String[] {inp};
 		}
 
+		// No escape, so we can just split normally
 		if (escape == null || escape.equals("")) {
-			// No escape, so we can just split normally
 			return inp.split(Pattern.quote(splat));
 		}
 
 		List<String> ret = new ArrayList<>();
 
+		/*
+		 * Set up working variables
+		 */
+
+		// Copy of parameters
 		String wrk = inp;
+
+		// Index of first occurrence of split string
 		int sidx = wrk.indexOf(splat);
+		// Index of first occurrence of escaped string
 		int eidx = wrk.indexOf(escape);
 
+		// Was the last thing we saw an escape?
+		// 	This is used to enable the handling of escaping escapes
 		boolean hadEscape = false;
 
+		// As long as there an occurrence of either the split/escape
 		while (sidx != -1 || eidx != -1) {
+			// If there is an escape before a split
 			if (eidx > 0 && eidx < sidx) {
 				if (isDebug) System.err.printf("[TRACE] Considering escape\n");
 
@@ -64,26 +76,16 @@ public class StringUtils {
 				 * 	- either an escaped split
 				 * 	- or an escaped escape
 				 */
+
 				// Check for an escaped split
-				if (wrk.regionMatches(eidx + escape.length(), splat, 0, splat.length())) {
+				boolean hasEscapedSplit = wrk.startsWith(splat, eidx + escape.length());
+				if (hasEscapedSplit) {
 					// Skip over it
 					int ofst = eidx + splat.length();
 
-					// Slice out the escape
-					{
-						String s1 = wrk.substring(0, eidx);
-						String s2 = wrk.substring(eidx + escape.length());
+					wrk = sliceStringL(wrk, eidx, escape.length());
 
-						String s3 = wrk.substring(eidx, eidx + escape.length());
-
-						if (isDebug) {
-							System.err.printf("[TRACE] Skip esc. split (%s)/(%s); (%s)\n",
-									s1, s2, s3);
-						}
-
-						wrk = s1 + s2;
-					}
-
+					// Recalculate indexes
 					sidx = wrk.indexOf(splat,  ofst);
 					eidx = wrk.indexOf(escape, ofst);
 
@@ -92,29 +94,20 @@ public class StringUtils {
 								wrk, sidx, eidx);
 					}
 
+					// No pending escape
 					hadEscape = false;
 					continue;
 				}
 
 				// Check for an escaped escape
-				if (wrk.regionMatches(eidx + escape.length(), escape, 0, escape.length())) {
+				boolean hasEscapedEscape = wrk.startsWith(escape, eidx + escape.length());
+				if (hasEscapedEscape) {
 					// Skip over it
 					int ofst = eidx + escape.length();
 
-					// Slice out the escape
-					{
-						String s1 = wrk.substring(0, eidx);
-						String s2 = wrk.substring(eidx + escape.length());
+					wrk = sliceStringL(wrk, eidx, escape.length());
 
-						String s3 = wrk.substring(eidx, eidx + escape.length());
-						if (isDebug) {
-							System.err.printf("[TRACE] Skip esc. escape (%s)/(%s); (%s)\n",
-								s1, s2, s3);
-						}
-
-						wrk = s1 + s2;
-					}
-
+					// Recalculate indexes
 					sidx = wrk.indexOf(splat,  ofst);
 					eidx = wrk.indexOf(escape, ofst);
 
@@ -123,34 +116,32 @@ public class StringUtils {
 								wrk, wrk.substring(ofst), sidx, eidx);
 					}
 
+					// There's a pending escape
 					hadEscape = true;
 					continue;
 				}
 			}
 
+			// Calculate whether there is currently an escape
 			boolean hasEscape = false;
-
 			{
-				boolean tmp = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());
+				boolean tmp = wrk.startsWith(escape, sidx - escape.length());
+				// boolean tmp = wrk.regionMatches(lo, escape, 0, escape.length());
 
 				hasEscape = hadEscape ? false : tmp;
 			}
 
+			// Handle anything that the pending escape may be applied to
 			while (sidx != -1 && hasEscape) {
 				int oidx = wrk.indexOf(splat, sidx + escape.length());
 
 				if (oidx == -1) break;
 
-				{
-					String s1 = wrk.substring(0, oidx);
-					String s2 = wrk.substring(oidx + escape.length());
-
-					wrk = s1 + s2;
-				}
+				wrk = sliceStringL(wrk, oidx, escape.length());
 
 				sidx = oidx;
 
-				hasEscape = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());
+				hasEscape = wrk.startsWith(escape, sidx - escape.length());
 			}
 
 			if (sidx == -1) {
@@ -184,5 +175,43 @@ public class StringUtils {
 		if (!wrk.equals("")) ret.add(wrk);
 
 		return ret.toArray(new String[0]);
+	}
+
+	/**
+	 * Slice a substring out of another string.
+	 *
+	 * @param strang
+	 * 	The string to remove a substring from.
+	 * @param lft
+	 * 	The left-side of the substring to remove.
+	 * @param rft
+	 * 	The right-side of the substring to remove.
+	 *
+	 * @return The string, with the substring removed.
+	 */
+	public static String sliceString(String strang, int lft, int rft) {
+		String leftSide  = strang.substring(0, lft);
+		String rightSide = strang.substring(rft);
+
+		return leftSide + rightSide;
+	}
+
+	/**
+	 * Slice a substring out of another string.
+	 *
+	 * @param strang
+	 * 	The string to remove a substring from.
+	 * @param lft
+	 * 	The left-side of the substring to remove.
+	 * @param len
+	 * 	The length of the substring to remove.
+	 *
+	 * @return The string, with the substring removed.
+	 */
+	public static String sliceStringL(String strang, int lft, int len) {
+		String leftSide  = strang.substring(0, lft);
+		String rightSide = strang.substring(lft + len);
+
+		return leftSide + rightSide;
 	}
 }
