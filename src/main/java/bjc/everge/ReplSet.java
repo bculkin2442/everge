@@ -1,12 +1,8 @@
 package bjc.everge;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * A set of ReplPairs, kept together for easy use
@@ -36,6 +32,13 @@ public class ReplSet {
 		parList = lst;
 	}
 
+	/**
+	 * Load a ReplSet from a file.
+	 * @param fName
+	 * 	The file to load the ReplSet from.
+	 * @return A ReplSet, loaded from the file.
+	 * @throws IOException if something goes badly reading it.
+	 */
 	public static ReplSet fromFile(String fName) throws IOException {
 		ReplSet rs = new ReplSet();
 

@@ -1,13 +1,9 @@
 package bjc.everge;
 
-import bjc.everge.ControlledString.Control;
-
 import org.junit.Test;
 
 import static bjc.everge.ControlledString.Control.C;
 import static bjc.everge.TestUtils.*;
-
-import static org.junit.Assert.*;
 
 /**
  * Test for ControlledString.

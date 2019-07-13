@@ -1,8 +1,6 @@
 package bjc.everge;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import java.util.regex.Pattern;
 
@@ -12,10 +10,13 @@ import java.util.regex.Pattern;
  * @author Ben Culkin.
  */
 public class StringUtils {
+	/**
+	 * Is the class in debug mode or not?
+	 */
 	public static boolean isDebug = false;
 
 	/**
-	 * Split a string on every occurance of a string not preceeded by an escape.
+	 * Split a string on every occurrence of a string not preceded by an escape.
 	 *
 	 * @param escape
 	 * 		The escape that stops splitting.
@@ -137,12 +138,6 @@ public class StringUtils {
 
 			while (sidx != -1 && hasEscape) {
 				int oidx = wrk.indexOf(splat, sidx + escape.length());
-
-				if (isDebug) {
-					String s1 = wrk.substring(0, sidx);
-					String s2 = wrk.substring(sidx, sidx + escape.length());
-					String s3 = wrk.substring(sidx + escape.length());
-				}
 
 				if (oidx == -1) break;
 
