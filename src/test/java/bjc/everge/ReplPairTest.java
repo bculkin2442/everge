@@ -86,4 +86,9 @@ public class ReplPairTest {
 	public void testGlobals() {
 		assertMultiReplace("data/test/test8.rp", "b1d\n1d\n1b1", "acca");
 	}
+
+	@Test
+	public void testGuards() {
+		assertMultiReplace("data/test/test10.rp", "a", "a", "bbb", "aaa");
+	}
 }

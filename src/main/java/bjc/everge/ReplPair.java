@@ -1,13 +1,10 @@
 package bjc.everge;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.*;
+import java.util.regex.*;
 
-import java.util.function.UnaryOperator;
-
-import bjc.everge.ControlledString.Control;
-import bjc.everge.ControlledString.ParseStrings;
+import bjc.everge.ControlledString.*;
 
 /**
  * String pairs for replacements.
@@ -35,6 +32,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Defaults to the 'find' string.
 	 */
 	public String name;
+
+	/**
+	 * The guard for this replacement.
+	 *
+	 * The guard of the replacement is a regex that has to match before the pair will be considered.
+	 * Defaults to being blank.
+	 */
+	public String guard;
 
 	/**
 	 * The string to look for.
@@ -448,6 +453,10 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 	@Override
 	public String apply(String inp) {
+		if (guard != null) {
+			if (!inp.matches(guard)) return inp;
+		}
+
 		return inp.replaceAll(find, replace);
 	}
 
@@ -519,6 +528,28 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 							errs.add(new ReplError(lno, pno, errMsg, nam));
 						} else {
 							rp.name = cont.get(0);
+						}
+						break;
+					case "GUARD":
+					case "G":
+						if (cont.count() != 1) {
+							String errMsg = String.format("One guard argument was expected (got %d)",
+									cont.count());
+
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						} else {
+							String pat = cont.get(0);
+
+							try {
+								Pattern.compile(pat);
+							} catch (PatternSyntaxException psex) {
+								String errMsg = String.format("Guard argument '%s' is not a valid regex (%s)",
+										pat, psex.getMessage());
+
+								errs.add(new ReplError(lno, pno, errMsg, nam));
+							}
+
+							rp.guard = cont.get(0);
 						}
 						break;
 					case "PRIORITY":
@@ -796,8 +827,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 	
 	private static ControlledString getControls(String lne, List<ReplError> errs,
-			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) 
-	{
+			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) {
 		try {
 			return ControlledString.parse(lne, new ParseStrings("//", ";", "/", "|"));
 		} catch (IllegalArgumentException iaex) {
