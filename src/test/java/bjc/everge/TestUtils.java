@@ -45,7 +45,7 @@ public class TestUtils {
 			ReplPair.readList(new ArrayList<>(), scn);
 
 			assertTrue(false);
-		} catch (ReplParseException rpex) {
+		} catch (BadReplParse rpex) {
 			if (logMsg) System.err.println(rpex.toPrintString());
 
 			assertEquals(msg, rpex.toPrintString());
@@ -76,7 +76,7 @@ public class TestUtils {
 
 		try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
 			lrp = ReplPair.readList(scn);
-		} catch (ReplParseException rpex) {
+		} catch (BadReplParse rpex) {
 			System.err.println(rpex.toPrintString());
 			
 			assertTrue(false);

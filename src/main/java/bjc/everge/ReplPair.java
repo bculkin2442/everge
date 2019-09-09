@@ -145,7 +145,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		List<ReplPair> rplPar = readList(detals, scn, errList);
 
 		if (errList.size() != 0) {
-			throw new ReplParseException("", errList);
+			throw new BadReplParse("", errList);
 		}
 
 		return rplPar;

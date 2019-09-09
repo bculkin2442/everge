@@ -43,7 +43,13 @@ public class ReplOpts {
 	 */
 	public boolean isPerf = false;
 
+	/**
+	 * The stream to print normal output on.
+	 */
 	public PrintStream outStream = System.out;
+	/**
+	 * The stream to print error output on.
+	 */
 	public PrintStream errStream = System.err;
 	@Override
 	public int hashCode() {

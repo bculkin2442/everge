@@ -60,6 +60,12 @@ public class IntHolder {
 		return val;
 	}
 
+	/**
+	 * Set the value.
+	 * 
+	 * @param i
+	 * 	The value to set it to.
+	 */
 	public void set(int i) {
 		val = i;
 	}

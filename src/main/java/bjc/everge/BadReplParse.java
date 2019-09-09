@@ -2,19 +2,40 @@ package bjc.everge;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class ReplParseException extends RuntimeException {
+/**
+ * Exception thrown when ReplPair parsing fails
+ * @author bjculkin
+ *
+ */
+public class BadReplParse extends RuntimeException {
 	/**
 	 * Serialization ID.
 	 */
 	private static final long serialVersionUID = 4752304282380556849L;
+	/**
+	 * The errors that were encountered during parsing.
+	 */
 	public List<ReplError> errs;
 
-	public ReplParseException(String msg) {
+	/**
+	 * Create a new exception for ReplPair parsing failing.
+	 * 
+	 * @param msg 
+	 * 	The message for the exception.
+	 */
+	public BadReplParse(String msg) {
 		this(msg, new ArrayList<>());
 	}
 
-	public ReplParseException(String msg, List<ReplError> errs) {
+	/**
+	 * Create a new exception for ReplPair parsing failing.
+	 * 
+	 * @param msg
+	 * 	The message for the exception.
+	 * @param errs
+	 * 	The list of errors encountered while parsing.
+	 */
+	public BadReplParse(String msg, List<ReplError> errs) {
 		super(msg);
 
 		this.errs = errs;
@@ -30,6 +51,11 @@ public class ReplParseException extends RuntimeException {
 				errString, getMessage(), errs);
 	}
 
+	/**
+	 * Convert the exception to a printable format.
+	 * 
+	 * @return The exception as a printable format.
+	 */
 	public String toPrintString() {
 		StringBuilder errString = new StringBuilder("[ERROR] ");
 

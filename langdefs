@@ -1,0 +1,9 @@
+Everge input
+    filter remove_matches ^\s*#
+    extension inp
+    3rd_gen_scale 3.0
+Everge script
+    filter remove_matches ^\s*#
+    filter remove_inline #.*$
+    extension rp
+    3rd_gen_scale 3.0

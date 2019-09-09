@@ -70,10 +70,23 @@ public class ReplError {
 		return String.format("line %d, pair %d:%s\n\t%s", line, numPairs, msg, errString);
 	}
 
+	/**
+	 * Convert the error to a printable string.
+	 * 
+	 * @return The error as a printable string.
+	 */
 	public String toPrintString() {
 		return toPrintString("");
 	}
 
+	/**
+	 * Convert the error to a printable string, with a custom header.
+	 * 
+	 * @param hdr
+	 * 	The text to include in the header.
+	 * 
+	 * @return The error as a printable string.
+	 */
 	public String toPrintString(String hdr) {
 		String errString;
 		if      (txt == null)    errString = "No associated line";
