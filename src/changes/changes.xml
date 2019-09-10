@@ -5,12 +5,15 @@
 		<author email="bjculkin@mix.wvu">Benjamin Culkin</author>
 	</properties>
 	<body>
-		<release version="current" description="Current work version">    
+		<release version="0.2.0" description="Work up to the addition of pattern guards">    
 			<action dev="Ben Culkin" type="add">
 				Initial release :)
 			</action>         
 			<action dev="Ben Culkin" type="add">
 				Added a basic CLI front-end
+			</action>
+			<action dev="Ben Culkin" type="add">
+				General cleanup, including the addition of pattern guards
 			</action>
 		</release>
 	</body>

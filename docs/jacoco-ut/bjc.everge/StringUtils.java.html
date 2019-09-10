@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">StringUtils.java</span></div><h1>StringUtils.java</h1><pre class="source lang-java linenums">package bjc.everge;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import java.util.regex.Pattern;
 
@@ -11,11 +9,14 @@ import java.util.regex.Pattern;
  *
  * @author Ben Culkin.
  */
-<span class="nc" id="L14">public class StringUtils {</span>
-<span class="fc" id="L15">	public static boolean isDebug = false;</span>
+<span class="nc" id="L12">public class StringUtils {</span>
+	/**
+	 * Is the class in debug mode or not?
+	 */
+<span class="fc" id="L16">	public static boolean isDebug = false;</span>
 
 	/**
-	 * Split a string on every occurance of a string not preceeded by an escape.
+	 * Split a string on every occurrence of a string not preceded by an escape.
 	 *
 	 * @param escape
 	 * 		The escape that stops splitting.
@@ -27,168 +28,191 @@ import java.util.regex.Pattern;
 	 * @return The string split as specified above.
 	 */
 	public static String[] escapeSplit(String escape, String splat, String inp) {
-
 		/*
 		 * Special case some stuffs.
 		 */
-<span class="pc bpc" id="L34" title="2 of 4 branches missed.">		if (inp == null || inp.equals(&quot;&quot;)) {</span>
-			// No input
-<span class="nc" id="L36">			return new String[] {inp};</span>
+
+		// No input
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">		if (inp == null || inp.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L37">			return new String[] {inp};</span>
 		}
 
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (!inp.contains(splat)) {</span>
-			// Input does not contain any delimiters
-<span class="fc" id="L41">			return new String[] {inp};</span>
+		// Input does not contain any delimiters
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (!inp.contains(splat)) {</span>
+<span class="fc" id="L42">			return new String[] {inp};</span>
 		}
 
-<span class="pc bpc" id="L44" title="1 of 4 branches missed.">		if (escape == null || escape.equals(&quot;&quot;)) {</span>
-			// No escape, so we can just split normally
-<span class="fc" id="L46">			return inp.split(Pattern.quote(splat));</span>
+		// No escape, so we can just split normally
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">		if (escape == null || escape.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L47">			return inp.split(Pattern.quote(splat));</span>
 		}
 
-<span class="fc" id="L49">		List&lt;String&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">		List&lt;String&gt; ret = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L51">		String wrk = inp;</span>
-<span class="fc" id="L52">		int sidx = wrk.indexOf(splat);</span>
-<span class="fc" id="L53">		int eidx = wrk.indexOf(escape);</span>
+		/*
+		 * Set up working variables
+		 */
 
-<span class="fc" id="L55">		boolean hadEscape = false;</span>
+		// Copy of parameters
+<span class="fc" id="L57">		String wrk = inp;</span>
 
-<span class="fc bfc" id="L57" title="All 4 branches covered.">		while (sidx != -1 || eidx != -1) {</span>
-<span class="fc bfc" id="L58" title="All 4 branches covered.">			if (eidx &gt; 0 &amp;&amp; eidx &lt; sidx) {</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				if (isDebug) System.err.printf(&quot;[TRACE] Considering escape\n&quot;);</span>
+		// Index of first occurrence of split string
+<span class="fc" id="L60">		int sidx = wrk.indexOf(splat);</span>
+		// Index of first occurrence of escaped string
+<span class="fc" id="L62">		int eidx = wrk.indexOf(escape);</span>
+
+		// Was the last thing we saw an escape?
+		// 	This is used to enable the handling of escaping escapes
+<span class="fc" id="L66">		boolean hadEscape = false;</span>
+
+		// As long as there an occurrence of either the split/escape
+<span class="fc bfc" id="L69" title="All 4 branches covered.">		while (sidx != -1 || eidx != -1) {</span>
+			// If there is an escape before a split
+<span class="fc bfc" id="L71" title="All 4 branches covered.">			if (eidx &gt; 0 &amp;&amp; eidx &lt; sidx) {</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">				if (isDebug) System.err.printf(&quot;[TRACE] Considering escape\n&quot;);</span>
 
 				/*
 				 * We potentially have an escaped sequence:
 				 * 	- either an escaped split
 				 * 	- or an escaped escape
 				 */
+
 				// Check for an escaped split
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				if (wrk.regionMatches(eidx + escape.length(), splat, 0, splat.length())) {</span>
+<span class="fc" id="L81">				boolean hasEscapedSplit = wrk.startsWith(splat, eidx + escape.length());</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (hasEscapedSplit) {</span>
 					// Skip over it
-<span class="fc" id="L69">					int ofst = eidx + splat.length();</span>
+<span class="fc" id="L84">					int ofst = eidx + splat.length();</span>
 
-					// Slice out the escape
-					{
-<span class="fc" id="L73">						String s1 = wrk.substring(0, eidx);</span>
-<span class="fc" id="L74">						String s2 = wrk.substring(eidx + escape.length());</span>
+<span class="fc" id="L86">					wrk = sliceStringL(wrk, eidx, escape.length());</span>
 
-<span class="fc" id="L76">						String s3 = wrk.substring(eidx, eidx + escape.length());</span>
+					// Recalculate indexes
+<span class="fc" id="L89">					sidx = wrk.indexOf(splat,  ofst);</span>
+<span class="fc" id="L90">					eidx = wrk.indexOf(escape, ofst);</span>
 
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">						if (isDebug) {</span>
-<span class="nc" id="L79">							System.err.printf(&quot;[TRACE] Skip esc. split (%s)/(%s); (%s)\n&quot;,</span>
-									s1, s2, s3);
-						}
-
-<span class="fc" id="L83">						wrk = s1 + s2;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">					if (isDebug) {</span>
+<span class="nc" id="L93">						System.err.printf(&quot;[TRACE] After esc. split (%s) %d/%d\n&quot;,</span>
+<span class="nc" id="L94">								wrk, sidx, eidx);</span>
 					}
 
-<span class="fc" id="L86">					sidx = wrk.indexOf(splat,  ofst);</span>
-<span class="fc" id="L87">					eidx = wrk.indexOf(escape, ofst);</span>
-
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">					if (isDebug) {</span>
-<span class="nc" id="L90">						System.err.printf(&quot;[TRACE] After esc. split (%s) %d/%d\n&quot;,</span>
-<span class="nc" id="L91">								wrk, sidx, eidx);</span>
-					}
-
-<span class="fc" id="L94">					hadEscape = false;</span>
-<span class="fc" id="L95">					continue;</span>
+					// No pending escape
+<span class="fc" id="L98">					hadEscape = false;</span>
+<span class="fc" id="L99">					continue;</span>
 				}
 
 				// Check for an escaped escape
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">				if (wrk.regionMatches(eidx + escape.length(), escape, 0, escape.length())) {</span>
+<span class="fc" id="L103">				boolean hasEscapedEscape = wrk.startsWith(escape, eidx + escape.length());</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">				if (hasEscapedEscape) {</span>
 					// Skip over it
-<span class="fc" id="L101">					int ofst = eidx + escape.length();</span>
+<span class="fc" id="L106">					int ofst = eidx + escape.length();</span>
 
-					// Slice out the escape
-					{
-<span class="fc" id="L105">						String s1 = wrk.substring(0, eidx);</span>
-<span class="fc" id="L106">						String s2 = wrk.substring(eidx + escape.length());</span>
+<span class="fc" id="L108">					wrk = sliceStringL(wrk, eidx, escape.length());</span>
 
-<span class="fc" id="L108">						String s3 = wrk.substring(eidx, eidx + escape.length());</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">						if (isDebug) {</span>
-<span class="nc" id="L110">							System.err.printf(&quot;[TRACE] Skip esc. escape (%s)/(%s); (%s)\n&quot;,</span>
-								s1, s2, s3);
-						}
+					// Recalculate indexes
+<span class="fc" id="L111">					sidx = wrk.indexOf(splat,  ofst);</span>
+<span class="fc" id="L112">					eidx = wrk.indexOf(escape, ofst);</span>
 
-<span class="fc" id="L114">						wrk = s1 + s2;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">					if (isDebug) {</span>
+<span class="nc" id="L115">						System.err.printf(&quot;[TRACE] After esc. escape (%s)/(%s) %d/%d\n&quot;,</span>
+<span class="nc" id="L116">								wrk, wrk.substring(ofst), sidx, eidx);</span>
 					}
 
-<span class="fc" id="L117">					sidx = wrk.indexOf(splat,  ofst);</span>
-<span class="fc" id="L118">					eidx = wrk.indexOf(escape, ofst);</span>
-
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">					if (isDebug) {</span>
-<span class="nc" id="L121">						System.err.printf(&quot;[TRACE] After esc. escape (%s)/(%s) %d/%d\n&quot;,</span>
-<span class="nc" id="L122">								wrk, wrk.substring(ofst), sidx, eidx);</span>
-					}
-
-<span class="fc" id="L125">					hadEscape = true;</span>
-<span class="fc" id="L126">					continue;</span>
+					// There's a pending escape
+<span class="fc" id="L120">					hadEscape = true;</span>
+<span class="fc" id="L121">					continue;</span>
 				}
 			}
 
-<span class="fc" id="L130">			boolean hasEscape = false;</span>
-
+			// Calculate whether there is currently an escape
+<span class="fc" id="L126">			boolean hasEscape = false;</span>
 			{
-<span class="fc" id="L133">				boolean tmp = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());</span>
+<span class="fc" id="L128">				boolean tmp = wrk.startsWith(escape, sidx - escape.length());</span>
+				// boolean tmp = wrk.regionMatches(lo, escape, 0, escape.length());
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">				hasEscape = hadEscape ? false : tmp;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				hasEscape = hadEscape ? false : tmp;</span>
 			}
 
-<span class="pc bpc" id="L138" title="1 of 4 branches missed.">			while (sidx != -1 &amp;&amp; hasEscape) {</span>
-<span class="nc" id="L139">				int oidx = wrk.indexOf(splat, sidx + escape.length());</span>
+			// Handle anything that the pending escape may be applied to
+<span class="pc bpc" id="L135" title="1 of 4 branches missed.">			while (sidx != -1 &amp;&amp; hasEscape) {</span>
+<span class="nc" id="L136">				int oidx = wrk.indexOf(splat, sidx + escape.length());</span>
 
-<span class="nc bnc" id="L141" title="All 2 branches missed.">				if (isDebug) {</span>
-<span class="nc" id="L142">					String s1 = wrk.substring(0, sidx);</span>
-<span class="nc" id="L143">					String s2 = wrk.substring(sidx, sidx + escape.length());</span>
-<span class="nc" id="L144">					String s3 = wrk.substring(sidx + escape.length());</span>
-				}
+<span class="nc bnc" id="L138" title="All 2 branches missed.">				if (oidx == -1) break;</span>
 
-<span class="nc bnc" id="L147" title="All 2 branches missed.">				if (oidx == -1) break;</span>
+<span class="nc" id="L140">				wrk = sliceStringL(wrk, oidx, escape.length());</span>
 
-				{
-<span class="nc" id="L150">					String s1 = wrk.substring(0, oidx);</span>
-<span class="nc" id="L151">					String s2 = wrk.substring(oidx + escape.length());</span>
+<span class="nc" id="L142">				sidx = oidx;</span>
 
-<span class="nc" id="L153">					wrk = s1 + s2;</span>
-				}
+<span class="nc" id="L144">				hasEscape = wrk.startsWith(escape, sidx - escape.length());</span>
+<span class="nc" id="L145">			}</span>
 
-<span class="nc" id="L156">				sidx = oidx;</span>
-
-<span class="nc" id="L158">				hasEscape = wrk.regionMatches(sidx - escape.length(), escape, 0, escape.length());</span>
-<span class="nc" id="L159">			}</span>
-
-<span class="fc bfc" id="L161" title="All 2 branches covered.">			if (sidx == -1) {</span>
-<span class="fc" id="L162">				break;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			if (sidx == -1) {</span>
+<span class="fc" id="L148">				break;</span>
 			}
 
-<span class="fc" id="L165">			String tmp = wrk.substring(0, sidx);</span>
+<span class="fc" id="L151">			String tmp = wrk.substring(0, sidx);</span>
 
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (isDebug) {</span>
-<span class="nc" id="L168">				System.err.printf(&quot;[TRACE] Adding (%s) to returned splits; (%s)\n&quot;,</span>
-<span class="nc" id="L169">					tmp, wrk.substring(sidx));</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">			if (isDebug) {</span>
+<span class="nc" id="L154">				System.err.printf(&quot;[TRACE] Adding (%s) to returned splits; (%s)\n&quot;,</span>
+<span class="nc" id="L155">					tmp, wrk.substring(sidx));</span>
 			}
 
-<span class="fc" id="L172">			ret.add(tmp);</span>
-<span class="pc bpc" id="L173" title="1 of 4 branches missed.">			if (!tmp.equals(&quot;&quot;) &amp;&amp; wrk.endsWith(tmp)) {</span>
-<span class="nc" id="L174">				wrk = &quot;&quot;;</span>
+<span class="fc" id="L158">			ret.add(tmp);</span>
+<span class="pc bpc" id="L159" title="1 of 4 branches missed.">			if (!tmp.equals(&quot;&quot;) &amp;&amp; wrk.endsWith(tmp)) {</span>
+<span class="nc" id="L160">				wrk = &quot;&quot;;</span>
 			} else {
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (wrk.indexOf(splat, sidx) != -1) {</span>
-<span class="fc" id="L177">					wrk = wrk.substring(sidx + splat.length());</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">				if (wrk.indexOf(splat, sidx) != -1) {</span>
+<span class="fc" id="L163">					wrk = wrk.substring(sidx + splat.length());</span>
 				} else {
-<span class="nc" id="L179">					wrk = wrk.substring(sidx);</span>
+<span class="nc" id="L165">					wrk = wrk.substring(sidx);</span>
 				}
 			}
 
-<span class="fc" id="L183">			sidx = wrk.indexOf(splat);</span>
-<span class="fc" id="L184">			eidx = wrk.indexOf(escape);</span>
+<span class="fc" id="L169">			sidx = wrk.indexOf(splat);</span>
+<span class="fc" id="L170">			eidx = wrk.indexOf(escape);</span>
 
-<span class="fc" id="L186">			hadEscape = false;</span>
-<span class="fc" id="L187">		}</span>
+<span class="fc" id="L172">			hadEscape = false;</span>
+<span class="fc" id="L173">		}</span>
 
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (!wrk.equals(&quot;&quot;)) ret.add(wrk);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (!wrk.equals(&quot;&quot;)) ret.add(wrk);</span>
 
-<span class="fc" id="L191">		return ret.toArray(new String[0]);</span>
+<span class="fc" id="L177">		return ret.toArray(new String[0]);</span>
+	}
+
+	/**
+	 * Slice a substring out of another string.
+	 *
+	 * @param strang
+	 * 	The string to remove a substring from.
+	 * @param lft
+	 * 	The left-side of the substring to remove.
+	 * @param rft
+	 * 	The right-side of the substring to remove.
+	 *
+	 * @return The string, with the substring removed.
+	 */
+	public static String sliceString(String strang, int lft, int rft) {
+<span class="fc" id="L193">		String leftSide  = strang.substring(0, lft);</span>
+<span class="fc" id="L194">		String rightSide = strang.substring(rft);</span>
+
+<span class="fc" id="L196">		return leftSide + rightSide;</span>
+	}
+
+	/**
+	 * Slice a substring out of another string.
+	 *
+	 * @param strang
+	 * 	The string to remove a substring from.
+	 * @param lft
+	 * 	The left-side of the substring to remove.
+	 * @param len
+	 * 	The length of the substring to remove.
+	 *
+	 * @return The string, with the substring removed.
+	 */
+	public static String sliceStringL(String strang, int lft, int len) {
+<span class="fc" id="L212">		String leftSide  = strang.substring(0, lft);</span>
+<span class="fc" id="L213">		String rightSide = strang.substring(lft + len);</span>
+
+<span class="fc" id="L215">		return leftSide + rightSide;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

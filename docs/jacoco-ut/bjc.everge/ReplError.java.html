@@ -7,7 +7,7 @@
  */
 public class ReplError {
 	/**
-	 * The line the error occured on.
+	 * The line the error occurred on.
 	 */
 	public int line;
 	/**
@@ -70,18 +70,31 @@ public class ReplError {
 <span class="nc" id="L70">		return String.format(&quot;line %d, pair %d:%s\n\t%s&quot;, line, numPairs, msg, errString);</span>
 	}
 
+	/**
+	 * Convert the error to a printable string.
+	 * 
+	 * @return The error as a printable string.
+	 */
 	public String toPrintString() {
-<span class="nc" id="L74">		return toPrintString(&quot;&quot;);</span>
+<span class="nc" id="L79">		return toPrintString(&quot;&quot;);</span>
 	}
 
+	/**
+	 * Convert the error to a printable string, with a custom header.
+	 * 
+	 * @param hdr
+	 * 	The text to include in the header.
+	 * 
+	 * @return The error as a printable string.
+	 */
 	public String toPrintString(String hdr) {
 		String errString;
-<span class="fc bfc" id="L79" title="All 2 branches covered.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
-<span class="fc" id="L81">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
+<span class="nc" id="L94">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
 
-<span class="fc" id="L83">		return String.format(&quot;[ERROR] line %d, pair %d: %s\n%s\tContext: %s&quot;,</span>
-<span class="fc" id="L84">				line, numPairs, msg, hdr, errString);</span>
+<span class="fc" id="L96">		return String.format(&quot;[ERROR] line %d, pair %d: %s\n%s\tContext: %s&quot;,</span>
+<span class="fc" id="L97">				line, numPairs, msg, hdr, errString);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
