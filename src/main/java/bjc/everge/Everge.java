@@ -1,15 +1,10 @@
 package bjc.everge;
 
 import java.io.*;
-
-import java.nio.charset.Charset;
-
+import java.nio.charset.*;
 import java.nio.file.*;
-
 import java.util.*;
-
 import java.util.concurrent.locks.*;
-
 import java.util.regex.*;
 
 /**
@@ -39,8 +34,8 @@ public class Everge {
 	// Options for doing repl-pairs
 	private ReplOpts ropts = new ReplOpts();
 
-	// Loaded repl-pairs
-	private List<ReplPair> lrp = new ArrayList<>();
+	// Pair repository
+	private ReplSet replSet = new ReplSet();
 
 	// Input status
 	private InputStatus inputStat = InputStatus.ALL;
@@ -52,7 +47,7 @@ public class Everge {
 	private boolean printNL = true;
 
 	// Verbosity level
-	private int verbosity = 0;
+	private int verbosity;
 
 	// The pattern to use for REGEX input mode
 	private String pattern;
@@ -67,11 +62,27 @@ public class Everge {
 	/**
 	 * Stream to use for normal output.
 	 */
-	public PrintStream outStream = System.out;
+	private PrintStream outStream = System.out;
 	/**
 	 * Stream to use for error output.
 	 */
-	public PrintStream errStream = System.err;
+	private LogStream errStream = new LogStream(System.err);
+
+	public void setOutput(PrintStream out) {
+		outStream = out;
+	}
+
+	public void setOutput(OutputStream out) {
+		outStream = new PrintStream(out);
+	}
+
+	public void setError(PrintStream err) {
+		errStream = new LogStream(err);
+	}
+
+	public void setError(OutputStream err) {
+		errStream = new LogStream(new PrintStream(err));
+	}
 
 	/**
 	 * Main method for front end,
@@ -96,9 +107,20 @@ public class Everge {
 		List<String> errs = new ArrayList<>();
 
 		boolean stat = processArgs(errs, args);
+		if (verbosity >= 2) {
+			String argString = args.length > 0 ? "arguments" : "argument";
+
+			errStream.infof("[INFO] Processed %d %s\n", args.length, argString);
+			int argc = 0;
+			if (verbosity >= 3) {
+				String arg = args[argc++];
+				errStream.tracef("[TRACE]\tArg %d: '%s\n", argc, arg);
+			}
+		}
+
 		if (!stat) {
 			for (String err : errs) {
-				errStream.println(err);
+				errStream.errorf("%s\n", err);
 			}
 		}
 
@@ -125,174 +147,201 @@ public class Everge {
 			// Process CLI args
 			while(argQue.size() > 0) {
 				String arg = argQue.pop();
-
-				if (arg.equals("--")) {
-					doingArgs = false;
-					continue;
-				}
-
-				// Process an argument
-				if (doingArgs && arg.startsWith("-")) {
-					String argName = arg;
-					String argBody = "";
-
-					// Process arguments to arguments 
-					int idx = arg.indexOf("=");
-					if (idx != -1) {
-						argName = arg.substring(0, idx);
-						argBody = arg.substring(idx + 1);
-					}
-
-					switch (argName) {
-					case "-n":
-					case "--newline":
-						printNL = true;
-						break;
-					case "-N":
-					case "--no-newline":
-						printNL = false;
-						break;
-					case "-v":
-					case "--verbose":
-						verbosity += 1;
-						break;
-					case "-q":
-					case "--quiet":
-						verbosity -= 1;
-						break;
-					case "--verbosity":
-						if (argQue.size() < 1) {
-							errs.add("[ERROR] No parameter to --verbosity");
-							retStat = false;
-							break;
-						}
-						argBody = argQue.pop();
-						break;
-					case "-V":
-						try {
-							verbosity = Integer.parseInt(argBody);
-						} catch (NumberFormatException nfex) {
-							String msg = String.format("[ERROR] Invalid verbosity: '%s' is not an integer",
-									argBody);
-							errs.add(msg);
-							retStat = false;
-						}
-						break;
-					case "--pattern":
-						if (argQue.size() < 1) {
-							errs.add("[ERROR] No parameter to --pattern");
-							retStat = false;
-							break;
-						}
-						argBody = argQue.pop();
-					case "-p":
-						try {
-							pattern = argBody;
-
-							Pattern.compile(argBody);
-						} catch (PatternSyntaxException psex) {
-							String msg = String.format("[ERROR] Pattern '%s' is invalid: %s",
-									pattern, psex.getMessage());
-							errs.add(msg);
-							retStat = false;
-						}
-						break;
-					case "--file":
-						if (argQue.size() < 1) {
-							errs.add("[ERROR] No argument to --file");
-							retStat = false;
-							break;
-						}
-						argBody = argQue.pop();
-					case "-f":
-						try (FileInputStream fis = new FileInputStream(argBody);
-								Scanner scn = new Scanner(fis)) {
-							List<ReplError> ferrs = new ArrayList<>();
-
-							lrp = ReplPair.readList(lrp, scn, ferrs, ropts);
-
-							if (ferrs.size() > 0) {
-								StringBuilder sb = new StringBuilder();
-								
-								String errString = "an error";
-								if (ferrs.size() > 1) errString = String.format("%d errors");
-
-								{
-									String msg = String.format(
-											"[ERROR] Encountered %s parsing data file'%s'\n",
-											errString, argBody);
-									sb.append(msg);
-								}
-
-								for (ReplError err : ferrs) {
-									sb.append(String.format("\t%s\n", err));
-								}
-
-								errs.add(sb.toString());
-								retStat = false;
-							}
-						} catch (FileNotFoundException fnfex) {
-							String msg = String.format("[ERROR] Could not open data file '%s' for input",
-									argBody);
-							errs.add(msg);
-							retStat = false;
-						} catch (IOException ioex) {
-							String msg = String.format("[ERROR] Unknown I/O error reading data file '%s': %s",
-									argBody, ioex.getMessage());
-							errs.add(msg);
-							retStat = false;
-						}
-						break;
-					case "--arg-file":
-						if (argQue.size() < 1) {
-							errs.add("[ERROR] No argument to --arg-file");
-							break;
-						}
-						argBody = argQue.pop();
-					case "-F":
-						try (FileInputStream fis = new FileInputStream(argBody);
-								Scanner scn = new Scanner(fis)) {
-							List<String> sl = new ArrayList<>();
-
-							while (scn.hasNextLine()) {
-								String ln = scn.nextLine().trim();
-
-								if (ln.equals(""))      continue;
-								if (ln.startsWith("#")) continue;
-
-								sl.add(ln);
-							}
-
-							processArgs(sl.toArray(new String[0]));
-						} catch (FileNotFoundException fnfex) {
-							String msg = String.format("[ERROR] Could not open argument file '%s' for input", argBody);
-							errs.add(msg);
-							retStat = false;
-						} catch (IOException ioex) {
-							String msg = String.format("[ERROR] Unknown I/O error reading input file '%s': %s",
-									argBody, ioex.getMessage());
-							errs.add(msg);
-							retStat = false;
-						}
-						break;
-					default:
-						{
-							String msg = String.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
-							errs.add(msg);
-							retStat = false;
-						}
-					}
-				} else {
-					// Strip off an escaped initial dash
-					if (arg.startsWith("\\-")) arg = arg.substring(1);
-
-					processInputFile(arg);
-				}
+				
+				retStat = processArg(errs, retStat, arg);
 			}
 		} finally {
 			argLock.writeLock().unlock();
 		}
 
+		return retStat;
+	}
+
+	private boolean processArg(List<String> errs, boolean retStat, String arg) {
+		if (arg.equals("--")) {
+			doingArgs = false;
+			return retStat;
+		}
+
+		// Process an argument
+		if (doingArgs && arg.startsWith("-")) {
+			String argName = arg;
+			String argBody = "";
+
+			// Process arguments to arguments 
+			int idx = arg.indexOf("=");
+			if (idx != -1) {
+				argName = arg.substring(0, idx);
+				argBody = arg.substring(idx + 1);
+			}
+
+			switch (argName) {
+			case "-n":
+			case "--newline":
+				printNL = true;
+				break;
+			case "-N":
+			case "--no-newline":
+				printNL = false;
+				break;
+			case "-v":
+			case "--verbose":
+				verbosity += 1;
+				errStream.louder();
+				System.err.printf("[TRACE] Incremented verbosity\n");
+				break;
+			case "-q":
+			case "--quiet":
+				verbosity -= 1;
+				errStream.quieter();
+				System.err.printf("[TRACE] Decremented verbosity\n");
+				break;
+			case "--verbosity":
+				if (argQue.size() < 1) {
+					errs.add("[ERROR] No parameter to --verbosity");
+					retStat = false;
+					break;
+				}
+				argBody = argQue.pop();
+			case "-V":
+				try {
+					verbosity = Integer.parseInt(argBody);
+					errStream.verbosity(verbosity);
+					System.err.printf("[TRACE] Set verbosity to %d\n", verbosity);
+				} catch (NumberFormatException nfex) {
+					String msg = String.format("[ERROR] Invalid verbosity: '%s' is not an integer",
+							argBody);
+					errs.add(msg);
+					retStat = false;
+				}
+				break;
+			case "--pattern":
+				if (argQue.size() < 1) {
+					errs.add("[ERROR] No parameter to --pattern");
+					retStat = false;
+					break;
+				}
+				argBody = argQue.pop();
+			case "-p":
+				try {
+					pattern = argBody;
+
+					Pattern.compile(argBody);
+				} catch (PatternSyntaxException psex) {
+					String msg = String.format("[ERROR] Pattern '%s' is invalid: %s",
+							pattern, psex.getMessage());
+					errs.add(msg);
+					retStat = false;
+				}
+				break;
+			case "--file":
+				if (argQue.size() < 1) {
+					errs.add("[ERROR] No argument to --file");
+					retStat = false;
+					break;
+				}
+				argBody = argQue.pop();
+			case "-f":
+				try (FileInputStream fis = new FileInputStream(argBody);
+						Scanner scn = new Scanner(fis)) {
+					List<ReplError> ferrs = new ArrayList<>();
+
+					List<ReplPair> lrp = new ArrayList<>();
+					lrp = ReplPair.readList(lrp, scn, ferrs, ropts);
+
+					if (ferrs.size() > 0) {
+						StringBuilder sb = new StringBuilder();
+						
+						String errString = "an error";
+						if (ferrs.size() > 1) errString = String.format("%d errors");
+
+						{
+							String msg = String.format(
+									"[ERROR] Encountered %s parsing data file'%s'\n",
+									errString, argBody);
+							sb.append(msg);
+						}
+
+						for (ReplError err : ferrs) {
+							sb.append(String.format("\t%s\n", err));
+						}
+
+						errs.add(sb.toString());
+						retStat = false;
+					}
+
+					replSet.addPairs(lrp);
+				} catch (FileNotFoundException fnfex) {
+					String msg = String.format("[ERROR] Could not open data file '%s' for input",
+							argBody);
+					errs.add(msg);
+					retStat = false;
+				} catch (IOException ioex) {
+					String msg = String.format("[ERROR] Unknown I/O error reading data file '%s': %s",
+							argBody, ioex.getMessage());
+					errs.add(msg);
+					retStat = false;
+				}
+				break;
+			case "--arg-file":
+				if (argQue.size() < 1) {
+					errs.add("[ERROR] No argument to --arg-file");
+					break;
+				}
+				argBody = argQue.pop();
+			case "-F":
+				try (FileInputStream fis = new FileInputStream(argBody);
+						Scanner scn = new Scanner(fis)) {
+					List<String> sl = new ArrayList<>();
+
+					while (scn.hasNextLine()) {
+						String ln = scn.nextLine().trim();
+
+						if (ln.equals(""))      continue;
+						if (ln.startsWith("#")) continue;
+
+						sl.add(ln);
+					}
+
+					processArgs(sl.toArray(new String[0]));
+				} catch (FileNotFoundException fnfex) {
+					String msg = String.format("[ERROR] Could not open argument file '%s' for input", argBody);
+					errs.add(msg);
+					retStat = false;
+				} catch (IOException ioex) {
+					String msg = String.format("[ERROR] Unknown I/O error reading input file '%s': %s",
+							argBody, ioex.getMessage());
+					errs.add(msg);
+					retStat = false;
+				}
+				break;
+			case "--input-status":
+				if (argQue.size() < 1) {
+					errs.add("[ERROR] No argument to --input-status");
+					break;
+				}
+				argBody = argQue.pop();
+			case "-I":
+				try {
+					inputStat = InputStatus.valueOf(argBody.toUpperCase());
+				} catch (IllegalArgumentException iaex) {
+					String msg = String.format("[ERROR] '%s' is not a valid input status", argBody);
+					errs.add(msg);
+				}
+				break;
+			default:
+				{
+					String msg = String.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
+					errs.add(msg);
+					retStat = false;
+				}
+			}
+		} else {
+			// Strip off an escaped initial dash
+			if (arg.startsWith("\\-")) arg = arg.substring(1);
+
+			processInputFile(arg);
+		}
 		return retStat;
 	}
 
@@ -309,7 +358,7 @@ public class Everge {
 		boolean stat = processInputFile(errs, fle);
 		if (!stat) {
 			for (String err : errs) {
-				errStream.println(err);
+				errStream.errorf("%s\n", err);
 			}
 		}
 
@@ -392,9 +441,11 @@ public class Everge {
 		try {
 			String strang = inp;
 
-			for (ReplPair rp : lrp) {
-				strang = rp.apply(strang);
+			if (verbosity >= 3) {
+				errStream.infof("[INFO] Processing replacements for string '%s' in mode \n", strang);
 			}
+
+			strang = replSet.apply(inp);
 
 			outStream.print(strang);
 			if (printNL) outStream.println();
@@ -407,12 +458,19 @@ public class Everge {
 	private void loadQueue(String... args) {
 		boolean doArgs = true;
 		for (String arg : args) {
-			if (arg.equals("--")) doArgs = false;
+			if (arg.equals("--")) {
+				doArgs = false;
+			}
 
 			// Handle things like -nNv correctly
 			if (doArgs) {
 				if (arg.startsWith("-") && !arg.startsWith("--")) {
 					char[] car = arg.substring(1).toCharArray();
+
+					if (verbosity >= 3) {
+						errStream.infof("[INFO] Adding stream of args: %s", car);
+					}
+
 					for (char c : car) {
 						String argstr = String.format("-%c", c);
 						argQue.add(argstr);

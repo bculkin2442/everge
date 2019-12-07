@@ -91,7 +91,9 @@ public class ReplSet {
 		String ret = val;
 
 		for (ReplPair par : parList) {
-			ret = par.apply(ret);
+			String tmp = par.apply(ret);
+
+			ret = tmp;
 		}
 
 		return ret;

@@ -457,7 +457,9 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			if (!inp.matches(guard)) return inp;
 		}
 
-		return inp.replaceAll(find, replace);
+		String res = inp.replaceAll(find, replace);
+
+		return res;
 	}
 
 	@Override

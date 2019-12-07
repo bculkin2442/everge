@@ -73,14 +73,14 @@ public class ControlledString {
 			if (i < 0) {
 				String msg = String.format("Control argument index must be greater than 0 (was %d)", i);
 
-				throw new IllegalArgumentException(msg);
+				throw new IndexOutOfBoundsException(msg);
 			}
 
 			if (i > args.length) {
 				String msg = String.format("Control argument index must be less than %d (was %d)",
 						args.length, i);
 
-				throw new IllegalArgumentException(msg);
+				throw new IndexOutOfBoundsException(msg);
 			}
 
 			return args[i];
