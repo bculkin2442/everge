@@ -4,7 +4,6 @@ import bjc.everge.ControlledString.Control;
 import bjc.everge.ControlledString.ParseStrings;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;

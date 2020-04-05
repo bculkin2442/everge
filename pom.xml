@@ -114,8 +114,8 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
 				<executions>
-					<execution>
-						<!-- Run source tagging (i.e ctags) -->
+					<!-- <execution>
+						<!- Run source tagging (i.e ctags) ->
 						<id>Source Tagging</id>
 						<phase>generate-sources</phase>
 						<goals>
@@ -127,7 +127,7 @@
 								<argument>-R</argument>
 							</arguments>
 						</configuration>
-					</execution>
+					</execution> -->
 					<execution>
 						<!-- Copy site for gh pages deploy -->
 						<id>Site Copy</id>

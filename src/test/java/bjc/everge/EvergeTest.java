@@ -1,12 +1,8 @@
 package bjc.everge;
 
-import bjc.everge.*;
-
 import java.io.*;
 
 import java.util.*;
-
-import static bjc.everge.TestUtils.*;
 
 import static org.junit.Assert.*;
 
@@ -20,6 +16,7 @@ import org.junit.Test;
 public class EvergeTest {
 	@Test
 	public void testConstruct() {
+		@SuppressWarnings("unused")
 		Everge evg = new Everge();
 
 		assertTrue(true);

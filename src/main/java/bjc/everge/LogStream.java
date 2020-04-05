@@ -1,7 +1,6 @@
 package bjc.everge;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Simple class used for logging with various levels.
