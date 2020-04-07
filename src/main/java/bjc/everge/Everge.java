@@ -158,9 +158,11 @@ public class Everge {
 	}
 
 	private boolean processArg(List<String> errs, boolean retStat, String arg) {
+		boolean newRet = retStat;
+		
 		if (arg.equals("--")) {
 			doingArgs = false;
-			return retStat;
+			return newRet;
 		}
 
 		// Process an argument
@@ -199,7 +201,7 @@ public class Everge {
 			case "--verbosity":
 				if (argQue.size() < 1) {
 					errs.add("[ERROR] No parameter to --verbosity");
-					retStat = false;
+					newRet = false;
 					break;
 				}
 				argBody = argQue.pop();
@@ -212,13 +214,13 @@ public class Everge {
 					String msg = String.format("[ERROR] Invalid verbosity: '%s' is not an integer",
 							argBody);
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				}
 				break;
 			case "--pattern":
 				if (argQue.size() < 1) {
 					errs.add("[ERROR] No parameter to --pattern");
-					retStat = false;
+					newRet = false;
 					break;
 				}
 				argBody = argQue.pop();
@@ -231,13 +233,13 @@ public class Everge {
 					String msg = String.format("[ERROR] Pattern '%s' is invalid: %s",
 							pattern, psex.getMessage());
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				}
 				break;
 			case "--file":
 				if (argQue.size() < 1) {
 					errs.add("[ERROR] No argument to --file");
-					retStat = false;
+					newRet = false;
 					break;
 				}
 				argBody = argQue.pop();
@@ -267,7 +269,7 @@ public class Everge {
 						}
 
 						errs.add(sb.toString());
-						retStat = false;
+						newRet = false;
 					}
 
 					replSet.addPairs(lrp);
@@ -275,12 +277,12 @@ public class Everge {
 					String msg = String.format("[ERROR] Could not open data file '%s' for input",
 							argBody);
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				} catch (IOException ioex) {
 					String msg = String.format("[ERROR] Unknown I/O error reading data file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				}
 				break;
 			case "--arg-file":
@@ -307,12 +309,12 @@ public class Everge {
 				} catch (FileNotFoundException fnfex) {
 					String msg = String.format("[ERROR] Could not open argument file '%s' for input", argBody);
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				} catch (IOException ioex) {
 					String msg = String.format("[ERROR] Unknown I/O error reading input file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				}
 				break;
 			case "--input-status":
@@ -333,16 +335,18 @@ public class Everge {
 				{
 					String msg = String.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
 					errs.add(msg);
-					retStat = false;
+					newRet = false;
 				}
 			}
 		} else {
+			String tmp = arg;
 			// Strip off an escaped initial dash
-			if (arg.startsWith("\\-")) arg = arg.substring(1);
+			if (tmp.startsWith("\\-")) tmp = tmp.substring(1);
 
-			processInputFile(arg);
+			processInputFile(tmp);
 		}
-		return retStat;
+		
+		return newRet;
 	}
 
 	/**
