@@ -23,7 +23,8 @@ public class ReplPairTest {
 		List<ReplPair> lrp = null;
 		String fName = "data/test/test1.rp";
 
-		try (FileInputStream fis = new FileInputStream(fName); Scanner scn = new Scanner(fis)) {
+		try (FileInputStream fis = new FileInputStream(fName);
+				Scanner scn = new Scanner(fis)) {
 			lrp = ReplPair.readList(scn);
 
 			assertTrue(lrp.size() == 0);
@@ -39,7 +40,8 @@ public class ReplPairTest {
 
 	@Test
 	public void testMultiReplace() {
-		assertMultiReplace("data/test/test3.rp", "A B C", "a b c", "A A B", "a a b", "AAB", "aab");
+		assertMultiReplace("data/test/test3.rp", "A B C", "a b c", "A A B", "a a b",
+				"AAB", "aab");
 	}
 
 	@Test
@@ -59,13 +61,12 @@ public class ReplPairTest {
 
 	@Test
 	public void testErrorException() {
-			String msg = 
-				"[ERROR] An error occured parsing replacement pairs:"
+		String msg = "[ERROR] An error occured parsing replacement pairs:"
 				+ "\n\t[ERROR] line 2, pair 1: Ran out of input looking for"
 				+ " replacement body for raw name 'a'"
 				+ "\n\t\tContext: No associated line";
 
-			assertThrownMessage(msg, "data/test/test7.rp");
+		assertThrownMessage(msg, "data/test/test7.rp");
 	}
 
 	@Test

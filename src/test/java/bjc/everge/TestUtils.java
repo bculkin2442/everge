@@ -21,9 +21,9 @@ public class TestUtils {
 	 * Assert that a ReplParseException is thrown with a given message.
 	 *
 	 * @param msg
-	 * 		The message.
+	 *            The message.
 	 * @param fle
-	 * 		The file to load input from.
+	 *            The file to load input from.
 	 */
 	public static void assertThrownMessage(String msg, String fle) {
 		assertThrownMessage(false, msg, fle);
@@ -33,19 +33,21 @@ public class TestUtils {
 	 * Assert that a ReplParseException is thrown with a given message.
 	 *
 	 * @param logMsg
-	 * 		Log the exception message.
+	 *               Log the exception message.
 	 * @param msg
-	 * 		The message.
+	 *               The message.
 	 * @param fle
-	 * 		The file to load input from.
+	 *               The file to load input from.
 	 */
 	public static void assertThrownMessage(boolean logMsg, String msg, String fle) {
-		try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
+		try (FileInputStream fis = new FileInputStream(fle);
+				Scanner scn = new Scanner(fis)) {
 			ReplPair.readList(new ArrayList<>(), scn);
 
 			assertTrue(false);
 		} catch (BadReplParse rpex) {
-			if (logMsg) System.err.println(rpex.toPrintString());
+			if (logMsg)
+				System.err.println(rpex.toPrintString());
 
 			assertEquals(msg, rpex.toPrintString());
 		} catch (Exception ex) {
@@ -64,20 +66,23 @@ public class TestUtils {
 
 	public static void assertMultiReplace(boolean logRep, String fle, String... inps) {
 		if (inps.length < 2) {
-			throw new IllegalArgumentException("ERROR: Must provide at least two strings to assertMultiReplace");
+			throw new IllegalArgumentException(
+					"ERROR: Must provide at least two strings to assertMultiReplace");
 		}
 
 		if (inps.length % 2 != 0) {
-			throw new IllegalArgumentException("ERROR: Odd number of strings passed to assertMultiReplace");
+			throw new IllegalArgumentException(
+					"ERROR: Odd number of strings passed to assertMultiReplace");
 		}
 
 		List<ReplPair> lrp = null;
 
-		try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
+		try (FileInputStream fis = new FileInputStream(fle);
+				Scanner scn = new Scanner(fis)) {
 			lrp = ReplPair.readList(scn);
 		} catch (BadReplParse rpex) {
 			System.err.println(rpex.toPrintString());
-			
+
 			assertTrue(false);
 		} catch (Exception ex) {
 			System.err.println("EXCEPTION");
@@ -90,7 +95,7 @@ public class TestUtils {
 
 		for (int i = 0; i < inps.length; i += 2) {
 			String right = inps[i];
-			String inp   = inps[i + 1];
+			String inp = inps[i + 1];
 
 			assertReplacesTo(logRep, right, lrp, inp);
 		}
@@ -104,7 +109,8 @@ public class TestUtils {
 		assertReplacesTo(false, right, rps, inp);
 	}
 
-	public static void assertReplacesTo(boolean logRep, String right, List<ReplPair> rps, String inp) {
+	public static void assertReplacesTo(boolean logRep, String right, List<ReplPair> rps,
+			String inp) {
 		if (logRep) {
 			System.err.printf("\t[LOG] Checking '%s' -> '%s'\n", inp, right);
 		}
@@ -124,13 +130,16 @@ public class TestUtils {
 		assertEquals(right, tmp);
 	}
 
-	public static void assertSplitsTo(String inp, String esc, String splat, String... right) {
+	public static void assertSplitsTo(String inp, String esc, String splat,
+			String... right) {
 		assertSplitsTo(false, inp, esc, splat, right);
 	}
 
-	public static void assertSplitsTo(boolean doLog, String inp, String esc, String splat, String... right) {
+	public static void assertSplitsTo(boolean doLog, String inp, String esc, String splat,
+			String... right) {
 		try {
-			if (doLog) StringUtils.isDebug = true;
+			if (doLog)
+				StringUtils.isDebug = true;
 
 			String[] lst = StringUtils.escapeSplit(esc, splat, inp);
 
@@ -152,7 +161,8 @@ public class TestUtils {
 
 			assertTrue(false);
 		} finally {
-			if (doLog) StringUtils.isDebug = false;
+			if (doLog)
+				StringUtils.isDebug = false;
 		}
 	}
 
@@ -160,8 +170,10 @@ public class TestUtils {
 		assertIsControl(false, inp, strang, args);
 	}
 
-	public static void assertIsControl(boolean doLog, String inp, String strang, Control... args) {
-		ControlledString cs = ControlledString.parse(inp, new ParseStrings("//", ";", "/", "|"));
+	public static void assertIsControl(boolean doLog, String inp, String strang,
+			Control... args) {
+		ControlledString cs
+				= ControlledString.parse(inp, new ParseStrings("//", ";", "/", "|"));
 
 		if (doLog) {
 			System.err.printf("[LOG] CS: %s\n", cs);

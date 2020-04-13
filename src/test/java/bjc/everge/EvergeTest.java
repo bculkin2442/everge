@@ -51,10 +51,10 @@ public class EvergeTest {
 		evg.setOutput(normOut);
 		evg.setError(normErr);
 
-		//evg.processArgs("--verbosity", "3");
+		// evg.processArgs("--verbosity", "3");
 		List<String> errs = new ArrayList<>();
-		boolean stat = evg.processArgs(errs, "--input-status",  "line", "--file", "data/test/evg-test1.rp",
-				"data/test/evg-test1.inp");
+		boolean stat = evg.processArgs(errs, "--input-status", "line", "--file",
+				"data/test/evg-test1.rp", "data/test/evg-test1.inp");
 		if (!stat) {
 			System.err.println("[ERROR] Did not succesfully process args");
 			for (String err : errs) {
@@ -62,7 +62,8 @@ public class EvergeTest {
 			}
 			System.err.println("[ERROR] Normal Output:\n--------------------");
 			System.err.println(baos.toString().trim());
-			System.err.println("--------------------\n[ERROR] Error Output:\n------------------");
+			System.err.println(
+					"--------------------\n[ERROR] Error Output:\n------------------");
 			System.err.println(errBaos.toString().trim());
 			System.err.println("--------------------");
 

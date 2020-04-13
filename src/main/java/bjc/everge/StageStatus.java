@@ -2,6 +2,7 @@ package bjc.everge;
 
 /**
  * Possible statuses of pairs with respect to exporting.
+ * 
  * @author Ben Culkin
  */
 public enum StageStatus {
@@ -18,4 +19,3 @@ public enum StageStatus {
 	 */
 	BOTH;
 }
-

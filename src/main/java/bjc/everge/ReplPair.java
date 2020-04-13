@@ -36,8 +36,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	/**
 	 * The guard for this replacement.
 	 *
-	 * The guard of the replacement is a regex that has to match before the pair will be considered.
-	 * Defaults to being blank.
+	 * The guard of the replacement is a regex that has to match before the pair
+	 * will be considered. Defaults to being blank.
 	 */
 	public String guard;
 
@@ -62,9 +62,9 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Create a new replacement pair with a priority of 1.
 	 *
 	 * @param f
-	 * 	The string to find.
+	 *          The string to find.
 	 * @param r
-	 * 	The string to replace.
+	 *          The string to replace.
 	 */
 	public ReplPair(String f, String r) {
 		this(f, r, 1);
@@ -74,11 +74,11 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Create a new named replacement pair with a priority of 1.
 	 *
 	 * @param f
-	 * 	The string to find.
+	 *          The string to find.
 	 * @param r
-	 * 	The string to replace.
+	 *          The string to replace.
 	 * @param n
-	 * 	The name of the replacement pair.
+	 *          The name of the replacement pair.
 	 */
 	public ReplPair(String f, String r, String n) {
 		this(f, r, 1, n);
@@ -88,11 +88,11 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Create a new replacement pair with a set priority.
 	 *
 	 * @param f
-	 * 	The string to find.
+	 *          The string to find.
 	 * @param r
-	 * 	The string to replace.
+	 *          The string to replace.
 	 * @param p
-	 * 	The priority for the replacement.
+	 *          The priority for the replacement.
 	 */
 	public ReplPair(String f, String r, int p) {
 		this(f, r, p, f);
@@ -102,16 +102,16 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Create a new replacement pair with a set priority and name.
 	 *
 	 * @param f
-	 * 	The string to find.
+	 *          The string to find.
 	 * @param r
-	 * 	The string to replace.
+	 *          The string to replace.
 	 * @param n
-	 * 	The name of the replacement pair.
+	 *          The name of the replacement pair.
 	 * @param p
-	 * 	The priority for the replacement.
+	 *          The priority for the replacement.
 	 */
 	public ReplPair(String f, String r, int p, String n) {
-		find    = f;
+		find = f;
 		replace = r;
 
 		name = n;
@@ -123,9 +123,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	 * Read a list of replacement pairs from an input source.
 	 *
 	 * @param scn
-	 * 	The source to read the replacements from.
-	 * @return
-	 * 	The list of replacements.
+	 *            The source to read the replacements from.
+	 * @return The list of replacements.
 	 */
 	public static List<ReplPair> readList(Scanner scn) {
 		List<ReplPair> lst = new ArrayList<>();
@@ -134,15 +133,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 
 	/**
-	 * Read a list of replacement pairs from an input source, adding them to
-	 * an existing list.
+	 * Read a list of replacement pairs from an input source, adding them to an
+	 * existing list.
 	 *
 	 * @param detals
-	 * 	The list to add the replacements to.
+	 *               The list to add the replacements to.
 	 * @param scn
-	 * 	The source to read the replacements from.
-	 * @return
-	 * 	The list of replacements.
+	 *               The source to read the replacements from.
+	 * @return The list of replacements.
 	 */
 	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn) {
 		List<ReplError> errList = new ArrayList<>();
@@ -157,41 +155,38 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 
 	/**
-	 * Read a list of replacement pairs from an input source, adding them to
-	 * an existing list.
+	 * Read a list of replacement pairs from an input source, adding them to an
+	 * existing list.
 	 *
 	 * @param detals
-	 * 	The list to add the replacements to.
+	 *               The list to add the replacements to.
 	 * @param scn
-	 * 	The source to read the replacements from.
+	 *               The source to read the replacements from.
 	 * @param errs
-	 * 	The list to stick errors in.
-	 * @return
-	 * 	The list of replacements.
+	 *               The list to stick errors in.
+	 * @return The list of replacements.
 	 */
-	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn, List<ReplError> errs) {
+	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
+			List<ReplError> errs) {
 		return readList(detals, scn, errs, new ReplOpts());
 	}
 
 	/**
-	 * Read a list of replacement pairs from an input source, adding them to
-	 * an existing list.
+	 * Read a list of replacement pairs from an input source, adding them to an
+	 * existing list.
 	 *
 	 * @param detals
-	 * 	The list to add the replacements to.
+	 *               The list to add the replacements to.
 	 * @param scn
-	 * 	The source to read the replacements from.
+	 *               The source to read the replacements from.
 	 * @param errs
-	 * 	The list to stick errors in.
+	 *               The list to stick errors in.
 	 * @param ropts
-	 * 	The options to use when reading the pairs.
-	 * @return
-	 * 	The list of replacements.
+	 *               The options to use when reading the pairs.
+	 * @return The list of replacements.
 	 */
-	public static List<ReplPair> readList(
-			List<ReplPair> detals, Scanner scn,
-			List<ReplError> errs, ReplOpts ropts) 
-	{
+	public static List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
+			List<ReplError> errs, ReplOpts ropts) {
 		IntHolder lno = new IntHolder();
 		IntHolder pno = new IntHolder();
 
@@ -204,8 +199,10 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			lno.incr();
 
 			// If its commented or blank, skip it
-			if (name.equals(""))      continue;
-			if (name.startsWith("#")) continue;
+			if (name.equals(""))
+				continue;
+			if (name.startsWith("#"))
+				continue;
 
 			// Global control. Process it.
 			if (name.startsWith("|//")) {
@@ -217,20 +214,22 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			ReplPair rp = new ReplPair();
 
 			rp.priority = ropts.defPrior;
-			rp.stat     = ropts.defStatus;
-			rp.lno      = lno.get();
-			rp.stage    = ropts.defStage;
+			rp.stat = ropts.defStatus;
+			rp.lno = lno.get();
+			rp.stage = ropts.defStage;
 
 			boolean isMulti = ropts.defMulti;
 
 			{
 				String tmpName = readName(name, scn, errs, rp, ropts, lno, pno);
-				if (tmpName == null) continue;
+				if (tmpName == null)
+					continue;
 				name = tmpName;
 			}
 
 			rp.find = name;
-			if (rp.name == null) rp.name = name;
+			if (rp.name == null)
+				rp.name = name;
 
 			// We started to process the pair, mark it as being
 			// started
@@ -239,7 +238,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			// Read in the next uncommented line
 			do {
-				if (!scn.hasNextLine()) break; 
+				if (!scn.hasNextLine())
+					break;
 
 				body = scn.nextLine().trim();
 				lno.incr();
@@ -247,14 +247,15 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			if (body == null) {
 				String msg = String.format(
-						"Ran out of input looking for replacement body for raw name '%s'", name);
+						"Ran out of input looking for replacement body for raw name '%s'",
+						name);
 
 				errs.add(new ReplError(lno, pno, msg, null));
 				break;
 			}
 
 			isMulti = ropts.defMulti;
-			
+
 			ControlledString cs = getControls(body, errs, ropts, lno, pno, "body");
 			// Body has attached controls, process them.
 			if (cs.hasControls()) {
@@ -273,17 +274,18 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 					case "MULTI":
 					case "M":
 						if (cont.count() != 1) {
-							String errMsg = String.format("Expected one multi flag (got %d)", cont.count());
+							String errMsg = String.format(
+									"Expected one multi flag (got %d)", cont.count());
 							errs.add(new ReplError(lno, pno, errMsg, body));
 						} else {
 							isMulti = Boolean.parseBoolean(cont.get(0));
 						}
 						break;
-					default: 
-						{
-							String errMsg = String.format("Invalid control name '%s'", cont.name);
-							errs.add(new ReplError(lno, pno, errMsg, body));
-						}
+					default: {
+						String errMsg
+								= String.format("Invalid control name '%s'", cont.name);
+						errs.add(new ReplError(lno, pno, errMsg, body));
+					}
 						break;
 					}
 				}
@@ -293,7 +295,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			if (isMulti) {
 				String tmp = readMultiLine(body, scn, ropts, errs, "body", lno);
-				if (tmp == null) continue;
+				if (tmp == null)
+					continue;
 				body = tmp;
 			}
 
@@ -326,11 +329,14 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		// Special-case one-stage processing.
 		if (stages.size() == 1) {
-			if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Executing single-stage bypass\n");
+			if (ropts.isTrace)
+				ropts.errStream.printf("\t[DEBUG] Executing single-stage bypass\n");
 
 			for (ReplPair rp : stages.iterator().next()) {
 				if (rp.stat == StageStatus.INTERNAL) {
-					if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Excluding internal RP %s\n", rp);
+					if (ropts.isTrace)
+						ropts.errStream.printf("\t[DEBUG] Excluding internal RP %s\n",
+								rp);
 
 					continue;
 				}
@@ -347,15 +353,17 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		List<ReplPair> tmpList = new ArrayList<>();
 		tmpList.addAll(detals);
 
-		if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Stages: %s\n", stages);
+		if (ropts.isTrace)
+			ropts.errStream.printf("\t[DEBUG] Stages: %s\n", stages);
 
 		int procStg = 0;
 		for (List<ReplPair> stageList : stages) {
 			procStg += 1;
 			List<ReplPair> curStage = new ArrayList<>();
 
-			if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Staging stage %d of %d: %s\n",
-					procStg, stageList.size(), stageList);
+			if (ropts.isTrace)
+				ropts.errStream.printf("\t[DEBUG] Staging stage %d of %d: %s\n", procStg,
+						stageList.size(), stageList);
 
 			for (ReplPair rp : stageList) {
 				// Process through every pair in the previous
@@ -365,7 +373,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 					if (ropts.isTrace && !rp.replace.equals(tmp)) {
 						ropts.errStream.printf("\t[DEBUG] Staged '%s' -> '%s'\t%s\n",
-							rp.replace, tmp, curPar);
+								rp.replace, tmp, curPar);
 					}
 
 					rp.replace = tmp;
@@ -374,21 +382,22 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				// If we're external; add straight to the output
 				if (rp.stat == StageStatus.EXTERNAL) {
 					if (ropts.isTrace) {
-						ropts.errStream.printf("\t[DEBUG] Skipped external for staging: %s\n",
-								rp);
+						ropts.errStream.printf(
+								"\t[DEBUG] Skipped external for staging: %s\n", rp);
 					}
 
 					detals.add(rp);
 				} else {
 					if (ropts.isTrace) {
-						ropts.errStream.printf("\t[DEBUG] Added to stage %d: %s\n\t\tContents: %s\n",
+						ropts.errStream.printf(
+								"\t[DEBUG] Added to stage %d: %s\n\t\tContents: %s\n",
 								procStg, rp, curStage);
 					}
 
 					curStage.add(rp);
 				}
 			}
-			
+
 			tmpList.addAll(curStage);
 			tmpList.sort(null);
 		}
@@ -396,7 +405,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		// Copy over to output, excluding internals
 		for (ReplPair rp : tmpList) {
 			if (rp.stat == StageStatus.INTERNAL) {
-				if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Excluded internal: %s\n", rp);
+				if (ropts.isTrace)
+					ropts.errStream.printf("\t[DEBUG] Excluded internal: %s\n", rp);
 
 				continue;
 			}
@@ -417,19 +427,22 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			List<ReplError> errs, String typ, IntHolder lno) {
 		String tmp = lead;
 
-		if (ropts.isTrace && tmp.endsWith("\\")) 
-			ropts.errStream.printf("\t[TRACE] Starting multi-line parse for %s '%s'\n", typ, tmp);
+		if (ropts.isTrace && tmp.endsWith("\\"))
+			ropts.errStream.printf("\t[TRACE] Starting multi-line parse for %s '%s'\n",
+					typ, tmp);
 
 		boolean didMulti = tmp.endsWith("\\");
 		while (tmp.endsWith("\\")) {
 			boolean incNL = tmp.endsWith("|\\");
 
-			if (!src.hasNextLine()) break;
+			if (!src.hasNextLine())
+				break;
 
 			String nxt = src.nextLine().trim();
 			lno.incr();
 
-			if (nxt.startsWith("#")) continue;
+			if (nxt.startsWith("#"))
+				continue;
 
 			String nlStr = incNL ? "\n" : "";
 
@@ -454,7 +467,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	@Override
 	public String apply(String inp) {
 		if (guard != null) {
-			if (!inp.matches(guard)) return inp;
+			if (!inp.matches(guard))
+				return inp;
 		}
 
 		String res = inp.replaceAll(find, replace);
@@ -466,18 +480,20 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	public String toString() {
 		String nameStr = "";
 
-		if (!find.equals(name)) nameStr = String.format("(%s)", name);
+		if (!find.equals(name))
+			nameStr = String.format("(%s)", name);
 
 		return String.format("%ss/(%s)/(%s)/p(%d)", nameStr, find, replace, priority);
 	}
 
 	@Override
 	public int compareTo(ReplPair rp) {
-		if (this.priority == rp.priority) return this.lno - rp.lno;
+		if (this.priority == rp.priority)
+			return this.lno - rp.lno;
 
 		return rp.priority - this.priority;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -492,21 +508,32 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
 		ReplPair other = (ReplPair) obj;
 		if (find == null) {
-			if (other.find != null) return false;
-		} else if (!find.equals(other.find)) return false;
+			if (other.find != null)
+				return false;
+		} else if (!find.equals(other.find))
+			return false;
 		if (name == null) {
-			if (other.name != null) return false;
-		} else if (!name.equals(other.name)) return false;
-		if (priority != other.priority) return false;
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (priority != other.priority)
+			return false;
 		if (replace == null) {
-			if (other.replace != null) return false;
-		} else if (!replace.equals(other.replace)) return false;
-		if (stage != other.stage) return false;
+			if (other.replace != null)
+				return false;
+		} else if (!replace.equals(other.replace))
+			return false;
+		if (stage != other.stage)
+			return false;
 		return true;
 	}
 
@@ -521,129 +548,135 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		if (cs.hasControls()) {
 			for (Control cont : cs.controls) {
 				switch (cont.name) {
-					case "NAME":
-					case "N":
-						if (cont.count() != 1) {
-							String errMsg = String.format("One name argument was expected (got %d)",
-									cont.count());
+				case "NAME":
+				case "N":
+					if (cont.count() != 1) {
+						String errMsg = String.format(
+								"One name argument was expected (got %d)", cont.count());
 
-							errs.add(new ReplError(lno, pno, errMsg, nam));
-						} else {
-							rp.name = cont.get(0);
-						}
-						break;
-					case "GUARD":
-					case "G":
-						if (cont.count() != 1) {
-							String errMsg = String.format("One guard argument was expected (got %d)",
-									cont.count());
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					} else {
+						rp.name = cont.get(0);
+					}
+					break;
+				case "GUARD":
+				case "G":
+					if (cont.count() != 1) {
+						String errMsg = String.format(
+								"One guard argument was expected (got %d)", cont.count());
 
-							errs.add(new ReplError(lno, pno, errMsg, nam));
-						} else {
-							String pat = cont.get(0);
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					} else {
+						String pat = cont.get(0);
 
-							try {
-								Pattern.compile(pat);
-							} catch (PatternSyntaxException psex) {
-								String errMsg = String.format("Guard argument '%s' is not a valid regex (%s)",
-										pat, psex.getMessage());
-
-								errs.add(new ReplError(lno, pno, errMsg, nam));
-							}
-
-							rp.guard = cont.get(0);
-						}
-						break;
-					case "PRIORITY":
-					case "PRIOR":
-					case "P":
 						try {
-							if (cont.count() != 1) {
-								String errMsg = String.format("One priority argument was expected (got %d",
-										cont.count());
-
-								errs.add(new ReplError(lno, pno, errMsg, nam));
-							} else {
-								rp.priority = Integer.parseInt(cont.get(0));
-							}
-						} catch (NumberFormatException nfex) {
-							String errMsg = String.format("'%s' is not a valid priority (must be an integer)",
-									cont.get(0));
+							Pattern.compile(pat);
+						} catch (PatternSyntaxException psex) {
+							String errMsg = String.format(
+									"Guard argument '%s' is not a valid regex (%s)", pat,
+									psex.getMessage());
 
 							errs.add(new ReplError(lno, pno, errMsg, nam));
 						}
-						break;
-					case "STAGE":
-					case "S":
-						try {
-							if (cont.count() != 1) {
-								String errMsg = String.format("One stage argument was expected (got %d",
-										cont.count());
 
-								errs.add(new ReplError(lno, pno, errMsg, nam));
-							} else {
-								int tmpStage = Integer.parseInt(cont.get(0));
-								if (tmpStage < 0) {
-									String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
-											cont.get(0));
-									errs.add(new ReplError(lno, pno, errMsg, nam));
-
-									break;
-								}
-								rp.stage = tmpStage;
-							}
-						} catch (NumberFormatException nfex) {
-							String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
-									cont.get(0));
-
-							errs.add(new ReplError(lno, pno, errMsg, nam));
-						}
-						break;
-					case "MULTITRUE":
-					case "MULTIT":
-					case "MT":
-						isMulti = true;
-						break;
-					case "MULTIFALSE":
-					case "MULTIF":
-					case "MF":
-						isMulti = false;
-						break;
-					case "MULTI":
-					case "M":
+						rp.guard = cont.get(0);
+					}
+					break;
+				case "PRIORITY":
+				case "PRIOR":
+				case "P":
+					try {
 						if (cont.count() != 1) {
-							String errMsg = String.format("One multi-flag argument was expected (got %d",
+							String errMsg = String.format(
+									"One priority argument was expected (got %d",
 									cont.count());
 
 							errs.add(new ReplError(lno, pno, errMsg, nam));
 						} else {
-							isMulti = Boolean.parseBoolean(cont.get(0));
+							rp.priority = Integer.parseInt(cont.get(0));
 						}
-						break;
-					case "INTERNAL":
-					case "INT":
-					case "I":
-						rp.stat = StageStatus.INTERNAL;
-						break;
-					case "EXTERNAL":
-					case "EXT":
-					case "E":
-						rp.stat = StageStatus.EXTERNAL;
-						break;
-					case "BOTH":
-					case "B":
-						rp.stat = StageStatus.BOTH;
-						break;
-					default: 
-						{
-							String errMsg = String.format("Unknown control name '%s' for name '%s'",
-									cont.name, nam);
+					} catch (NumberFormatException nfex) {
+						String errMsg = String.format(
+								"'%s' is not a valid priority (must be an integer)",
+								cont.get(0));
 
-							ReplError erd = new ReplError(lno, pno, errMsg, nam);
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					}
+					break;
+				case "STAGE":
+				case "S":
+					try {
+						if (cont.count() != 1) {
+							String errMsg = String.format(
+									"One stage argument was expected (got %d",
+									cont.count());
 
-							errs.add(erd);
+							errs.add(new ReplError(lno, pno, errMsg, nam));
+						} else {
+							int tmpStage = Integer.parseInt(cont.get(0));
+							if (tmpStage < 0) {
+								String errMsg = String.format(
+										"'%s' is not a valid stage (must be a positive integer)",
+										cont.get(0));
+								errs.add(new ReplError(lno, pno, errMsg, nam));
+
+								break;
+							}
+							rp.stage = tmpStage;
 						}
-						break;
+					} catch (NumberFormatException nfex) {
+						String errMsg = String.format(
+								"'%s' is not a valid stage (must be a positive integer)",
+								cont.get(0));
+
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					}
+					break;
+				case "MULTITRUE":
+				case "MULTIT":
+				case "MT":
+					isMulti = true;
+					break;
+				case "MULTIFALSE":
+				case "MULTIF":
+				case "MF":
+					isMulti = false;
+					break;
+				case "MULTI":
+				case "M":
+					if (cont.count() != 1) {
+						String errMsg = String.format(
+								"One multi-flag argument was expected (got %d",
+								cont.count());
+
+						errs.add(new ReplError(lno, pno, errMsg, nam));
+					} else {
+						isMulti = Boolean.parseBoolean(cont.get(0));
+					}
+					break;
+				case "INTERNAL":
+				case "INT":
+				case "I":
+					rp.stat = StageStatus.INTERNAL;
+					break;
+				case "EXTERNAL":
+				case "EXT":
+				case "E":
+					rp.stat = StageStatus.EXTERNAL;
+					break;
+				case "BOTH":
+				case "B":
+					rp.stat = StageStatus.BOTH;
+					break;
+				default: {
+					String errMsg = String.format(
+							"Unknown control name '%s' for name '%s'", cont.name, nam);
+
+					ReplError erd = new ReplError(lno, pno, errMsg, nam);
+
+					errs.add(erd);
+				}
+					break;
 				}
 			}
 
@@ -653,7 +686,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		// Multi-line name with a trailer
 		if (isMulti) {
 			String tmp = readMultiLine(name, scn, ropts, errs, "name", lno);
-			if (tmp == null) return null;
+			if (tmp == null)
+				return null;
 			name = tmp;
 		}
 
@@ -662,7 +696,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 	private static void readGlobal(String nam, Scanner scn, List<ReplError> errs,
 			ReplOpts ropts, IntHolder lno, IntHolder pno) {
-		ControlledString cs = getControls(nam.substring(1), errs, ropts, lno, pno, "global");
+		ControlledString cs
+				= getControls(nam.substring(1), errs, ropts, lno, pno, "global");
 
 		for (Control cont : cs.controls) {
 			switch (cont.name) {
@@ -671,8 +706,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "P":
 				try {
 					if (cont.count() != 1) {
-						String errMsg = String.format("Must specify 1 priority (%d specified)",
-								cont.count());
+						String errMsg = String.format(
+								"Must specify 1 priority (%d specified)", cont.count());
 
 						errs.add(new ReplError(lno, pno, errMsg, nam));
 					} else {
@@ -680,7 +715,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 						ropts.defPrior = tmp;
 					}
 				} catch (NumberFormatException nfex) {
-					String errMsg = String.format("'%s' is not a valid priority (must be an integer)",
+					String errMsg = String.format(
+							"'%s' is not a valid priority (must be an integer)",
 							cont.get(0));
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
@@ -690,15 +726,16 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "S":
 				try {
 					if (cont.count() != 1) {
-						String errMsg = String.format("Must specify 1 stage (%d specified)",
-								cont.count());
+						String errMsg = String.format(
+								"Must specify 1 stage (%d specified)", cont.count());
 
 						errs.add(new ReplError(lno, pno, errMsg, nam));
 					} else {
 						int tmpStage = Integer.parseInt(cont.get(0));
 
 						if (tmpStage < 0) {
-							String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
+							String errMsg = String.format(
+									"'%s' is not a valid stage (must be a positive integer)",
 									cont.get(0));
 
 							errs.add(new ReplError(lno, pno, errMsg, nam));
@@ -708,7 +745,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 						ropts.defStage = tmpStage;
 					}
 				} catch (NumberFormatException nfex) {
-					String errMsg = String.format("'%s' is not a valid stage (must be a positive integer)",
+					String errMsg = String.format(
+							"'%s' is not a valid stage (must be a positive integer)",
 							cont.get(0));
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
@@ -727,8 +765,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "MULTI":
 			case "M":
 				if (cont.count() != 1) {
-					String errMsg = String.format("Must specify 1 multi-flag (%d specified)",
-							cont.count());
+					String errMsg = String.format(
+							"Must specify 1 multi-flag (%d specified)", cont.count());
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
 				} else {
@@ -762,8 +800,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "DEBUG":
 			case "D":
 				if (cont.count() != 1) {
-					String errMsg = String.format("Must specify 1 debug flag (%d specified)",
-							cont.count());
+					String errMsg = String.format(
+							"Must specify 1 debug flag (%d specified)", cont.count());
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
 				} else {
@@ -783,8 +821,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "TRACE":
 			case "T":
 				if (cont.count() != 1) {
-					String errMsg = String.format("Must specify 1 trace flag (%d specified)",
-							cont.count());
+					String errMsg = String.format(
+							"Must specify 1 trace flag (%d specified)", cont.count());
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
 				} else {
@@ -804,30 +842,29 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			case "PERF":
 			case "PRF":
 				if (cont.count() != 1) {
-					String errMsg = String.format("Must specify 1 perf. flag (%d specified)",
-							cont.count());
+					String errMsg = String.format(
+							"Must specify 1 perf. flag (%d specified)", cont.count());
 
 					errs.add(new ReplError(lno, pno, errMsg, nam));
 				} else {
 					ropts.isPerf = Boolean.parseBoolean(cont.get(0));
 				}
 				break;
-			default: 
-				{
-					String msg = String.format("Invalid global control name '%s'", cont.name);
-					ReplError err = new ReplError(lno, pno, msg, nam);
-					errs.add(err);
-				}
+			default: {
+				String msg = String.format("Invalid global control name '%s'", cont.name);
+				ReplError err = new ReplError(lno, pno, msg, nam);
+				errs.add(err);
+			}
 				break;
 			}
 
-			if (ropts.isTrace) 
+			if (ropts.isTrace)
 				ropts.errStream.printf("\t[TRACE] Processed global control '%s'\n", cont);
 		}
 
 		return;
 	}
-	
+
 	private static ControlledString getControls(String lne, List<ReplError> errs,
 			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) {
 		try {

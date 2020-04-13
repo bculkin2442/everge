@@ -14,16 +14,16 @@ import static org.junit.Assert.*;
 public class StringUtilsTest {
 	@Test
 	public void testNullSplit() {
-		assertSplitsTo("a", null, " ", "a");	
-		assertSplitsTo("a b", null, " ", "a", "b");	
+		assertSplitsTo("a", null, " ", "a");
+		assertSplitsTo("a b", null, " ", "a", "b");
 		assertSplitsTo("a b cd", null, " ", "a", "b", "cd");
 	}
 
 	@Test
 	public void testNoEscapeSplit() {
-		assertSplitsTo("a",        "/", " ", "a");
-		assertSplitsTo("a b",      "/", " ", "a", "b");
-		assertSplitsTo("a b/c",    "/", " ", "a", "b/c");
+		assertSplitsTo("a", "/", " ", "a");
+		assertSplitsTo("a b", "/", " ", "a", "b");
+		assertSplitsTo("a b/c", "/", " ", "a", "b/c");
 	}
 
 	@Test

@@ -70,7 +70,9 @@ public class Everge {
 
 	/**
 	 * Set the output stream.
-	 * @param out The output stream..
+	 * 
+	 * @param out
+	 *            The output stream..
 	 */
 	public void setOutput(PrintStream out) {
 		outStream = out;
@@ -78,7 +80,9 @@ public class Everge {
 
 	/**
 	 * Set the output stream.
-	 * @param out The output stream..
+	 * 
+	 * @param out
+	 *            The output stream..
 	 */
 	public void setOutput(OutputStream out) {
 		outStream = new PrintStream(out);
@@ -86,7 +90,9 @@ public class Everge {
 
 	/**
 	 * Set the error stream.
-	 * @param err The error stream.
+	 * 
+	 * @param err
+	 *            The error stream.
 	 */
 	public void setError(PrintStream err) {
 		errStream = new LogStream(err);
@@ -94,7 +100,9 @@ public class Everge {
 
 	/**
 	 * Set the error stream.
-	 * @param err The error stream.
+	 * 
+	 * @param err
+	 *            The error stream.
 	 */
 	public void setError(OutputStream err) {
 		errStream = new LogStream(new PrintStream(err));
@@ -104,7 +112,7 @@ public class Everge {
 	 * Main method for front end,
 	 *
 	 * @param args
-	 * 		The CLI arguments.
+	 *             The CLI arguments.
 	 */
 	public static void main(String[] args) {
 		Everge evg = new Everge();
@@ -116,7 +124,7 @@ public class Everge {
 	 * Process one or more command line arguments.
 	 *
 	 * @param args
-	 * 		The arguments to process.
+	 *             The arguments to process.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processArgs(String... args) {
@@ -147,9 +155,9 @@ public class Everge {
 	 * Process one or more command line arguments.
 	 *
 	 * @param args
-	 * 		The arguments to process.
+	 *             The arguments to process.
 	 * @param errs
-	 * 		The list to stash errors in.
+	 *             The list to stash errors in.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processArgs(List<String> errs, String... args) {
@@ -161,9 +169,9 @@ public class Everge {
 			loadQueue(args);
 
 			// Process CLI args
-			while(argQue.size() > 0) {
+			while (argQue.size() > 0) {
 				String arg = argQue.pop();
-				
+
 				retStat = processArg(errs, retStat, arg);
 			}
 		} finally {
@@ -175,7 +183,7 @@ public class Everge {
 
 	private boolean processArg(List<String> errs, boolean retStat, String arg) {
 		boolean newRet = retStat;
-		
+
 		if (arg.equals("--")) {
 			doingArgs = false;
 			return newRet;
@@ -186,7 +194,7 @@ public class Everge {
 			String argName = arg;
 			String argBody = "";
 
-			// Process arguments to arguments 
+			// Process arguments to arguments
 			int idx = arg.indexOf("=");
 			if (idx != -1) {
 				argName = arg.substring(0, idx);
@@ -227,8 +235,8 @@ public class Everge {
 					errStream.verbosity(verbosity);
 					System.err.printf("[TRACE] Set verbosity to %d\n", verbosity);
 				} catch (NumberFormatException nfex) {
-					String msg = String.format("[ERROR] Invalid verbosity: '%s' is not an integer",
-							argBody);
+					String msg = String.format(
+							"[ERROR] Invalid verbosity: '%s' is not an integer", argBody);
 					errs.add(msg);
 					newRet = false;
 				}
@@ -269,9 +277,10 @@ public class Everge {
 
 					if (ferrs.size() > 0) {
 						StringBuilder sb = new StringBuilder();
-						
+
 						String errString = "an error";
-						if (ferrs.size() > 1) errString = String.format("%d errors");
+						if (ferrs.size() > 1)
+							errString = String.format("%d errors");
 
 						{
 							String msg = String.format(
@@ -290,12 +299,13 @@ public class Everge {
 
 					replSet.addPairs(lrp);
 				} catch (FileNotFoundException fnfex) {
-					String msg = String.format("[ERROR] Could not open data file '%s' for input",
-							argBody);
+					String msg = String.format(
+							"[ERROR] Could not open data file '%s' for input", argBody);
 					errs.add(msg);
 					newRet = false;
 				} catch (IOException ioex) {
-					String msg = String.format("[ERROR] Unknown I/O error reading data file '%s': %s",
+					String msg = String.format(
+							"[ERROR] Unknown I/O error reading data file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
 					newRet = false;
@@ -315,19 +325,24 @@ public class Everge {
 					while (scn.hasNextLine()) {
 						String ln = scn.nextLine().trim();
 
-						if (ln.equals(""))      continue;
-						if (ln.startsWith("#")) continue;
+						if (ln.equals(""))
+							continue;
+						if (ln.startsWith("#"))
+							continue;
 
 						sl.add(ln);
 					}
 
 					processArgs(sl.toArray(new String[0]));
 				} catch (FileNotFoundException fnfex) {
-					String msg = String.format("[ERROR] Could not open argument file '%s' for input", argBody);
+					String msg = String.format(
+							"[ERROR] Could not open argument file '%s' for input",
+							argBody);
 					errs.add(msg);
 					newRet = false;
 				} catch (IOException ioex) {
-					String msg = String.format("[ERROR] Unknown I/O error reading input file '%s': %s",
+					String msg = String.format(
+							"[ERROR] Unknown I/O error reading input file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
 					newRet = false;
@@ -343,25 +358,27 @@ public class Everge {
 				try {
 					inputStat = InputStatus.valueOf(argBody.toUpperCase());
 				} catch (IllegalArgumentException iaex) {
-					String msg = String.format("[ERROR] '%s' is not a valid input status", argBody);
+					String msg = String.format("[ERROR] '%s' is not a valid input status",
+							argBody);
 					errs.add(msg);
 				}
 				break;
-			default:
-				{
-					String msg = String.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
-					errs.add(msg);
-					newRet = false;
-				}
+			default: {
+				String msg = String
+						.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
+				errs.add(msg);
+				newRet = false;
+			}
 			}
 		} else {
 			String tmp = arg;
 			// Strip off an escaped initial dash
-			if (tmp.startsWith("\\-")) tmp = tmp.substring(1);
+			if (tmp.startsWith("\\-"))
+				tmp = tmp.substring(1);
 
 			processInputFile(tmp);
 		}
-		
+
 		return newRet;
 	}
 
@@ -369,7 +386,7 @@ public class Everge {
 	 * Process a input file.
 	 *
 	 * @param fle
-	 * 		Input file to process.
+	 *            Input file to process.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processInputFile(String fle) {
@@ -389,9 +406,9 @@ public class Everge {
 	 * Process a input file.
 	 *
 	 * @param fle
-	 * 		Input file to process.
+	 *             Input file to process.
 	 * @param errs
-	 * 		List to accumulate errors in.
+	 *             List to accumulate errors in.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processInputFile(List<String> errs, String fle) {
@@ -400,14 +417,16 @@ public class Everge {
 		// Read in and do replacements on a file
 		try {
 			if (verbosity > 2) {
-				errStream.printf("[TRACE] Reading file (%s) in mode (%s)\n", fle, inputStat);
+				errStream.printf("[TRACE] Reading file (%s) in mode (%s)\n", fle,
+						inputStat);
 			}
 
 			if (inputStat == InputStatus.ALL) {
 				Path pth = Paths.get(fle);
 
 				if (!Files.isReadable(pth)) {
-					String msg = String.format("[ERROR] File '%s' is not readable\n", fle);
+					String msg
+							= String.format("[ERROR] File '%s' is not readable\n", fle);
 					errs.add(msg);
 					return false;
 				}
@@ -418,27 +437,31 @@ public class Everge {
 
 				processString(strang);
 			} else if (inputStat == InputStatus.LINE) {
-				try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
-					while(scn.hasNextLine()) {
+				try (FileInputStream fis = new FileInputStream(fle);
+						Scanner scn = new Scanner(fis)) {
+					while (scn.hasNextLine()) {
 						processString(scn.nextLine());
 					}
 				}
 			} else if (inputStat == InputStatus.REGEX) {
-				try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {
+				try (FileInputStream fis = new FileInputStream(fle);
+						Scanner scn = new Scanner(fis)) {
 					scn.useDelimiter(pattern);
 
-					while(scn.hasNext()) {
+					while (scn.hasNext()) {
 						processString(scn.next());
 					}
 				}
 			} else {
-				String msg = String.format("[INTERNAL-ERROR] Input status '%s' is not yet implemented\n",
+				String msg = String.format(
+						"[INTERNAL-ERROR] Input status '%s' is not yet implemented\n",
 						inputStat);
 				errs.add(msg);
 				return false;
 			}
 		} catch (IOException ioex) {
-			String msg = String.format("[ERROR] Unknown I/O related error for file '%s'\n\tError was %s",
+			String msg = String.format(
+					"[ERROR] Unknown I/O related error for file '%s'\n\tError was %s",
 					fle, ioex.getMessage());
 			errs.add(msg);
 			return false;
@@ -453,7 +476,7 @@ public class Everge {
 	 * Process an input string.
 	 *
 	 * @param inp
-	 * 		The input string to process.
+	 *            The input string to process.
 	 */
 	public void processString(String inp) {
 		argLock.readLock().lock();
@@ -462,13 +485,16 @@ public class Everge {
 			String strang = inp;
 
 			if (verbosity >= 3) {
-				errStream.infof("[INFO] Processing replacements for string '%s' in mode \n", strang);
+				errStream.infof(
+						"[INFO] Processing replacements for string '%s' in mode \n",
+						strang);
 			}
 
 			strang = replSet.apply(inp);
 
 			outStream.print(strang);
-			if (printNL) outStream.println();
+			if (printNL)
+				outStream.println();
 		} finally {
 			argLock.readLock().unlock();
 		}

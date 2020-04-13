@@ -53,7 +53,7 @@ public class LogStream {
 	 * Defaults to printing only fatal errors.
 	 *
 	 * @param out
-	 * 	The output stream to place things into.
+	 *            The output stream to place things into.
 	 */
 	public LogStream(PrintStream out) {
 		output = out;
@@ -64,9 +64,10 @@ public class LogStream {
 	 * Create a new log stream.
 	 *
 	 * @param out
-	 * 	The output stream to place things into.
+	 *              The output stream to place things into.
 	 * @param level
-	 * 	The verbosity level. Use the constants in this class for the values.
+	 *              The verbosity level. Use the constants in this class for the
+	 *              values.
 	 */
 	public LogStream(PrintStream out, int level) {
 		output = out;
@@ -75,6 +76,7 @@ public class LogStream {
 
 	/**
 	 * Get the verbosity of the stream.
+	 * 
 	 * @return The verbosity of the stream.
 	 */
 	public int verbosity() {
@@ -83,7 +85,9 @@ public class LogStream {
 
 	/**
 	 * Set the verbosity of the stream.
-	 * @param verb The verbosity of the stream.
+	 * 
+	 * @param verb
+	 *             The verbosity of the stream.
 	 */
 	public void verbosity(int verb) {
 		verbosity = verb;
@@ -98,12 +102,14 @@ public class LogStream {
 
 	/**
 	 * Increase the verbosity of the stream by an amount.
-	 * @param amt The amount to increase the verbosity by.
+	 * 
+	 * @param amt
+	 *            The amount to increase the verbosity by.
 	 */
 	public void louder(int amt) {
 		verbosity += amt;
 	}
-	
+
 	/**
 	 * Decrement the verbosity of the stream.
 	 */
@@ -113,7 +119,9 @@ public class LogStream {
 
 	/**
 	 * Decrease the verbosity of the stream by an amount.
-	 * @param amt The amount to decrease the verbosity by.
+	 * 
+	 * @param amt
+	 *            The amount to decrease the verbosity by.
 	 */
 	public void quieter(int amt) {
 		verbosity -= amt;
@@ -123,7 +131,7 @@ public class LogStream {
 	 * Print a message that will always be visible.
 	 *
 	 * @param msg
-	 * 	The message to print.
+	 *            The message to print.
 	 */
 	public void print(String msg) {
 		output.print(msg);
@@ -133,10 +141,10 @@ public class LogStream {
 	 * Print a formatted message that will always be visible.
 	 *
 	 * @param msg
-	 * 	The format string for the message to print.
+	 *             The format string for the message to print.
 	 *
 	 * @param args
-	 * 	The arguments to the format string.
+	 *             The arguments to the format string.
 	 */
 	public void printf(String msg, Object... args) {
 		output.printf(msg, args);
@@ -144,8 +152,11 @@ public class LogStream {
 
 	/**
 	 * Print a message at a given verbosity level.
-	 * @param lvl The verbosity level.
-	 * @param msg The message to print.
+	 * 
+	 * @param lvl
+	 *            The verbosity level.
+	 * @param msg
+	 *            The message to print.
 	 */
 	public void message(int lvl, String msg) {
 		if (verbosity >= lvl) {
@@ -195,7 +206,7 @@ public class LogStream {
 		message(DEBUG, msg);
 	}
 
-	public void debugf(String msg, Object...args) {
+	public void debugf(String msg, Object... args) {
 		messagef(DEBUG, msg, args);
 	}
 

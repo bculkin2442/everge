@@ -35,7 +35,7 @@ public class ControlledString {
 		 * Create a new argless control.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 */
 		public Control(String nam) {
 			name = nam;
@@ -45,9 +45,9 @@ public class ControlledString {
 		 * Create a new control.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 * @param ars
-		 * 	The arguments of the control.
+		 *            The arguments of the control.
 		 */
 		public Control(String nam, String... ars) {
 			name = nam;
@@ -65,19 +65,22 @@ public class ControlledString {
 
 		/**
 		 * Get an argument from the control.
-		 * 
-		 * @param i The index of the argument to get.
+		 *
+		 * @param i
+		 *          The index of the argument to get.
 		 * @return The argument at that position.
 		 */
 		public String get(int i) {
 			if (i < 0) {
-				String msg = String.format("Control argument index must be greater than 0 (was %d)", i);
+				String msg = String.format(
+						"Control argument index must be greater than 0 (was %d)", i);
 
 				throw new IndexOutOfBoundsException(msg);
 			}
 
 			if (i > args.length) {
-				String msg = String.format("Control argument index must be less than %d (was %d)",
+				String msg = String.format(
+						"Control argument index must be less than %d (was %d)",
 						args.length, i);
 
 				throw new IndexOutOfBoundsException(msg);
@@ -114,21 +117,35 @@ public class ControlledString {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj) { return true; }
-			if (obj == null) { return false; }
-			if (getClass() != obj.getClass()) { return false; }
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
 
 			Control other = (Control) obj;
 
 			if (name == null) {
-				if (other.name != null) { return false; }
-			} else if (!name.equals(other.name)) { return false; }
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
 
-			boolean isArged  = args != null && args.length > 0;
+			boolean isArged = args != null && args.length > 0;
 			boolean oIsArged = other.args != null && other.args.length > 0;
 
-			if (isArged && !oIsArged) { return false; }
-			if (!isArged && oIsArged) { return false; }
+			if (isArged && !oIsArged) {
+				return false;
+			}
+			if (!isArged && oIsArged) {
+				return false;
+			}
 
 			if (isArged && oIsArged) {
 				return Arrays.equals(args, other.args);
@@ -141,16 +158,16 @@ public class ControlledString {
 		 * Convenient static constructor for static imports.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 * @param ars
-		 * 	The arguments to the control.
+		 *            The arguments to the control.
 		 * @return A control with the right parameters.
 		 */
 		public static Control C(String nam, String... ars) {
 			return new Control(nam, ars);
 		}
 	}
-	
+
 	/**
 	 * Parameter class for defining how to parse a ControlledString.
 	 *
@@ -181,15 +198,16 @@ public class ControlledString {
 		 * Create a new set of parse strings.
 		 *
 		 * @param contInd
-		 * 	The control indicator.
+		 *                The control indicator.
 		 * @param contSep
-		 * 	The control separator.
+		 *                The control separator.
 		 * @param contArg
-		 * 	The argument separator.
+		 *                The argument separator.
 		 * @param contEsc
-		 * 	The control escape.
+		 *                The control escape.
 		 */
-		public ParseStrings(String contInd, String contSep, String contArg, String contEsc) {
+		public ParseStrings(String contInd, String contSep, String contArg,
+				String contEsc) {
 			this.contInd = contInd;
 			this.contSep = contSep;
 			this.contArg = contArg;
@@ -200,20 +218,21 @@ public class ControlledString {
 		 * Convenient static constructor.
 		 *
 		 * @param contInd
-		 * 	The control indicator.
+		 *                The control indicator.
 		 * @param contSep
-		 * 	The control separator.
+		 *                The control separator.
 		 * @param contArg
-		 * 	The argument separator.
+		 *                The argument separator.
 		 * @param contEsc
-		 * 	The control escape.
+		 *                The control escape.
 		 * @return A new set of control strings.
 		 */
-		public static ParseStrings PS(String contInd, String contSep, String contArg, String contEsc) {
+		public static ParseStrings PS(String contInd, String contSep, String contArg,
+				String contEsc) {
 			return new ParseStrings(contInd, contSep, contArg, contEsc);
 		}
 	}
-	
+
 	/**
 	 * The string the controls apply to.
 	 */
@@ -235,7 +254,7 @@ public class ControlledString {
 	 * Create a new controlled string without any controls.
 	 *
 	 * @param strung
-	 * 	The string to use.
+	 *               The string to use.
 	 */
 	public ControlledString(String strung) {
 		strang = strung;
@@ -247,9 +266,9 @@ public class ControlledString {
 	 * Create a new controlled string.
 	 *
 	 * @param strung
-	 * 	The string to use.
+	 *                 The string to use.
 	 * @param controls
-	 * 	The controls that apply to the string.
+	 *                 The controls that apply to the string.
 	 */
 	public ControlledString(String strung, Control... controls) {
 		strang = strung;
@@ -281,13 +300,12 @@ public class ControlledString {
 	 * The controls must be parsed from the beginning of the string.
 	 *
 	 * @param lne
-	 * 	The string to parse from.
+	 *                The string to parse from.
 	 * @param strangs
-	 * 	The object to read the strings from
+	 *                The object to read the strings from
 	 * @return A parsed control string.
 	 */
-	public static ControlledString parse(String lne, ParseStrings strangs) 
-	{
+	public static ControlledString parse(String lne, ParseStrings strangs) {
 		if (!lne.startsWith(strangs.contInd)) {
 			return new ControlledString(lne);
 		}
@@ -299,10 +317,11 @@ public class ControlledString {
 			msg = String.format(msg, strangs.contInd);
 
 			throw new IllegalArgumentException(msg);
-		} 
+		}
 
 		ControlledString cs = new ControlledString(bits[0]);
-		if (bits.length > 2) cs.strang = bits[2];
+		if (bits.length > 2)
+			cs.strang = bits[2];
 
 		bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contSep, bits[1]);
 
@@ -311,7 +330,8 @@ public class ControlledString {
 		for (int i = 0; i < bits.length; i++) {
 			String bit = bits[i];
 
-			String[] bots = StringUtils.escapeSplit(strangs.contEsc, strangs.contArg, bit);
+			String[] bots
+					= StringUtils.escapeSplit(strangs.contEsc, strangs.contArg, bit);
 
 			Control cont = new Control(bots[0]);
 

@@ -22,7 +22,7 @@ public class IntHolder {
 	 * Create a new int-holder set to a value.
 	 *
 	 * @param i
-	 * 		The value to set the int to.
+	 *          The value to set the int to.
 	 */
 	public IntHolder(int i) {
 		val = i;
@@ -41,7 +41,7 @@ public class IntHolder {
 	 * Increment the value by an amount and return it.
 	 *
 	 * @param i
-	 * 		The amount to increment by.
+	 *          The amount to increment by.
 	 *
 	 * @return The value of the holder.
 	 */
@@ -62,9 +62,9 @@ public class IntHolder {
 
 	/**
 	 * Set the value.
-	 * 
+	 *
 	 * @param i
-	 * 	The value to set it to.
+	 *          The value to set it to.
 	 */
 	public void set(int i) {
 		val = i;

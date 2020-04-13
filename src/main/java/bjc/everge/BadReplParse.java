@@ -2,8 +2,10 @@ package bjc.everge;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Exception thrown when ReplPair parsing fails
+ * 
  * @author bjculkin
  *
  */
@@ -19,9 +21,9 @@ public class BadReplParse extends RuntimeException {
 
 	/**
 	 * Create a new exception for ReplPair parsing failing.
-	 * 
-	 * @param msg 
-	 * 	The message for the exception.
+	 *
+	 * @param msg
+	 *            The message for the exception.
 	 */
 	public BadReplParse(String msg) {
 		this(msg, new ArrayList<>());
@@ -29,11 +31,11 @@ public class BadReplParse extends RuntimeException {
 
 	/**
 	 * Create a new exception for ReplPair parsing failing.
-	 * 
+	 *
 	 * @param msg
-	 * 	The message for the exception.
+	 *             The message for the exception.
 	 * @param errs
-	 * 	The list of errors encountered while parsing.
+	 *             The list of errors encountered while parsing.
 	 */
 	public BadReplParse(String msg, List<ReplError> errs) {
 		super(msg);
@@ -44,16 +46,18 @@ public class BadReplParse extends RuntimeException {
 	@Override
 	public String toString() {
 		String errString;
-		if (errs.size() == 0) errString = "An error";
-		else                  errString = "Errors";
+		if (errs.size() == 0)
+			errString = "An error";
+		else
+			errString = "Errors";
 
-		return String.format("%s occured parsing replacement pairs: %s\n%s",
-				errString, getMessage(), errs);
+		return String.format("%s occured parsing replacement pairs: %s\n%s", errString,
+				getMessage(), errs);
 	}
 
 	/**
 	 * Convert the exception to a printable format.
-	 * 
+	 *
 	 * @return The exception as a printable format.
 	 */
 	public String toPrintString() {

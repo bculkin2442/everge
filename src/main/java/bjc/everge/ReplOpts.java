@@ -51,6 +51,7 @@ public class ReplOpts {
 	 * The stream to print error output on.
 	 */
 	public PrintStream errStream = System.err;
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -64,19 +65,30 @@ public class ReplOpts {
 		result = prime * result + (isTrace ? 1231 : 1237);
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
 		ReplOpts other = (ReplOpts) obj;
-		if (defMulti != other.defMulti) return false;
-		if (defPrior != other.defPrior) return false;
-		if (defStage != other.defStage) return false;
-		if (defStatus != other.defStatus) return false;
-		if (isDebug != other.isDebug) return false;
-		if (isPerf != other.isPerf) return false;
-		if (isTrace != other.isTrace) return false;
+		if (defMulti != other.defMulti)
+			return false;
+		if (defPrior != other.defPrior)
+			return false;
+		if (defStage != other.defStage)
+			return false;
+		if (defStatus != other.defStatus)
+			return false;
+		if (isDebug != other.isDebug)
+			return false;
+		if (isPerf != other.isPerf)
+			return false;
+		if (isTrace != other.isTrace)
+			return false;
 		return true;
 	}
 }

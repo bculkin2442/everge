@@ -14,30 +14,35 @@ public class MirrorOutputStream extends OutputStream {
 		}
 	}
 
+	@Override
 	public void close() throws IOException {
 		for (OutputStream stream : streams) {
 			stream.close();
 		}
 	}
 
+	@Override
 	public void flush() throws IOException {
 		for (OutputStream stream : streams) {
 			stream.flush();
 		}
 	}
 
+	@Override
 	public void write(byte[] ba) throws IOException {
 		for (OutputStream stream : streams) {
 			stream.write(ba);
 		}
 	}
 
+	@Override
 	public void write(byte[] ba, int off, int len) throws IOException {
 		for (OutputStream stream : streams) {
 			stream.write(ba, off, len);
 		}
 	}
 
+	@Override
 	public void write(int b) throws IOException {
 		for (OutputStream stream : streams) {
 			stream.write(b);

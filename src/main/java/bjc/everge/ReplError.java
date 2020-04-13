@@ -28,13 +28,13 @@ public class ReplError {
 	 * Create a new ReplPair parse error.
 	 *
 	 * @param lne
-	 * 	The line the error occured on.
+	 *               The line the error occured on.
 	 * @param nPairs
-	 * 	The number of pairs processed up to this point.
+	 *               The number of pairs processed up to this point.
 	 * @param msg
-	 * 	The message detailing the error.
+	 *               The message detailing the error.
 	 * @param txt
-	 * 	The text that caused the error.
+	 *               The text that caused the error.
 	 */
 	public ReplError(IntHolder lne, IntHolder nPairs, String msg, String txt) {
 		this(lne.get(), nPairs.get(), msg, txt);
@@ -44,13 +44,13 @@ public class ReplError {
 	 * Create a new ReplPair parse error.
 	 *
 	 * @param lne
-	 * 	The line the error occured on.
+	 *               The line the error occured on.
 	 * @param nPairs
-	 * 	The number of pairs processed up to this point.
+	 *               The number of pairs processed up to this point.
 	 * @param msg
-	 * 	The message detailing the error.
+	 *               The message detailing the error.
 	 * @param txt
-	 * 	The text that caused the error.
+	 *               The text that caused the error.
 	 */
 	public ReplError(int lne, int nPairs, String msg, String txt) {
 		line = lne;
@@ -63,16 +63,19 @@ public class ReplError {
 	@Override
 	public String toString() {
 		String errString;
-		if      (txt == null)    errString = "No associated line";
-		else if (txt.equals("")) errString = "Text of line was empty";
-		else                     errString = "Text of line was: " + txt;
+		if (txt == null)
+			errString = "No associated line";
+		else if (txt.equals(""))
+			errString = "Text of line was empty";
+		else
+			errString = "Text of line was: " + txt;
 
 		return String.format("line %d, pair %d:%s\n\t%s", line, numPairs, msg, errString);
 	}
 
 	/**
 	 * Convert the error to a printable string.
-	 * 
+	 *
 	 * @return The error as a printable string.
 	 */
 	public String toPrintString() {
@@ -81,19 +84,22 @@ public class ReplError {
 
 	/**
 	 * Convert the error to a printable string, with a custom header.
-	 * 
+	 *
 	 * @param hdr
-	 * 	The text to include in the header.
-	 * 
+	 *            The text to include in the header.
+	 *
 	 * @return The error as a printable string.
 	 */
 	public String toPrintString(String hdr) {
 		String errString;
-		if      (txt == null)    errString = "No associated line";
-		else if (txt.equals("")) errString = "Text of line was empty";
-		else                     errString = "Text of line was: " + txt;
+		if (txt == null)
+			errString = "No associated line";
+		else if (txt.equals(""))
+			errString = "Text of line was empty";
+		else
+			errString = "Text of line was: " + txt;
 
-		return String.format("[ERROR] line %d, pair %d: %s\n%s\tContext: %s",
-				line, numPairs, msg, hdr, errString);
+		return String.format("[ERROR] line %d, pair %d: %s\n%s\tContext: %s", line,
+				numPairs, msg, hdr, errString);
 	}
 }

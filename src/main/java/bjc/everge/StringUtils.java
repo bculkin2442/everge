@@ -19,12 +19,12 @@ public class StringUtils {
 	 * Split a string on every occurrence of a string not preceded by an escape.
 	 *
 	 * @param escape
-	 * 		The escape that stops splitting.
+	 *               The escape that stops splitting.
 	 * @param splat
-	 * 		The string to split on. If this starts with the escape sequence, things will work
-	 * 		poorly.
+	 *               The string to split on. If this starts with the escape
+	 *               sequence, things will work poorly.
 	 * @param inp
-	 * 		The string to split.
+	 *               The string to split.
 	 * @return The string split as specified above.
 	 */
 	public static String[] escapeSplit(String escape, String splat, String inp) {
@@ -34,12 +34,16 @@ public class StringUtils {
 
 		// No input
 		if (inp == null || inp.equals("")) {
-			return new String[] {inp};
+			return new String[] {
+					inp
+			};
 		}
 
 		// Input does not contain any delimiters
 		if (!inp.contains(splat)) {
-			return new String[] {inp};
+			return new String[] {
+					inp
+			};
 		}
 
 		// No escape, so we can just split normally
@@ -62,19 +66,19 @@ public class StringUtils {
 		int eidx = wrk.indexOf(escape);
 
 		// Was the last thing we saw an escape?
-		// 	This is used to enable the handling of escaping escapes
+		// This is used to enable the handling of escaping escapes
 		boolean hadEscape = false;
 
 		// As long as there an occurrence of either the split/escape
 		while (sidx != -1 || eidx != -1) {
 			// If there is an escape before a split
 			if (eidx > 0 && eidx < sidx) {
-				if (isDebug) System.err.printf("[TRACE] Considering escape\n");
+				if (isDebug)
+					System.err.printf("[TRACE] Considering escape\n");
 
 				/*
-				 * We potentially have an escaped sequence:
-				 * 	- either an escaped split
-				 * 	- or an escaped escape
+				 * We potentially have an escaped sequence: - either an escaped split - or
+				 * an escaped escape
 				 */
 
 				// Check for an escaped split
@@ -86,12 +90,12 @@ public class StringUtils {
 					wrk = sliceStringL(wrk, eidx, escape.length());
 
 					// Recalculate indexes
-					sidx = wrk.indexOf(splat,  ofst);
+					sidx = wrk.indexOf(splat, ofst);
 					eidx = wrk.indexOf(escape, ofst);
 
 					if (isDebug) {
-						System.err.printf("[TRACE] After esc. split (%s) %d/%d\n",
-								wrk, sidx, eidx);
+						System.err.printf("[TRACE] After esc. split (%s) %d/%d\n", wrk,
+								sidx, eidx);
 					}
 
 					// No pending escape
@@ -108,7 +112,7 @@ public class StringUtils {
 					wrk = sliceStringL(wrk, eidx, escape.length());
 
 					// Recalculate indexes
-					sidx = wrk.indexOf(splat,  ofst);
+					sidx = wrk.indexOf(splat, ofst);
 					eidx = wrk.indexOf(escape, ofst);
 
 					if (isDebug) {
@@ -135,7 +139,8 @@ public class StringUtils {
 			while (sidx != -1 && hasEscape) {
 				int oidx = wrk.indexOf(splat, sidx + escape.length());
 
-				if (oidx == -1) break;
+				if (oidx == -1)
+					break;
 
 				wrk = sliceStringL(wrk, oidx, escape.length());
 
@@ -151,8 +156,8 @@ public class StringUtils {
 			String tmp = wrk.substring(0, sidx);
 
 			if (isDebug) {
-				System.err.printf("[TRACE] Adding (%s) to returned splits; (%s)\n",
-					tmp, wrk.substring(sidx));
+				System.err.printf("[TRACE] Adding (%s) to returned splits; (%s)\n", tmp,
+						wrk.substring(sidx));
 			}
 
 			ret.add(tmp);
@@ -172,7 +177,8 @@ public class StringUtils {
 			hadEscape = false;
 		}
 
-		if (!wrk.equals("")) ret.add(wrk);
+		if (!wrk.equals(""))
+			ret.add(wrk);
 
 		return ret.toArray(new String[0]);
 	}
@@ -181,16 +187,16 @@ public class StringUtils {
 	 * Slice a substring out of another string.
 	 *
 	 * @param strang
-	 * 	The string to remove a substring from.
+	 *               The string to remove a substring from.
 	 * @param lft
-	 * 	The left-side of the substring to remove.
+	 *               The left-side of the substring to remove.
 	 * @param rft
-	 * 	The right-side of the substring to remove.
+	 *               The right-side of the substring to remove.
 	 *
 	 * @return The string, with the substring removed.
 	 */
 	public static String sliceString(String strang, int lft, int rft) {
-		String leftSide  = strang.substring(0, lft);
+		String leftSide = strang.substring(0, lft);
 		String rightSide = strang.substring(rft);
 
 		return leftSide + rightSide;
@@ -200,16 +206,16 @@ public class StringUtils {
 	 * Slice a substring out of another string.
 	 *
 	 * @param strang
-	 * 	The string to remove a substring from.
+	 *               The string to remove a substring from.
 	 * @param lft
-	 * 	The left-side of the substring to remove.
+	 *               The left-side of the substring to remove.
 	 * @param len
-	 * 	The length of the substring to remove.
+	 *               The length of the substring to remove.
 	 *
 	 * @return The string, with the substring removed.
 	 */
 	public static String sliceStringL(String strang, int lft, int len) {
-		String leftSide  = strang.substring(0, lft);
+		String leftSide = strang.substring(0, lft);
 		String rightSide = strang.substring(lft + len);
 
 		return leftSide + rightSide;

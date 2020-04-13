@@ -23,10 +23,11 @@ public class ReplSet {
 	/**
 	 * Create a new set of pairs using an existing list of pairs.
 	 *
-	 * Changes to the list of pairs will carry across to the ReplSet, so be careful about that.
+	 * Changes to the list of pairs will carry across to the ReplSet, so be careful
+	 * about that.
 	 *
 	 * @param lst
-	 * 		The list of pairs to use.
+	 *            The list of pairs to use.
 	 */
 	public ReplSet(List<ReplPair> lst) {
 		parList = lst;
@@ -34,15 +35,18 @@ public class ReplSet {
 
 	/**
 	 * Load a ReplSet from a file.
+	 * 
 	 * @param fName
-	 * 	The file to load the ReplSet from.
+	 *              The file to load the ReplSet from.
 	 * @return A ReplSet, loaded from the file.
-	 * @throws IOException if something goes badly reading it.
+	 * @throws IOException
+	 *                     if something goes badly reading it.
 	 */
 	public static ReplSet fromFile(String fName) throws IOException {
 		ReplSet rs = new ReplSet();
 
-		try (FileInputStream fis = new FileInputStream(fName); Scanner scn = new Scanner(fis)) {
+		try (FileInputStream fis = new FileInputStream(fName);
+				Scanner scn = new Scanner(fis)) {
 			rs.parList = ReplPair.readList(scn);
 		}
 
@@ -53,7 +57,7 @@ public class ReplSet {
 	 * Adds more pairs to the ReplSet.
 	 *
 	 * @param pars
-	 * 	The pairs to add to the ReplSet.
+	 *             The pairs to add to the ReplSet.
 	 */
 	public void addPairs(List<ReplPair> pars) {
 		for (ReplPair par : pars) {
@@ -68,7 +72,7 @@ public class ReplSet {
 	 * Adds more pairs to the ReplSet.
 	 *
 	 * @param pars
-	 * 	The pairs to add to the ReplSet.
+	 *             The pairs to add to the ReplSet.
 	 */
 	public void addPairs(ReplPair... pars) {
 		for (ReplPair par : pars) {
@@ -83,7 +87,7 @@ public class ReplSet {
 	 * Apply the ReplSet to a string.
 	 *
 	 * @param val
-	 * 		The string to apply the ReplSet to.
+	 *            The string to apply the ReplSet to.
 	 *
 	 * @return The result of applying the ReplSet.
 	 */
