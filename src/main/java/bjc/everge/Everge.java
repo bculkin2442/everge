@@ -280,7 +280,7 @@ public class Everge {
 
 						String errString = "an error";
 						if (ferrs.size() > 1)
-							errString = String.format("%d errors");
+							errString = String.format("%d errors", ferrs.size());
 
 						{
 							String msg = String.format(
