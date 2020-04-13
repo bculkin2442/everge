@@ -73,26 +73,48 @@ public class LogStream {
 		verbosity = level;
 	}
 
+	/**
+	 * Get the verbosity of the stream.
+	 * @return The verbosity of the stream.
+	 */
 	public int verbosity() {
 		return verbosity;
 	}
 
+	/**
+	 * Set the verbosity of the stream.
+	 * @param verb The verbosity of the stream.
+	 */
 	public void verbosity(int verb) {
 		verbosity = verb;
 	}
 
+	/**
+	 * Increment the verbosity of the stream.
+	 */
 	public void louder() {
 		louder(1);
 	}
 
+	/**
+	 * Increase the verbosity of the stream by an amount.
+	 * @param amt The amount to increase the verbosity by.
+	 */
 	public void louder(int amt) {
 		verbosity += amt;
 	}
-
+	
+	/**
+	 * Decrement the verbosity of the stream.
+	 */
 	public void quieter() {
 		quieter(1);
 	}
 
+	/**
+	 * Decrease the verbosity of the stream by an amount.
+	 * @param amt The amount to decrease the verbosity by.
+	 */
 	public void quieter(int amt) {
 		verbosity -= amt;
 	}
@@ -120,6 +142,11 @@ public class LogStream {
 		output.printf(msg, args);
 	}
 
+	/**
+	 * Print a message at a given verbosity level.
+	 * @param lvl The verbosity level.
+	 * @param msg The message to print.
+	 */
 	public void message(int lvl, String msg) {
 		if (verbosity >= lvl) {
 			output.print(msg);

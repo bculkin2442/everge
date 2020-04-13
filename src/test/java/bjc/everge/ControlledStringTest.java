@@ -10,6 +10,7 @@ import static bjc.everge.TestUtils.*;
  *
  * @author Ben Culkin
  */
+@SuppressWarnings("javadoc")
 public class ControlledStringTest {
 	@Test
 	public void testNoControls() {

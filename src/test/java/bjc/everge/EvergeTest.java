@@ -13,6 +13,7 @@ import org.junit.Test;
  *
  * @author Ben Culkin.
  */
+@SuppressWarnings("javadoc")
 public class EvergeTest {
 	@Test
 	public void testConstruct() {

@@ -68,18 +68,34 @@ public class Everge {
 	 */
 	private LogStream errStream = new LogStream(System.err);
 
+	/**
+	 * Set the output stream.
+	 * @param out The output stream..
+	 */
 	public void setOutput(PrintStream out) {
 		outStream = out;
 	}
 
+	/**
+	 * Set the output stream.
+	 * @param out The output stream..
+	 */
 	public void setOutput(OutputStream out) {
 		outStream = new PrintStream(out);
 	}
 
+	/**
+	 * Set the error stream.
+	 * @param err The error stream.
+	 */
 	public void setError(PrintStream err) {
 		errStream = new LogStream(err);
 	}
 
+	/**
+	 * Set the error stream.
+	 * @param err The error stream.
+	 */
 	public void setError(OutputStream err) {
 		errStream = new LogStream(new PrintStream(err));
 	}
