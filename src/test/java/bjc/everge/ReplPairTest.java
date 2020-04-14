@@ -17,6 +17,7 @@ import org.junit.Test;
  *
  * @author Ben Culkin
  */
+@SuppressWarnings("javadoc")
 public class ReplPairTest {
 	@Test
 	public void testLoadFile() {

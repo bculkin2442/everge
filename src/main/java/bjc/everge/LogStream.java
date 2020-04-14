@@ -164,56 +164,150 @@ public class LogStream {
 		}
 	}
 
+	/**
+	 * Print a formatted message at a given verbosity level.
+	 * 
+	 * @param lvl
+	 *             The verbosity level.
+	 * @param msg
+	 *             The message to print.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void messagef(int lvl, String msg, Object... args) {
 		if (verbosity >= lvl) {
 			output.printf(msg, args);
 		}
 	}
 
+	/**
+	 * Emit a fatal error message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void fatal(String msg) {
 		message(FATAL, msg);
 	}
 
+	/**
+	 * Emit a formatted fatal error message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void fatalf(String msg, Object... args) {
 		messagef(FATAL, msg, args);
 	}
 
+	/**
+	 * Emit a normal error message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void error(String msg) {
 		message(ERROR, msg);
 	}
 
+	/**
+	 * Emit a formatted normal error message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void errorf(String msg, Object... args) {
 		messagef(ERROR, msg, args);
 	}
 
+	/**
+	 * Emit a warning message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void warn(String msg) {
 		message(WARN, msg);
 	}
 
+	/**
+	 * Emit a formatted warning message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void warnf(String msg, Object... args) {
 		messagef(WARN, msg, args);
 	}
 
+	/**
+	 * Emit an info message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void info(String msg) {
 		message(INFO, msg);
 	}
 
+	/**
+	 * Emit a formatted info message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void infof(String msg, Object... args) {
 		messagef(INFO, msg, args);
 	}
 
+	/**
+	 * Emit a debug message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void debug(String msg) {
 		message(DEBUG, msg);
 	}
 
+	/**
+	 * Emit a formatted debug message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void debugf(String msg, Object... args) {
 		messagef(DEBUG, msg, args);
 	}
 
+	/**
+	 * Emit a tracing message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
 	public void trace(String msg) {
 		message(TRACE, msg);
 	}
 
+	/**
+	 * Emit a formatted tracing message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
 	public void tracef(String msg, Object... args) {
 		messagef(TRACE, msg, args);
 	}

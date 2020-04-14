@@ -16,29 +16,12 @@ import static org.junit.Assert.*;
  *
  * @author Ben Culkin
  */
+@SuppressWarnings("javadoc")
 public class TestUtils {
-	/**
-	 * Assert that a ReplParseException is thrown with a given message.
-	 *
-	 * @param msg
-	 *            The message.
-	 * @param fle
-	 *            The file to load input from.
-	 */
 	public static void assertThrownMessage(String msg, String fle) {
 		assertThrownMessage(false, msg, fle);
 	}
 
-	/**
-	 * Assert that a ReplParseException is thrown with a given message.
-	 *
-	 * @param logMsg
-	 *               Log the exception message.
-	 * @param msg
-	 *               The message.
-	 * @param fle
-	 *               The file to load input from.
-	 */
 	public static void assertThrownMessage(boolean logMsg, String msg, String fle) {
 		try (FileInputStream fis = new FileInputStream(fle);
 				Scanner scn = new Scanner(fis)) {
