@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static bjc.everge.TestUtils.*;
 
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class EvergeTest {
 		evg.setOutput(normOut);
 		evg.setError(normErr);
 
-		evg.processArgs("--verbosity", "3");
+		evg.processArgs("--verbosity", "4", "-n");
 		List<String> errs = new ArrayList<>();
 		boolean stat = evg.processArgs(errs, "--input-status", "line", "--file",
 				"data/test/evg-test1.rp", "data/test/evg-test1.inp");
@@ -71,6 +72,6 @@ public class EvergeTest {
 		}
 
 		String outp = baos.toString().trim();
-		assertEquals("b\nb", outp);
+		assertMatches("b\\Rb", outp);
 	}
 }

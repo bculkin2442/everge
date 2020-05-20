@@ -95,6 +95,7 @@ public class ReplSet {
 		String ret = val;
 
 		for (ReplPair par : parList) {
+			System.err.printf("Applying pair '%s' to string '%s' (original was '%s')\n", par, ret, val);
 			String tmp = par.apply(ret);
 
 			ret = tmp;

@@ -170,4 +170,8 @@ public class TestUtils {
 			assertEquals("array value mismatch:", args[i], cs.controls[i]);
 		}
 	}
+	
+	public static void assertMatches(String pattern, String actual) {
+		assertTrue(actual.matches(pattern));
+	}
 }
