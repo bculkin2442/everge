@@ -294,7 +294,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 			}
 
 			if (isMulti) {
-				String tmp = readMultiLine(body, scn, ropts, errs, "body", lno);
+				String tmp = readMultiLine(body, scn, ropts, "body", lno);
 				if (tmp == null)
 					continue;
 				body = tmp;
@@ -424,7 +424,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 
 	private static String readMultiLine(String lead, Scanner src, ReplOpts ropts,
-			List<ReplError> errs, String typ, IntHolder lno) {
+			String typ, IntHolder lno) {
 		String tmp = lead;
 
 		if (ropts.isTrace && tmp.endsWith("\\"))
@@ -471,6 +471,8 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 				return inp;
 		}
 
+		// FIXME :EndingSlash Ben Culkin 5/20/20
+		// In the event that replace ends with a \, that throws a confusing exception
 		String res = inp.replaceAll(find, replace);
 
 		return res;
@@ -685,7 +687,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 		// Multi-line name with a trailer
 		if (isMulti) {
-			String tmp = readMultiLine(name, scn, ropts, errs, "name", lno);
+			String tmp = readMultiLine(name, scn, ropts, "name", lno);
 			if (tmp == null)
 				return null;
 			name = tmp;

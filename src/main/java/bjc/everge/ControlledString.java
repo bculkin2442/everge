@@ -60,6 +60,8 @@ public class ControlledString {
 		 * @return The number of arguments to this control.
 		 */
 		public int count() {
+			if (args == null) return 0;
+			
 			return args.length;
 		}
 

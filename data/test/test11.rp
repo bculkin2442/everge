@@ -1,0 +1,20 @@
+# Test of inline multi-line controls on the body
+#|//tt
+a
+//MT//b\
+c
+
+d
+//M/true//z|\
+a
+
+
+
+|//MT
+
+F\
+G
+//MF//q\
+p\
+o
+m

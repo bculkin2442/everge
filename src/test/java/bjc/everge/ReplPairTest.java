@@ -90,4 +90,12 @@ public class ReplPairTest {
 	public void testGuards() {
 		assertMultiReplace("data/test/test10.rp", "a", "a", "bbb", "aaa");
 	}
+	
+	@Test
+	public void testMultiControl() {
+		assertMultiReplace("data/test/test11.rp", "bc", "a", "z\na", "d", "m", "po");
+		
+		// NOTE Uncomment when :EndingSlash is fixed 
+		//assertMultiReplace("data/test/test11.rp", "q\\", "FG");
+	}
 }
