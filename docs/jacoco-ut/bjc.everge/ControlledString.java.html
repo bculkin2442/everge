@@ -35,7 +35,7 @@ public class ControlledString {
 		 * Create a new argless control.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 */
 <span class="fc" id="L40">		public Control(String nam) {</span>
 <span class="fc" id="L41">			name = nam;</span>
@@ -45,9 +45,9 @@ public class ControlledString {
 		 * Create a new control.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 * @param ars
-		 * 	The arguments of the control.
+		 *            The arguments of the control.
 		 */
 <span class="fc" id="L52">		public Control(String nam, String... ars) {</span>
 <span class="fc" id="L53">			name = nam;</span>
@@ -60,97 +60,116 @@ public class ControlledString {
 		 * @return The number of arguments to this control.
 		 */
 		public int count() {
-<span class="fc" id="L63">			return args.length;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			if (args == null) return 0;</span>
+			
+<span class="fc" id="L65">			return args.length;</span>
 		}
 
 		/**
 		 * Get an argument from the control.
-		 * 
-		 * @param i The index of the argument to get.
+		 *
+		 * @param i
+		 *          The index of the argument to get.
 		 * @return The argument at that position.
 		 */
 		public String get(int i) {
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">			if (i &lt; 0) {</span>
-<span class="nc" id="L74">				String msg = String.format(&quot;Control argument index must be greater than 0 (was %d)&quot;, i);</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			if (i &lt; 0) {</span>
+<span class="nc" id="L77">				String msg = String.format(</span>
+<span class="nc" id="L78">						&quot;Control argument index must be greater than 0 (was %d)&quot;, i);</span>
 
-<span class="nc" id="L76">				throw new IllegalArgumentException(msg);</span>
+<span class="nc" id="L80">				throw new IndexOutOfBoundsException(msg);</span>
 			}
 
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">			if (i &gt; args.length) {</span>
-<span class="nc" id="L80">				String msg = String.format(&quot;Control argument index must be less than %d (was %d)&quot;,</span>
-<span class="nc" id="L81">						args.length, i);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">			if (i &gt; args.length) {</span>
+<span class="nc" id="L84">				String msg = String.format(</span>
+						&quot;Control argument index must be less than %d (was %d)&quot;,
+<span class="nc" id="L86">						args.length, i);</span>
 
-<span class="nc" id="L83">				throw new IllegalArgumentException(msg);</span>
+<span class="nc" id="L88">				throw new IndexOutOfBoundsException(msg);</span>
 			}
 
-<span class="fc" id="L86">			return args[i];</span>
+<span class="fc" id="L91">			return args[i];</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L91">			StringBuilder sb = new StringBuilder();</span>
-<span class="nc" id="L92">			sb.append(name);</span>
+<span class="nc" id="L96">			StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L97">			sb.append(name);</span>
 
-<span class="nc bnc" id="L94" title="All 4 branches missed.">			if (args != null &amp;&amp; args.length &gt; 0) {</span>
-<span class="nc" id="L95">				sb.append(&quot;/&quot;);</span>
+<span class="nc bnc" id="L99" title="All 4 branches missed.">			if (args != null &amp;&amp; args.length &gt; 0) {</span>
+<span class="nc" id="L100">				sb.append(&quot;/&quot;);</span>
 
-<span class="nc bnc" id="L97" title="All 2 branches missed.">				for (String arg : args) {</span>
-<span class="nc" id="L98">					sb.append(arg);</span>
-<span class="nc" id="L99">					sb.append(&quot;;&quot;);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">				for (String arg : args) {</span>
+<span class="nc" id="L103">					sb.append(arg);</span>
+<span class="nc" id="L104">					sb.append(&quot;;&quot;);</span>
 				}
 			}
 
-<span class="nc" id="L103">			return sb.toString();</span>
+<span class="nc" id="L108">			return sb.toString();</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L108">			final int prime = 31;</span>
-<span class="nc" id="L109">			int result = 1;</span>
-<span class="nc" id="L110">			result = prime * result + Arrays.hashCode(args);</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">			result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
-<span class="nc" id="L112">			return result;</span>
+<span class="nc" id="L113">			final int prime = 31;</span>
+<span class="nc" id="L114">			int result = 1;</span>
+<span class="nc" id="L115">			result = prime * result + Arrays.hashCode(args);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">			result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="nc" id="L117">			return result;</span>
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if (this == obj) { return true; }</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (obj == null) { return false; }</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			if (getClass() != obj.getClass()) { return false; }</span>
-
-<span class="fc" id="L121">			Control other = (Control) obj;</span>
-
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">			if (name == null) {</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">				if (other.name != null) { return false; }</span>
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			} else if (!name.equals(other.name)) { return false; }</span>
-
-<span class="pc bpc" id="L127" title="1 of 4 branches missed.">			boolean isArged  = args != null &amp;&amp; args.length &gt; 0;</span>
-<span class="pc bpc" id="L128" title="1 of 4 branches missed.">			boolean oIsArged = other.args != null &amp;&amp; other.args.length &gt; 0;</span>
-
-<span class="pc bpc" id="L130" title="1 of 4 branches missed.">			if (isArged &amp;&amp; !oIsArged) { return false; }</span>
-<span class="pc bpc" id="L131" title="1 of 4 branches missed.">			if (!isArged &amp;&amp; oIsArged) { return false; }</span>
-
-<span class="pc bpc" id="L133" title="1 of 4 branches missed.">			if (isArged &amp;&amp; oIsArged) {</span>
-<span class="fc" id="L134">				return Arrays.equals(args, other.args);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			if (this == obj) {</span>
+<span class="nc" id="L123">				return true;</span>
+			}
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			if (obj == null) {</span>
+<span class="nc" id="L126">				return false;</span>
+			}
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">			if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L129">				return false;</span>
 			}
 
-<span class="fc" id="L137">			return true;</span>
+<span class="fc" id="L132">			Control other = (Control) obj;</span>
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (name == null) {</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">				if (other.name != null) {</span>
+<span class="nc" id="L136">					return false;</span>
+				}
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			} else if (!name.equals(other.name)) {</span>
+<span class="nc" id="L139">				return false;</span>
+			}
+
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">			boolean isArged = args != null &amp;&amp; args.length &gt; 0;</span>
+<span class="pc bpc" id="L143" title="1 of 4 branches missed.">			boolean oIsArged = other.args != null &amp;&amp; other.args.length &gt; 0;</span>
+
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">			if (isArged &amp;&amp; !oIsArged) {</span>
+<span class="nc" id="L146">				return false;</span>
+			}
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">			if (!isArged &amp;&amp; oIsArged) {</span>
+<span class="nc" id="L149">				return false;</span>
+			}
+
+<span class="pc bpc" id="L152" title="1 of 4 branches missed.">			if (isArged &amp;&amp; oIsArged) {</span>
+<span class="fc" id="L153">				return Arrays.equals(args, other.args);</span>
+			}
+
+<span class="fc" id="L156">			return true;</span>
 		}
 
 		/**
 		 * Convenient static constructor for static imports.
 		 *
 		 * @param nam
-		 * 	The name of the control.
+		 *            The name of the control.
 		 * @param ars
-		 * 	The arguments to the control.
+		 *            The arguments to the control.
 		 * @return A control with the right parameters.
 		 */
 		public static Control C(String nam, String... ars) {
-<span class="fc" id="L150">			return new Control(nam, ars);</span>
+<span class="fc" id="L169">			return new Control(nam, ars);</span>
 		}
 	}
-	
+
 	/**
 	 * Parameter class for defining how to parse a ControlledString.
 	 *
@@ -181,39 +200,41 @@ public class ControlledString {
 		 * Create a new set of parse strings.
 		 *
 		 * @param contInd
-		 * 	The control indicator.
+		 *                The control indicator.
 		 * @param contSep
-		 * 	The control separator.
+		 *                The control separator.
 		 * @param contArg
-		 * 	The argument separator.
+		 *                The argument separator.
 		 * @param contEsc
-		 * 	The control escape.
+		 *                The control escape.
 		 */
-<span class="fc" id="L192">		public ParseStrings(String contInd, String contSep, String contArg, String contEsc) {</span>
-<span class="fc" id="L193">			this.contInd = contInd;</span>
-<span class="fc" id="L194">			this.contSep = contSep;</span>
-<span class="fc" id="L195">			this.contArg = contArg;</span>
-<span class="fc" id="L196">			this.contEsc = contEsc;</span>
-<span class="fc" id="L197">		}</span>
+		public ParseStrings(String contInd, String contSep, String contArg,
+<span class="fc" id="L212">				String contEsc) {</span>
+<span class="fc" id="L213">			this.contInd = contInd;</span>
+<span class="fc" id="L214">			this.contSep = contSep;</span>
+<span class="fc" id="L215">			this.contArg = contArg;</span>
+<span class="fc" id="L216">			this.contEsc = contEsc;</span>
+<span class="fc" id="L217">		}</span>
 
 		/**
 		 * Convenient static constructor.
 		 *
 		 * @param contInd
-		 * 	The control indicator.
+		 *                The control indicator.
 		 * @param contSep
-		 * 	The control separator.
+		 *                The control separator.
 		 * @param contArg
-		 * 	The argument separator.
+		 *                The argument separator.
 		 * @param contEsc
-		 * 	The control escape.
+		 *                The control escape.
 		 * @return A new set of control strings.
 		 */
-		public static ParseStrings PS(String contInd, String contSep, String contArg, String contEsc) {
-<span class="nc" id="L213">			return new ParseStrings(contInd, contSep, contArg, contEsc);</span>
+		public static ParseStrings PS(String contInd, String contSep, String contArg,
+				String contEsc) {
+<span class="nc" id="L234">			return new ParseStrings(contInd, contSep, contArg, contEsc);</span>
 		}
 	}
-	
+
 	/**
 	 * The string the controls apply to.
 	 */
@@ -227,35 +248,35 @@ public class ControlledString {
 	/**
 	 * Create a new blank controlled string.
 	 */
-<span class="nc" id="L230">	public ControlledString() {</span>
-<span class="nc" id="L231">		controls = new Control[0];</span>
-<span class="nc" id="L232">	}</span>
+<span class="nc" id="L251">	public ControlledString() {</span>
+<span class="nc" id="L252">		controls = new Control[0];</span>
+<span class="nc" id="L253">	}</span>
 
 	/**
 	 * Create a new controlled string without any controls.
 	 *
 	 * @param strung
-	 * 	The string to use.
+	 *               The string to use.
 	 */
-<span class="fc" id="L240">	public ControlledString(String strung) {</span>
-<span class="fc" id="L241">		strang = strung;</span>
+<span class="fc" id="L261">	public ControlledString(String strung) {</span>
+<span class="fc" id="L262">		strang = strung;</span>
 
-<span class="fc" id="L243">		controls = new Control[0];</span>
-<span class="fc" id="L244">	}</span>
+<span class="fc" id="L264">		controls = new Control[0];</span>
+<span class="fc" id="L265">	}</span>
 
 	/**
 	 * Create a new controlled string.
 	 *
 	 * @param strung
-	 * 	The string to use.
+	 *                 The string to use.
 	 * @param controls
-	 * 	The controls that apply to the string.
+	 *                 The controls that apply to the string.
 	 */
-<span class="nc" id="L254">	public ControlledString(String strung, Control... controls) {</span>
-<span class="nc" id="L255">		strang = strung;</span>
+<span class="nc" id="L275">	public ControlledString(String strung, Control... controls) {</span>
+<span class="nc" id="L276">		strang = strung;</span>
 
-<span class="nc" id="L257">		this.controls = controls;</span>
-<span class="nc" id="L258">	}</span>
+<span class="nc" id="L278">		this.controls = controls;</span>
+<span class="nc" id="L279">	}</span>
 
 	/**
 	 * Check if the string has controls.
@@ -263,7 +284,7 @@ public class ControlledString {
 	 * @return Whether or not the string has controls.
 	 */
 	public boolean hasControls() {
-<span class="fc bfc" id="L266" title="All 2 branches covered.">		return controls.length &gt; 0;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		return controls.length &gt; 0;</span>
 	}
 
 	/**
@@ -272,7 +293,7 @@ public class ControlledString {
 	 * @return The number of controls for this string.
 	 */
 	public int count() {
-<span class="fc" id="L275">		return controls.length;</span>
+<span class="fc" id="L296">		return controls.length;</span>
 	}
 
 	/**
@@ -281,71 +302,72 @@ public class ControlledString {
 	 * The controls must be parsed from the beginning of the string.
 	 *
 	 * @param lne
-	 * 	The string to parse from.
+	 *                The string to parse from.
 	 * @param strangs
-	 * 	The object to read the strings from
+	 *                The object to read the strings from
 	 * @return A parsed control string.
 	 */
-	public static ControlledString parse(String lne, ParseStrings strangs) 
-	{
-<span class="fc bfc" id="L291" title="All 2 branches covered.">		if (!lne.startsWith(strangs.contInd)) {</span>
-<span class="fc" id="L292">			return new ControlledString(lne);</span>
+	public static ControlledString parse(String lne, ParseStrings strangs) {
+<span class="fc bfc" id="L311" title="All 2 branches covered.">		if (!lne.startsWith(strangs.contInd)) {</span>
+<span class="fc" id="L312">			return new ControlledString(lne);</span>
 		}
 
-<span class="fc" id="L295">		String[] bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contInd, lne);</span>
+<span class="fc" id="L315">		String[] bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contInd, lne);</span>
 
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">		if (bits.length &lt; 2) {</span>
-<span class="nc" id="L298">			String msg = &quot;Did not find control terminator (%s) where it should be&quot;;</span>
-<span class="nc" id="L299">			msg = String.format(msg, strangs.contInd);</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">		if (bits.length &lt; 2) {</span>
+<span class="nc" id="L318">			String msg = &quot;Did not find control terminator (%s) where it should be&quot;;</span>
+<span class="nc" id="L319">			msg = String.format(msg, strangs.contInd);</span>
 
-<span class="nc" id="L301">			throw new IllegalArgumentException(msg);</span>
-		} 
+<span class="nc" id="L321">			throw new IllegalArgumentException(msg);</span>
+		}
 
-<span class="fc" id="L304">		ControlledString cs = new ControlledString(bits[0]);</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">		if (bits.length &gt; 2) cs.strang = bits[2];</span>
+<span class="fc" id="L324">		ControlledString cs = new ControlledString(bits[0]);</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		if (bits.length &gt; 2)</span>
+<span class="fc" id="L326">			cs.strang = bits[2];</span>
 
-<span class="fc" id="L307">		bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contSep, bits[1]);</span>
+<span class="fc" id="L328">		bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contSep, bits[1]);</span>
 
-<span class="fc" id="L309">		cs.controls = new Control[bits.length];</span>
+<span class="fc" id="L330">		cs.controls = new Control[bits.length];</span>
 
-<span class="fc bfc" id="L311" title="All 2 branches covered.">		for (int i = 0; i &lt; bits.length; i++) {</span>
-<span class="fc" id="L312">			String bit = bits[i];</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">		for (int i = 0; i &lt; bits.length; i++) {</span>
+<span class="fc" id="L333">			String bit = bits[i];</span>
 
-<span class="fc" id="L314">			String[] bots = StringUtils.escapeSplit(strangs.contEsc, strangs.contArg, bit);</span>
+<span class="fc" id="L335">			String[] bots</span>
+<span class="fc" id="L336">					= StringUtils.escapeSplit(strangs.contEsc, strangs.contArg, bit);</span>
 
-<span class="fc" id="L316">			Control cont = new Control(bots[0]);</span>
+<span class="fc" id="L338">			Control cont = new Control(bots[0]);</span>
 
-<span class="fc bfc" id="L318" title="All 2 branches covered.">			if (cont.name.length() &gt; 1) {</span>
-<span class="fc" id="L319">				cont.name = cont.name.toUpperCase();</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">			if (cont.name.length() &gt; 1) {</span>
+<span class="fc" id="L341">				cont.name = cont.name.toUpperCase();</span>
 			}
 
-<span class="fc bfc" id="L322" title="All 2 branches covered.">			if (bots.length &gt; 1) {</span>
-<span class="fc" id="L323">				cont.args = new String[bots.length - 1];</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">				for (int j = 1; j &lt; bots.length; j++) {</span>
-<span class="fc" id="L325">					cont.args[j - 1] = bots[j];</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">			if (bots.length &gt; 1) {</span>
+<span class="fc" id="L345">				cont.args = new String[bots.length - 1];</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				for (int j = 1; j &lt; bots.length; j++) {</span>
+<span class="fc" id="L347">					cont.args[j - 1] = bots[j];</span>
 				}
 			}
 
-<span class="fc" id="L329">			cs.controls[i] = cont;</span>
+<span class="fc" id="L351">			cs.controls[i] = cont;</span>
 		}
 
-<span class="fc" id="L332">		return cs;</span>
+<span class="fc" id="L354">		return cs;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="nc" id="L337">		StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L359">		StringBuilder sb = new StringBuilder();</span>
 
-<span class="nc" id="L339">		sb.append(&quot;//&quot;);</span>
+<span class="nc" id="L361">		sb.append(&quot;//&quot;);</span>
 
-<span class="nc bnc" id="L341" title="All 2 branches missed.">		for (Control cont : controls) {</span>
-<span class="nc" id="L342">			sb.append(cont);</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">		for (Control cont : controls) {</span>
+<span class="nc" id="L364">			sb.append(cont);</span>
 		}
 
-<span class="nc" id="L345">		sb.append(&quot;//&quot;);</span>
-<span class="nc" id="L346">		sb.append(strang);</span>
+<span class="nc" id="L367">		sb.append(&quot;//&quot;);</span>
+<span class="nc" id="L368">		sb.append(strang);</span>
 
-<span class="nc" id="L348">		return sb.toString();</span>
+<span class="nc" id="L370">		return sb.toString();</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

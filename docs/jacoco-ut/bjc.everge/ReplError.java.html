@@ -28,13 +28,13 @@ public class ReplError {
 	 * Create a new ReplPair parse error.
 	 *
 	 * @param lne
-	 * 	The line the error occured on.
+	 *               The line the error occured on.
 	 * @param nPairs
-	 * 	The number of pairs processed up to this point.
+	 *               The number of pairs processed up to this point.
 	 * @param msg
-	 * 	The message detailing the error.
+	 *               The message detailing the error.
 	 * @param txt
-	 * 	The text that caused the error.
+	 *               The text that caused the error.
 	 */
 	public ReplError(IntHolder lne, IntHolder nPairs, String msg, String txt) {
 <span class="fc" id="L40">		this(lne.get(), nPairs.get(), msg, txt);</span>
@@ -44,13 +44,13 @@ public class ReplError {
 	 * Create a new ReplPair parse error.
 	 *
 	 * @param lne
-	 * 	The line the error occured on.
+	 *               The line the error occured on.
 	 * @param nPairs
-	 * 	The number of pairs processed up to this point.
+	 *               The number of pairs processed up to this point.
 	 * @param msg
-	 * 	The message detailing the error.
+	 *               The message detailing the error.
 	 * @param txt
-	 * 	The text that caused the error.
+	 *               The text that caused the error.
 	 */
 <span class="fc" id="L55">	public ReplError(int lne, int nPairs, String msg, String txt) {</span>
 <span class="fc" id="L56">		line = lne;</span>
@@ -63,38 +63,44 @@ public class ReplError {
 	@Override
 	public String toString() {
 		String errString;
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
-<span class="nc bnc" id="L67" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
-<span class="nc" id="L68">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (txt == null)</span>
+<span class="nc" id="L67">			errString = &quot;No associated line&quot;;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;))</span>
+<span class="nc" id="L69">			errString = &quot;Text of line was empty&quot;;</span>
+		else
+<span class="nc" id="L71">			errString = &quot;Text of line was: &quot; + txt;</span>
 
-<span class="nc" id="L70">		return String.format(&quot;line %d, pair %d:%s\n\t%s&quot;, line, numPairs, msg, errString);</span>
+<span class="nc" id="L73">		return String.format(&quot;line %d, pair %d:%s\n\t%s&quot;, line, numPairs, msg, errString);</span>
 	}
 
 	/**
 	 * Convert the error to a printable string.
-	 * 
+	 *
 	 * @return The error as a printable string.
 	 */
 	public String toPrintString() {
-<span class="nc" id="L79">		return toPrintString(&quot;&quot;);</span>
+<span class="nc" id="L82">		return toPrintString(&quot;&quot;);</span>
 	}
 
 	/**
 	 * Convert the error to a printable string, with a custom header.
-	 * 
+	 *
 	 * @param hdr
-	 * 	The text to include in the header.
-	 * 
+	 *            The text to include in the header.
+	 *
 	 * @return The error as a printable string.
 	 */
 	public String toPrintString(String hdr) {
 		String errString;
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		if      (txt == null)    errString = &quot;No associated line&quot;;</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;)) errString = &quot;Text of line was empty&quot;;</span>
-<span class="nc" id="L94">		else                     errString = &quot;Text of line was: &quot; + txt;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (txt == null)</span>
+<span class="fc" id="L96">			errString = &quot;No associated line&quot;;</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">		else if (txt.equals(&quot;&quot;))</span>
+<span class="nc" id="L98">			errString = &quot;Text of line was empty&quot;;</span>
+		else
+<span class="nc" id="L100">			errString = &quot;Text of line was: &quot; + txt;</span>
 
-<span class="fc" id="L96">		return String.format(&quot;[ERROR] line %d, pair %d: %s\n%s\tContext: %s&quot;,</span>
-<span class="fc" id="L97">				line, numPairs, msg, hdr, errString);</span>
+<span class="fc" id="L102">		return String.format(&quot;[ERROR] line %d, pair %d: %s\n%s\tContext: %s&quot;, line,</span>
+<span class="fc" id="L103">				numPairs, msg, hdr, errString);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

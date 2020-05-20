@@ -16,85 +16,92 @@ public class ReplSet {
 	/**
 	 * Create a new blank set of pairs.
 	 */
-<span class="nc" id="L19">	public ReplSet() {</span>
-<span class="nc" id="L20">		parList = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L21">	}</span>
+<span class="fc" id="L19">	public ReplSet() {</span>
+<span class="fc" id="L20">		parList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">	}</span>
 
 	/**
 	 * Create a new set of pairs using an existing list of pairs.
 	 *
-	 * Changes to the list of pairs will carry across to the ReplSet, so be careful about that.
+	 * Changes to the list of pairs will carry across to the ReplSet, so be careful
+	 * about that.
 	 *
 	 * @param lst
-	 * 		The list of pairs to use.
+	 *            The list of pairs to use.
 	 */
-<span class="nc" id="L31">	public ReplSet(List&lt;ReplPair&gt; lst) {</span>
-<span class="nc" id="L32">		parList = lst;</span>
-<span class="nc" id="L33">	}</span>
+<span class="nc" id="L32">	public ReplSet(List&lt;ReplPair&gt; lst) {</span>
+<span class="nc" id="L33">		parList = lst;</span>
+<span class="nc" id="L34">	}</span>
 
 	/**
 	 * Load a ReplSet from a file.
+	 * 
 	 * @param fName
-	 * 	The file to load the ReplSet from.
+	 *              The file to load the ReplSet from.
 	 * @return A ReplSet, loaded from the file.
-	 * @throws IOException if something goes badly reading it.
+	 * @throws IOException
+	 *                     if something goes badly reading it.
 	 */
 	public static ReplSet fromFile(String fName) throws IOException {
-<span class="nc" id="L43">		ReplSet rs = new ReplSet();</span>
+<span class="nc" id="L46">		ReplSet rs = new ReplSet();</span>
 
-<span class="nc" id="L45">		try (FileInputStream fis = new FileInputStream(fName); Scanner scn = new Scanner(fis)) {</span>
-<span class="nc" id="L46">			rs.parList = ReplPair.readList(scn);</span>
+<span class="nc" id="L48">		try (FileInputStream fis = new FileInputStream(fName);</span>
+<span class="nc" id="L49">				Scanner scn = new Scanner(fis)) {</span>
+<span class="nc" id="L50">			rs.parList = ReplPair.readList(scn);</span>
 		}
 
-<span class="nc" id="L49">		return rs;</span>
+<span class="nc" id="L53">		return rs;</span>
 	}
 
 	/**
 	 * Adds more pairs to the ReplSet.
 	 *
 	 * @param pars
-	 * 	The pairs to add to the ReplSet.
+	 *             The pairs to add to the ReplSet.
 	 */
 	public void addPairs(List&lt;ReplPair&gt; pars) {
-<span class="nc bnc" id="L59" title="All 2 branches missed.">		for (ReplPair par : pars) {</span>
-<span class="nc" id="L60">			parList.add(par);</span>
-<span class="nc" id="L61">		}</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (ReplPair par : pars) {</span>
+<span class="fc" id="L64">			parList.add(par);</span>
+<span class="fc" id="L65">		}</span>
 
 		// Resort the pairs into priority order
-<span class="nc" id="L64">		parList.sort(null);</span>
-<span class="nc" id="L65">	}</span>
+<span class="fc" id="L68">		parList.sort(null);</span>
+<span class="fc" id="L69">	}</span>
 
 	/**
 	 * Adds more pairs to the ReplSet.
 	 *
 	 * @param pars
-	 * 	The pairs to add to the ReplSet.
+	 *             The pairs to add to the ReplSet.
 	 */
 	public void addPairs(ReplPair... pars) {
-<span class="nc bnc" id="L74" title="All 2 branches missed.">		for (ReplPair par : pars) {</span>
-<span class="nc" id="L75">			parList.add(par);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">		for (ReplPair par : pars) {</span>
+<span class="nc" id="L79">			parList.add(par);</span>
 		}
 
 		// Resort the pairs into priority order
-<span class="nc" id="L79">		parList.sort(null);</span>
-<span class="nc" id="L80">	}</span>
+<span class="nc" id="L83">		parList.sort(null);</span>
+<span class="nc" id="L84">	}</span>
 
 	/**
 	 * Apply the ReplSet to a string.
 	 *
 	 * @param val
-	 * 		The string to apply the ReplSet to.
+	 *            The string to apply the ReplSet to.
 	 *
 	 * @return The result of applying the ReplSet.
 	 */
 	public String apply(String val) {
-<span class="nc" id="L91">		String ret = val;</span>
+<span class="fc" id="L95">		String ret = val;</span>
 
-<span class="nc bnc" id="L93" title="All 2 branches missed.">		for (ReplPair par : parList) {</span>
-<span class="nc" id="L94">			ret = par.apply(ret);</span>
-<span class="nc" id="L95">		}</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (ReplPair par : parList) {</span>
+<span class="fc" id="L98">			System.err.printf(&quot;Applying pair '%s' to string '%s' (original was '%s')\n&quot;, par, ret, val);</span>
+<span class="fc" id="L99">			String tmp = par.apply(ret);</span>
 
-<span class="nc" id="L97">		return ret;</span>
+<span class="fc" id="L101">			ret = tmp;</span>
+<span class="fc" id="L102">		}</span>
+
+<span class="fc" id="L104">		return ret;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

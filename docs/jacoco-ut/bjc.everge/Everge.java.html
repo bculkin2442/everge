@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Everge.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">Everge.java</span></div><h1>Everge.java</h1><pre class="source lang-java linenums">package bjc.everge;
 
 import java.io.*;
-
-import java.nio.charset.Charset;
-
+import java.nio.charset.*;
 import java.nio.file.*;
-
 import java.util.*;
-
 import java.util.concurrent.locks.*;
-
 import java.util.regex.*;
 
 /**
@@ -17,413 +12,526 @@ import java.util.regex.*;
  *
  * @author Ben Culkin
  */
-<span class="fc" id="L20">public class Everge {</span>
+<span class="fc" id="L15">public class Everge {</span>
 	/**
 	 * Details how we handle our input.
 	 */
-<span class="fc" id="L24">	public static enum InputStatus {</span>
+<span class="fc" id="L19">	public static enum InputStatus {</span>
 		/**
 		 * Process the input as a single string.
 		 */
-<span class="fc" id="L28">		ALL,</span>
+<span class="fc" id="L23">		ALL,</span>
 		/**
 		 * Process the input line-by-line.
 		 */
-<span class="fc" id="L32">		LINE,</span>
+<span class="fc" id="L27">		LINE,</span>
 		/**
 		 * Process the input, splitting it around occurances of a regex.
 		 */
-<span class="fc" id="L36">		REGEX;</span>
+<span class="fc" id="L31">		REGEX;</span>
 	}
 
 	// Options for doing repl-pairs
-<span class="fc" id="L40">	private ReplOpts ropts = new ReplOpts();</span>
+<span class="fc" id="L35">	private ReplOpts ropts = new ReplOpts();</span>
 
-	// Loaded repl-pairs
-<span class="fc" id="L43">	private List&lt;ReplPair&gt; lrp = new ArrayList&lt;&gt;();</span>
+	// Pair repository
+<span class="fc" id="L38">	private ReplSet replSet = new ReplSet();</span>
 
 	// Input status
-<span class="fc" id="L46">	private InputStatus inputStat = InputStatus.ALL;</span>
+<span class="fc" id="L41">	private InputStatus inputStat = InputStatus.ALL;</span>
 
 	// Are we processing CLI args? (haven't seen a -- yet)
-<span class="fc" id="L49">	private boolean doingArgs = true;</span>
+<span class="fc" id="L44">	private boolean doingArgs = true;</span>
 
 	// Should an NL be printed after each replace?
-<span class="fc" id="L52">	private boolean printNL = true;</span>
+<span class="fc" id="L47">	private boolean printNL = true;</span>
 
 	// Verbosity level
-<span class="fc" id="L55">	private int verbosity = 0;</span>
+	private int verbosity;
 
 	// The pattern to use for REGEX input mode
 	private String pattern;
 
 	// The queue of arguments to process
-<span class="fc" id="L61">	private Deque&lt;String&gt; argQue = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L56">	private Deque&lt;String&gt; argQue = new LinkedList&lt;&gt;();</span>
 
 	// Used to prevent inter-mixing argument alterations with input processing.
-<span class="fc" id="L64">	private ReadWriteLock argLock = new ReentrantReadWriteLock();</span>
+<span class="fc" id="L59">	private ReadWriteLock argLock = new ReentrantReadWriteLock();</span>
 
 	// Input/output streams
 	/**
 	 * Stream to use for normal output.
 	 */
-<span class="fc" id="L70">	public PrintStream outStream = System.out;</span>
+<span class="fc" id="L65">	private PrintStream outStream = System.out;</span>
 	/**
 	 * Stream to use for error output.
 	 */
-<span class="fc" id="L74">	public PrintStream errStream = System.err;</span>
+<span class="fc" id="L69">	private LogStream errStream = new LogStream(System.err);</span>
+
+	/**
+	 * Set the output stream.
+	 * 
+	 * @param out
+	 *            The output stream..
+	 */
+	public void setOutput(PrintStream out) {
+<span class="nc" id="L78">		outStream = out;</span>
+<span class="nc" id="L79">	}</span>
+
+	/**
+	 * Set the output stream.
+	 * 
+	 * @param out
+	 *            The output stream..
+	 */
+	public void setOutput(OutputStream out) {
+<span class="fc" id="L88">		outStream = new PrintStream(out);</span>
+<span class="fc" id="L89">	}</span>
+
+	/**
+	 * Set the error stream.
+	 * 
+	 * @param err
+	 *            The error stream.
+	 */
+	public void setError(PrintStream err) {
+<span class="nc" id="L98">		errStream = new LogStream(err);</span>
+<span class="nc" id="L99">	}</span>
+
+	/**
+	 * Set the error stream.
+	 * 
+	 * @param err
+	 *            The error stream.
+	 */
+	public void setError(OutputStream err) {
+<span class="fc" id="L108">		errStream = new LogStream(new PrintStream(err));</span>
+<span class="fc" id="L109">	}</span>
 
 	/**
 	 * Main method for front end,
 	 *
 	 * @param args
-	 * 		The CLI arguments.
+	 *             The CLI arguments.
 	 */
 	public static void main(String[] args) {
-<span class="nc" id="L83">		Everge evg = new Everge();</span>
+<span class="nc" id="L118">		Everge evg = new Everge();</span>
 
-<span class="nc" id="L85">		evg.processArgs(args);</span>
-<span class="nc" id="L86">	}</span>
+<span class="nc" id="L120">		evg.processArgs(args);</span>
+<span class="nc" id="L121">	}</span>
 
 	/**
 	 * Process one or more command line arguments.
 	 *
 	 * @param args
-	 * 		The arguments to process.
+	 *             The arguments to process.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processArgs(String... args) {
-<span class="nc" id="L96">		List&lt;String&gt; errs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L131">		List&lt;String&gt; errs = new ArrayList&lt;&gt;();</span>
 
-<span class="nc" id="L98">		boolean stat = processArgs(errs, args);</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">		if (!stat) {</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">			for (String err : errs) {</span>
-<span class="nc" id="L101">				errStream.println(err);</span>
-<span class="nc" id="L102">			}</span>
+<span class="fc" id="L133">		boolean stat = processArgs(errs, args);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (verbosity &gt;= 2) {</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			String argString = args.length &gt; 0 ? &quot;arguments&quot; : &quot;argument&quot;;</span>
+
+<span class="fc" id="L137">			errStream.infof(&quot;[INFO] Processed %d %s\n&quot;, args.length, argString);</span>
+<span class="fc" id="L138">			int argc = 0;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			if (verbosity &gt;= 3) {</span>
+<span class="fc" id="L140">				String arg = args[argc++];</span>
+<span class="fc" id="L141">				errStream.tracef(&quot;[TRACE]\tArg %d: '%s\n&quot;, argc, arg);</span>
+			}
 		}
 
-<span class="nc" id="L105">		return stat;</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		if (!stat) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">			for (String err : errs) {</span>
+<span class="nc" id="L147">				errStream.errorf(&quot;%s\n&quot;, err);</span>
+<span class="nc" id="L148">			}</span>
+		}
+
+<span class="fc" id="L151">		return stat;</span>
 	}
 
 	/**
 	 * Process one or more command line arguments.
 	 *
 	 * @param args
-	 * 		The arguments to process.
+	 *             The arguments to process.
 	 * @param errs
-	 * 		The list to stash errors in.
+	 *             The list to stash errors in.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processArgs(List&lt;String&gt; errs, String... args) {
-<span class="fc" id="L118">		argLock.writeLock().lock();</span>
+<span class="fc" id="L164">		argLock.writeLock().lock();</span>
 
-<span class="fc" id="L120">		boolean retStat = true;</span>
+<span class="fc" id="L166">		boolean retStat = true;</span>
 
 		try {
-<span class="fc" id="L123">			loadQueue(args);</span>
+<span class="fc" id="L169">			loadQueue(args);</span>
 
 			// Process CLI args
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			while(argQue.size() &gt; 0) {</span>
-<span class="fc" id="L127">				String arg = argQue.pop();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			while (argQue.size() &gt; 0) {</span>
+<span class="fc" id="L173">				String arg = argQue.pop();</span>
 
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">				if (arg.equals(&quot;--&quot;)) {</span>
-<span class="nc" id="L130">					doingArgs = false;</span>
-<span class="nc" id="L131">					continue;</span>
-				}
-
-				// Process an argument
-<span class="pc bpc" id="L135" title="1 of 4 branches missed.">				if (doingArgs &amp;&amp; arg.startsWith(&quot;-&quot;)) {</span>
-<span class="fc" id="L136">					String argName = arg;</span>
-<span class="fc" id="L137">					String argBody = &quot;&quot;;</span>
-
-					// Process arguments to arguments 
-<span class="fc" id="L140">					int idx = arg.indexOf(&quot;=&quot;);</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">					if (idx != -1) {</span>
-<span class="nc" id="L142">						argName = arg.substring(0, idx);</span>
-<span class="nc" id="L143">						argBody = arg.substring(idx + 1);</span>
-					}
-
-<span class="pc bpc" id="L146" title="11 of 13 branches missed.">					switch (argName) {</span>
-					case &quot;-n&quot;:
-					case &quot;--newline&quot;:
-<span class="nc" id="L149">						printNL = true;</span>
-<span class="nc" id="L150">						break;</span>
-					case &quot;-N&quot;:
-					case &quot;--no-newline&quot;:
-<span class="nc" id="L153">						printNL = false;</span>
-<span class="nc" id="L154">						break;</span>
-					case &quot;-v&quot;:
-					case &quot;--verbose&quot;:
-<span class="fc" id="L157">						verbosity += 1;</span>
-<span class="fc" id="L158">						break;</span>
-					case &quot;-q&quot;:
-					case &quot;--quiet&quot;:
-<span class="nc" id="L161">						verbosity -= 1;</span>
-<span class="nc" id="L162">						break;</span>
-					case &quot;--verbosity&quot;:
-<span class="nc bnc" id="L164" title="All 2 branches missed.">						if (argQue.size() &lt; 1) {</span>
-<span class="nc" id="L165">							errs.add(&quot;[ERROR] No parameter to --verbosity&quot;);</span>
-<span class="nc" id="L166">							retStat = false;</span>
-<span class="nc" id="L167">							break;</span>
-						}
-<span class="nc" id="L169">						argBody = argQue.pop();</span>
-<span class="nc" id="L170">						break;</span>
-					case &quot;-V&quot;:
-						try {
-<span class="nc" id="L173">							verbosity = Integer.parseInt(argBody);</span>
-<span class="nc" id="L174">						} catch (NumberFormatException nfex) {</span>
-<span class="nc" id="L175">							String msg = String.format(&quot;[ERROR] Invalid verbosity: '%s' is not an integer&quot;,</span>
-									argBody);
-<span class="nc" id="L177">							errs.add(msg);</span>
-<span class="nc" id="L178">							retStat = false;</span>
-<span class="nc" id="L179">						}</span>
-<span class="nc" id="L180">						break;</span>
-					case &quot;--pattern&quot;:
-<span class="nc bnc" id="L182" title="All 2 branches missed.">						if (argQue.size() &lt; 1) {</span>
-<span class="nc" id="L183">							errs.add(&quot;[ERROR] No parameter to --pattern&quot;);</span>
-<span class="nc" id="L184">							retStat = false;</span>
-<span class="nc" id="L185">							break;</span>
-						}
-<span class="nc" id="L187">						argBody = argQue.pop();</span>
-					case &quot;-p&quot;:
-						try {
-<span class="nc" id="L190">							pattern = argBody;</span>
-
-<span class="nc" id="L192">							Pattern.compile(argBody);</span>
-<span class="nc" id="L193">						} catch (PatternSyntaxException psex) {</span>
-<span class="nc" id="L194">							String msg = String.format(&quot;[ERROR] Pattern '%s' is invalid: %s&quot;,</span>
-<span class="nc" id="L195">									pattern, psex.getMessage());</span>
-<span class="nc" id="L196">							errs.add(msg);</span>
-<span class="nc" id="L197">							retStat = false;</span>
-<span class="nc" id="L198">						}</span>
-<span class="nc" id="L199">						break;</span>
-					case &quot;--file&quot;:
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">						if (argQue.size() &lt; 1) {</span>
-<span class="nc" id="L202">							errs.add(&quot;[ERROR] No argument to --file&quot;);</span>
-<span class="nc" id="L203">							retStat = false;</span>
-<span class="nc" id="L204">							break;</span>
-						}
-<span class="fc" id="L206">						argBody = argQue.pop();</span>
-					case &quot;-f&quot;:
-<span class="fc" id="L208">						try (FileInputStream fis = new FileInputStream(argBody);</span>
-<span class="fc" id="L209">								Scanner scn = new Scanner(fis)) {</span>
-<span class="fc" id="L210">							List&lt;ReplError&gt; ferrs = new ArrayList&lt;&gt;();</span>
-
-<span class="fc" id="L212">							lrp = ReplPair.readList(lrp, scn, ferrs, ropts);</span>
-
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">							if (ferrs.size() &gt; 0) {</span>
-<span class="nc" id="L215">								StringBuilder sb = new StringBuilder();</span>
-								
-<span class="nc" id="L217">								String errString = &quot;an error&quot;;</span>
-<span class="nc bnc" id="L218" title="All 2 branches missed.">								if (ferrs.size() &gt; 1) errString = String.format(&quot;%d errors&quot;);</span>
-
-								{
-<span class="nc" id="L221">									String msg = String.format(</span>
-											&quot;[ERROR] Encountered %s parsing data file'%s'\n&quot;,
-											errString, argBody);
-<span class="nc" id="L224">									sb.append(msg);</span>
-								}
-
-<span class="nc bnc" id="L227" title="All 2 branches missed.">								for (ReplError err : ferrs) {</span>
-<span class="nc" id="L228">									sb.append(String.format(&quot;\t%s\n&quot;, err));</span>
-<span class="nc" id="L229">								}</span>
-
-<span class="nc" id="L231">								errs.add(sb.toString());</span>
-<span class="nc" id="L232">								retStat = false;</span>
-							}
-<span class="nc" id="L234">						} catch (FileNotFoundException fnfex) {</span>
-<span class="nc" id="L235">							String msg = String.format(&quot;[ERROR] Could not open data file '%s' for input&quot;,</span>
-									argBody);
-<span class="nc" id="L237">							errs.add(msg);</span>
-<span class="nc" id="L238">							retStat = false;</span>
-<span class="nc" id="L239">						} catch (IOException ioex) {</span>
-<span class="nc" id="L240">							String msg = String.format(&quot;[ERROR] Unknown I/O error reading data file '%s': %s&quot;,</span>
-<span class="nc" id="L241">									argBody, ioex.getMessage());</span>
-<span class="nc" id="L242">							errs.add(msg);</span>
-<span class="nc" id="L243">							retStat = false;</span>
-<span class="pc" id="L244">						}</span>
-<span class="nc" id="L245">						break;</span>
-					case &quot;--arg-file&quot;:
-<span class="nc bnc" id="L247" title="All 2 branches missed.">						if (argQue.size() &lt; 1) {</span>
-<span class="nc" id="L248">							errs.add(&quot;[ERROR] No argument to --arg-file&quot;);</span>
-<span class="nc" id="L249">							break;</span>
-						}
-<span class="nc" id="L251">						argBody = argQue.pop();</span>
-					case &quot;-F&quot;:
-<span class="nc" id="L253">						try (FileInputStream fis = new FileInputStream(argBody);</span>
-<span class="nc" id="L254">								Scanner scn = new Scanner(fis)) {</span>
-<span class="nc" id="L255">							List&lt;String&gt; sl = new ArrayList&lt;&gt;();</span>
-
-<span class="nc bnc" id="L257" title="All 2 branches missed.">							while (scn.hasNextLine()) {</span>
-<span class="nc" id="L258">								String ln = scn.nextLine().trim();</span>
-
-<span class="nc bnc" id="L260" title="All 2 branches missed.">								if (ln.equals(&quot;&quot;))      continue;</span>
-<span class="nc bnc" id="L261" title="All 2 branches missed.">								if (ln.startsWith(&quot;#&quot;)) continue;</span>
-
-<span class="nc" id="L263">								sl.add(ln);</span>
-<span class="nc" id="L264">							}</span>
-
-<span class="nc" id="L266">							processArgs(sl.toArray(new String[0]));</span>
-<span class="nc" id="L267">						} catch (FileNotFoundException fnfex) {</span>
-<span class="nc" id="L268">							String msg = String.format(&quot;[ERROR] Could not open argument file '%s' for input&quot;, argBody);</span>
-<span class="nc" id="L269">							errs.add(msg);</span>
-<span class="nc" id="L270">							retStat = false;</span>
-<span class="nc" id="L271">						} catch (IOException ioex) {</span>
-<span class="nc" id="L272">							String msg = String.format(&quot;[ERROR] Unknown I/O error reading input file '%s': %s&quot;,</span>
-<span class="nc" id="L273">									argBody, ioex.getMessage());</span>
-<span class="nc" id="L274">							errs.add(msg);</span>
-<span class="nc" id="L275">							retStat = false;</span>
-<span class="nc" id="L276">						}</span>
-<span class="nc" id="L277">						break;</span>
-					default:
-						{
-<span class="nc" id="L280">							String msg = String.format(&quot;[ERROR] Unrecognised CLI argument name '%s'\n&quot;, argName);</span>
-<span class="nc" id="L281">							errs.add(msg);</span>
-<span class="nc" id="L282">							retStat = false;</span>
-						}
-					}
-<span class="fc" id="L285">				} else {</span>
-					// Strip off an escaped initial dash
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">					if (arg.startsWith(&quot;\\-&quot;)) arg = arg.substring(1);</span>
-
-<span class="fc" id="L289">					processInputFile(arg);</span>
-				}
-<span class="fc" id="L291">			}</span>
+<span class="fc" id="L175">				retStat = processArg(errs, retStat, arg);</span>
+<span class="fc" id="L176">			}</span>
 		} finally {
-<span class="fc" id="L293">			argLock.writeLock().unlock();</span>
+<span class="fc" id="L178">			argLock.writeLock().unlock();</span>
 		}
 
-<span class="fc" id="L296">		return retStat;</span>
+<span class="fc" id="L181">		return retStat;</span>
+	}
+
+	private boolean processArg(List&lt;String&gt; errs, boolean retStat, String arg) {
+<span class="fc" id="L185">		boolean newRet = retStat;</span>
+
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">		if (arg.equals(&quot;--&quot;)) {</span>
+<span class="nc" id="L188">			doingArgs = false;</span>
+<span class="nc" id="L189">			return newRet;</span>
+		}
+
+		// Process an argument
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">		if (doingArgs &amp;&amp; arg.startsWith(&quot;-&quot;)) {</span>
+<span class="fc" id="L194">			String argName = arg;</span>
+<span class="fc" id="L195">			String argBody = &quot;&quot;;</span>
+
+			// Process arguments to arguments
+<span class="fc" id="L198">			int idx = arg.indexOf(&quot;=&quot;);</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">			if (idx != -1) {</span>
+<span class="nc" id="L200">				argName = arg.substring(0, idx);</span>
+<span class="nc" id="L201">				argBody = arg.substring(idx + 1);</span>
+			}
+
+<span class="pc bpc" id="L204" title="11 of 15 branches missed.">			switch (argName) {</span>
+			case &quot;-n&quot;:
+			case &quot;--newline&quot;:
+<span class="nc" id="L207">				printNL = true;</span>
+<span class="nc" id="L208">				break;</span>
+			case &quot;-N&quot;:
+			case &quot;--no-newline&quot;:
+<span class="nc" id="L211">				printNL = false;</span>
+<span class="nc" id="L212">				break;</span>
+			case &quot;-v&quot;:
+			case &quot;--verbose&quot;:
+<span class="fc" id="L215">				verbosity += 1;</span>
+<span class="fc" id="L216">				errStream.louder();</span>
+<span class="fc" id="L217">				System.err.printf(&quot;[TRACE] Incremented verbosity\n&quot;);</span>
+<span class="fc" id="L218">				break;</span>
+			case &quot;-q&quot;:
+			case &quot;--quiet&quot;:
+<span class="nc" id="L221">				verbosity -= 1;</span>
+<span class="nc" id="L222">				errStream.quieter();</span>
+<span class="nc" id="L223">				System.err.printf(&quot;[TRACE] Decremented verbosity\n&quot;);</span>
+<span class="nc" id="L224">				break;</span>
+			case &quot;--verbosity&quot;:
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">				if (argQue.size() &lt; 1) {</span>
+<span class="nc" id="L227">					errs.add(&quot;[ERROR] No parameter to --verbosity&quot;);</span>
+<span class="nc" id="L228">					newRet = false;</span>
+<span class="nc" id="L229">					break;</span>
+				}
+<span class="fc" id="L231">				argBody = argQue.pop();</span>
+			case &quot;-V&quot;:
+				try {
+<span class="fc" id="L234">					verbosity = Integer.parseInt(argBody);</span>
+<span class="fc" id="L235">					errStream.verbosity(verbosity);</span>
+<span class="fc" id="L236">					System.err.printf(&quot;[TRACE] Set verbosity to %d\n&quot;, verbosity);</span>
+<span class="nc" id="L237">				} catch (NumberFormatException nfex) {</span>
+<span class="nc" id="L238">					String msg = String.format(</span>
+							&quot;[ERROR] Invalid verbosity: '%s' is not an integer&quot;, argBody);
+<span class="nc" id="L240">					errs.add(msg);</span>
+<span class="nc" id="L241">					newRet = false;</span>
+<span class="fc" id="L242">				}</span>
+<span class="nc" id="L243">				break;</span>
+			case &quot;--pattern&quot;:
+<span class="nc bnc" id="L245" title="All 2 branches missed.">				if (argQue.size() &lt; 1) {</span>
+<span class="nc" id="L246">					errs.add(&quot;[ERROR] No parameter to --pattern&quot;);</span>
+<span class="nc" id="L247">					newRet = false;</span>
+<span class="nc" id="L248">					break;</span>
+				}
+<span class="nc" id="L250">				argBody = argQue.pop();</span>
+			case &quot;-p&quot;:
+				try {
+<span class="nc" id="L253">					pattern = argBody;</span>
+
+<span class="nc" id="L255">					Pattern.compile(argBody);</span>
+<span class="nc" id="L256">				} catch (PatternSyntaxException psex) {</span>
+<span class="nc" id="L257">					String msg = String.format(&quot;[ERROR] Pattern '%s' is invalid: %s&quot;,</span>
+<span class="nc" id="L258">							pattern, psex.getMessage());</span>
+<span class="nc" id="L259">					errs.add(msg);</span>
+<span class="nc" id="L260">					newRet = false;</span>
+<span class="nc" id="L261">				}</span>
+<span class="nc" id="L262">				break;</span>
+			case &quot;--file&quot;:
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">				if (argQue.size() &lt; 1) {</span>
+<span class="nc" id="L265">					errs.add(&quot;[ERROR] No argument to --file&quot;);</span>
+<span class="nc" id="L266">					newRet = false;</span>
+<span class="nc" id="L267">					break;</span>
+				}
+<span class="fc" id="L269">				argBody = argQue.pop();</span>
+			case &quot;-f&quot;:
+<span class="fc" id="L271">				try (FileInputStream fis = new FileInputStream(argBody);</span>
+<span class="fc" id="L272">						Scanner scn = new Scanner(fis)) {</span>
+<span class="fc" id="L273">					List&lt;ReplError&gt; ferrs = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L275">					List&lt;ReplPair&gt; lrp = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L276">					lrp = ReplPair.readList(lrp, scn, ferrs, ropts);</span>
+
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">					if (ferrs.size() &gt; 0) {</span>
+<span class="nc" id="L279">						StringBuilder sb = new StringBuilder();</span>
+
+<span class="nc" id="L281">						String errString = &quot;an error&quot;;</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">						if (ferrs.size() &gt; 1)</span>
+<span class="nc" id="L283">							errString = String.format(&quot;%d errors&quot;, ferrs.size());</span>
+
+						{
+<span class="nc" id="L286">							String msg = String.format(</span>
+									&quot;[ERROR] Encountered %s parsing data file'%s'\n&quot;,
+									errString, argBody);
+<span class="nc" id="L289">							sb.append(msg);</span>
+						}
+
+<span class="nc bnc" id="L292" title="All 2 branches missed.">						for (ReplError err : ferrs) {</span>
+<span class="nc" id="L293">							sb.append(String.format(&quot;\t%s\n&quot;, err));</span>
+<span class="nc" id="L294">						}</span>
+
+<span class="nc" id="L296">						errs.add(sb.toString());</span>
+<span class="nc" id="L297">						newRet = false;</span>
+					}
+
+<span class="fc" id="L300">					replSet.addPairs(lrp);</span>
+<span class="nc" id="L301">				} catch (FileNotFoundException fnfex) {</span>
+<span class="nc" id="L302">					String msg = String.format(</span>
+							&quot;[ERROR] Could not open data file '%s' for input&quot;, argBody);
+<span class="nc" id="L304">					errs.add(msg);</span>
+<span class="nc" id="L305">					newRet = false;</span>
+<span class="nc" id="L306">				} catch (IOException ioex) {</span>
+<span class="nc" id="L307">					String msg = String.format(</span>
+							&quot;[ERROR] Unknown I/O error reading data file '%s': %s&quot;,
+<span class="nc" id="L309">							argBody, ioex.getMessage());</span>
+<span class="nc" id="L310">					errs.add(msg);</span>
+<span class="nc" id="L311">					newRet = false;</span>
+<span class="pc" id="L312">				}</span>
+<span class="nc" id="L313">				break;</span>
+			case &quot;--arg-file&quot;:
+<span class="nc bnc" id="L315" title="All 2 branches missed.">				if (argQue.size() &lt; 1) {</span>
+<span class="nc" id="L316">					errs.add(&quot;[ERROR] No argument to --arg-file&quot;);</span>
+<span class="nc" id="L317">					break;</span>
+				}
+<span class="nc" id="L319">				argBody = argQue.pop();</span>
+			case &quot;-F&quot;:
+<span class="nc" id="L321">				try (FileInputStream fis = new FileInputStream(argBody);</span>
+<span class="nc" id="L322">						Scanner scn = new Scanner(fis)) {</span>
+<span class="nc" id="L323">					List&lt;String&gt; sl = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L325" title="All 2 branches missed.">					while (scn.hasNextLine()) {</span>
+<span class="nc" id="L326">						String ln = scn.nextLine().trim();</span>
+
+<span class="nc bnc" id="L328" title="All 2 branches missed.">						if (ln.equals(&quot;&quot;))</span>
+<span class="nc" id="L329">							continue;</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">						if (ln.startsWith(&quot;#&quot;))</span>
+<span class="nc" id="L331">							continue;</span>
+
+<span class="nc" id="L333">						sl.add(ln);</span>
+<span class="nc" id="L334">					}</span>
+
+<span class="nc" id="L336">					processArgs(sl.toArray(new String[0]));</span>
+<span class="nc" id="L337">				} catch (FileNotFoundException fnfex) {</span>
+<span class="nc" id="L338">					String msg = String.format(</span>
+							&quot;[ERROR] Could not open argument file '%s' for input&quot;,
+							argBody);
+<span class="nc" id="L341">					errs.add(msg);</span>
+<span class="nc" id="L342">					newRet = false;</span>
+<span class="nc" id="L343">				} catch (IOException ioex) {</span>
+<span class="nc" id="L344">					String msg = String.format(</span>
+							&quot;[ERROR] Unknown I/O error reading input file '%s': %s&quot;,
+<span class="nc" id="L346">							argBody, ioex.getMessage());</span>
+<span class="nc" id="L347">					errs.add(msg);</span>
+<span class="nc" id="L348">					newRet = false;</span>
+<span class="nc" id="L349">				}</span>
+<span class="nc" id="L350">				break;</span>
+			case &quot;--input-status&quot;:
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">				if (argQue.size() &lt; 1) {</span>
+<span class="nc" id="L353">					errs.add(&quot;[ERROR] No argument to --input-status&quot;);</span>
+<span class="nc" id="L354">					break;</span>
+				}
+<span class="fc" id="L356">				argBody = argQue.pop();</span>
+			case &quot;-I&quot;:
+				try {
+<span class="fc" id="L359">					inputStat = InputStatus.valueOf(argBody.toUpperCase());</span>
+<span class="nc" id="L360">				} catch (IllegalArgumentException iaex) {</span>
+<span class="nc" id="L361">					String msg = String.format(&quot;[ERROR] '%s' is not a valid input status&quot;,</span>
+							argBody);
+<span class="nc" id="L363">					errs.add(msg);</span>
+<span class="fc" id="L364">				}</span>
+<span class="nc" id="L365">				break;</span>
+			default: {
+<span class="nc" id="L367">				String msg = String</span>
+<span class="nc" id="L368">						.format(&quot;[ERROR] Unrecognised CLI argument name '%s'\n&quot;, argName);</span>
+<span class="nc" id="L369">				errs.add(msg);</span>
+<span class="nc" id="L370">				newRet = false;</span>
+			}
+			}
+<span class="fc" id="L373">		} else {</span>
+<span class="fc" id="L374">			String tmp = arg;</span>
+			// Strip off an escaped initial dash
+<span class="pc bpc" id="L376" title="1 of 2 branches missed.">			if (tmp.startsWith(&quot;\\-&quot;))</span>
+<span class="nc" id="L377">				tmp = tmp.substring(1);</span>
+
+<span class="fc" id="L379">			processInputFile(tmp);</span>
+		}
+
+<span class="fc" id="L382">		return newRet;</span>
 	}
 
 	/**
 	 * Process a input file.
 	 *
 	 * @param fle
-	 * 		Input file to process.
+	 *            Input file to process.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processInputFile(String fle) {
-<span class="fc" id="L307">		List&lt;String&gt; errs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L393">		List&lt;String&gt; errs = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L309">		boolean stat = processInputFile(errs, fle);</span>
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">		if (!stat) {</span>
-<span class="nc bnc" id="L311" title="All 2 branches missed.">			for (String err : errs) {</span>
-<span class="nc" id="L312">				errStream.println(err);</span>
-<span class="nc" id="L313">			}</span>
+<span class="fc" id="L395">		boolean stat = processInputFile(errs, fle);</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">		if (!stat) {</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">			for (String err : errs) {</span>
+<span class="nc" id="L398">				errStream.errorf(&quot;%s\n&quot;, err);</span>
+<span class="nc" id="L399">			}</span>
 		}
 
-<span class="fc" id="L316">		return stat;</span>
+<span class="fc" id="L402">		return stat;</span>
 	}
 
 	/**
 	 * Process a input file.
 	 *
 	 * @param fle
-	 * 		Input file to process.
+	 *             Input file to process.
 	 * @param errs
-	 * 		List to accumulate errors in.
+	 *             List to accumulate errors in.
 	 * @return Whether we processed succesfully or not.
 	 */
 	public boolean processInputFile(List&lt;String&gt; errs, String fle) {
-<span class="fc" id="L329">		argLock.readLock().lock();</span>
+<span class="fc" id="L415">		argLock.readLock().lock();</span>
 
 		// Read in and do replacements on a file
 		try {
-<span class="pc bpc" id="L333" title="1 of 2 branches missed.">			if (verbosity &gt; 2) {</span>
-<span class="nc" id="L334">				errStream.printf(&quot;[TRACE] Reading file (%s) in mode (%s)\n&quot;, fle, inputStat);</span>
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">			if (verbosity &gt; 2) {</span>
+<span class="fc" id="L420">				errStream.printf(&quot;[TRACE] Reading file (%s) in mode (%s)\n&quot;, fle,</span>
+						inputStat);
 			}
 
-<span class="pc bpc" id="L337" title="1 of 2 branches missed.">			if (inputStat == InputStatus.ALL) {</span>
-<span class="fc" id="L338">				Path pth = Paths.get(fle);</span>
+<span class="pc bpc" id="L424" title="1 of 2 branches missed.">			if (inputStat == InputStatus.ALL) {</span>
+<span class="nc" id="L425">				Path pth = Paths.get(fle);</span>
 
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">				if (!Files.isReadable(pth)) {</span>
-<span class="nc" id="L341">					String msg = String.format(&quot;[ERROR] File '%s' is not readable\n&quot;, fle);</span>
-<span class="nc" id="L342">					errs.add(msg);</span>
-<span class="nc" id="L343">					return false;</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">				if (!Files.isReadable(pth)) {</span>
+<span class="nc" id="L428">					String msg</span>
+<span class="nc" id="L429">							= String.format(&quot;[ERROR] File '%s' is not readable\n&quot;, fle);</span>
+<span class="nc" id="L430">					errs.add(msg);</span>
+<span class="nc" id="L431">					return false;</span>
 				}
 
-<span class="fc" id="L346">				byte[] inp = Files.readAllBytes(pth);</span>
+<span class="nc" id="L434">				byte[] inp = Files.readAllBytes(pth);</span>
 
-<span class="fc" id="L348">				String strang = new String(inp, Charset.forName(&quot;UTF-8&quot;));</span>
+<span class="nc" id="L436">				String strang = new String(inp, Charset.forName(&quot;UTF-8&quot;));</span>
 
-<span class="fc" id="L350">				processString(strang);</span>
-<span class="pc bnc" id="L351" title="All 2 branches missed.">			} else if (inputStat == InputStatus.LINE) {</span>
-<span class="nc" id="L352">				try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {</span>
-<span class="nc bnc" id="L353" title="All 2 branches missed.">					while(scn.hasNextLine()) {</span>
-<span class="nc" id="L354">						processString(scn.nextLine());</span>
+<span class="nc" id="L438">				processString(strang);</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">			} else if (inputStat == InputStatus.LINE) {</span>
+<span class="fc" id="L440">				try (FileInputStream fis = new FileInputStream(fle);</span>
+<span class="fc" id="L441">						Scanner scn = new Scanner(fis)) {</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">					while (scn.hasNextLine()) {</span>
+<span class="fc" id="L443">						processString(scn.nextLine());</span>
 					}
-<span class="nc" id="L356">				}</span>
-<span class="nc bnc" id="L357" title="All 2 branches missed.">			} else if (inputStat == InputStatus.REGEX) {</span>
-<span class="nc" id="L358">				try (FileInputStream fis = new FileInputStream(fle); Scanner scn = new Scanner(fis)) {</span>
-<span class="nc" id="L359">					scn.useDelimiter(pattern);</span>
+<span class="fc" id="L445">				}</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">			} else if (inputStat == InputStatus.REGEX) {</span>
+<span class="nc" id="L447">				try (FileInputStream fis = new FileInputStream(fle);</span>
+<span class="nc" id="L448">						Scanner scn = new Scanner(fis)) {</span>
+<span class="nc" id="L449">					scn.useDelimiter(pattern);</span>
 
-<span class="nc bnc" id="L361" title="All 2 branches missed.">					while(scn.hasNext()) {</span>
-<span class="nc" id="L362">						processString(scn.next());</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">					while (scn.hasNext()) {</span>
+<span class="nc" id="L452">						processString(scn.next());</span>
 					}
-<span class="nc" id="L364">				}</span>
+<span class="nc" id="L454">				}</span>
 			} else {
-<span class="nc" id="L366">				String msg = String.format(&quot;[INTERNAL-ERROR] Input status '%s' is not yet implemented\n&quot;,</span>
+<span class="nc" id="L456">				String msg = String.format(</span>
+						&quot;[INTERNAL-ERROR] Input status '%s' is not yet implemented\n&quot;,
 						inputStat);
-<span class="nc" id="L368">				errs.add(msg);</span>
-<span class="nc" id="L369">				return false;</span>
+<span class="nc" id="L459">				errs.add(msg);</span>
+<span class="nc" id="L460">				return false;</span>
 			}
-<span class="nc" id="L371">		} catch (IOException ioex) {</span>
-<span class="nc" id="L372">			String msg = String.format(&quot;[ERROR] Unknown I/O related error for file '%s'\n\tError was %s&quot;,</span>
-<span class="nc" id="L373">					fle, ioex.getMessage());</span>
-<span class="nc" id="L374">			errs.add(msg);</span>
-<span class="nc" id="L375">			return false;</span>
+<span class="nc" id="L462">		} catch (IOException ioex) {</span>
+<span class="nc" id="L463">			String msg = String.format(</span>
+					&quot;[ERROR] Unknown I/O related error for file '%s'\n\tError was %s&quot;,
+<span class="nc" id="L465">					fle, ioex.getMessage());</span>
+<span class="nc" id="L466">			errs.add(msg);</span>
+<span class="nc" id="L467">			return false;</span>
 		} finally {
-<span class="fc" id="L377">			argLock.readLock().unlock();</span>
+<span class="fc" id="L469">			argLock.readLock().unlock();</span>
 		}
 
-<span class="fc" id="L380">		return true;</span>
+<span class="fc" id="L472">		return true;</span>
 	}
 
 	/**
 	 * Process an input string.
 	 *
 	 * @param inp
-	 * 		The input string to process.
+	 *            The input string to process.
 	 */
 	public void processString(String inp) {
-<span class="fc" id="L390">		argLock.readLock().lock();</span>
+<span class="fc" id="L482">		argLock.readLock().lock();</span>
 
 		try {
-<span class="fc" id="L393">			String strang = inp;</span>
+<span class="fc" id="L485">			String strang = inp;</span>
 
-<span class="fc bfc" id="L395" title="All 2 branches covered.">			for (ReplPair rp : lrp) {</span>
-<span class="fc" id="L396">				strang = rp.apply(strang);</span>
-<span class="fc" id="L397">			}</span>
+<span class="pc bpc" id="L487" title="1 of 2 branches missed.">			if (verbosity &gt;= 3) {</span>
+<span class="fc" id="L488">				errStream.infof(</span>
+						&quot;[INFO] Processing replacements for string '%s' in mode %s\n&quot;,
+						strang, inputStat);
+				
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">				if (!inp.equals(inp.trim())) {</span>
+<span class="nc" id="L493">					errStream.infof(&quot;[INFO] String '%s' has trailing spaces on it\n&quot;, inp);</span>
+				}
+			}
 
-<span class="fc" id="L399">			outStream.print(strang);</span>
-<span class="pc bpc" id="L400" title="1 of 2 branches missed.">			if (printNL) outStream.println();</span>
+<span class="fc" id="L497">			strang = replSet.apply(inp);</span>
+
+<span class="fc" id="L499">			outStream.print(strang);</span>
+<span class="pc bpc" id="L500" title="1 of 2 branches missed.">			if (printNL)</span>
+<span class="fc" id="L501">				outStream.println();</span>
 		} finally {
-<span class="fc" id="L402">			argLock.readLock().unlock();</span>
+<span class="fc" id="L503">			argLock.readLock().unlock();</span>
 		}
-<span class="fc" id="L404">	}</span>
+<span class="fc" id="L505">	}</span>
 
 	// Load arguments into the argument queue.
 	private void loadQueue(String... args) {
-<span class="fc" id="L408">		boolean doArgs = true;</span>
-<span class="fc bfc" id="L409" title="All 2 branches covered.">		for (String arg : args) {</span>
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			if (arg.equals(&quot;--&quot;)) doArgs = false;</span>
+<span class="fc" id="L509">		boolean doArgs = true;</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">		for (String arg : args) {</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">			if (arg.equals(&quot;--&quot;)) {</span>
+<span class="nc" id="L512">				doArgs = false;</span>
+			}
 
 			// Handle things like -nNv correctly
-<span class="pc bpc" id="L413" title="1 of 2 branches missed.">			if (doArgs) {</span>
-<span class="fc bfc" id="L414" title="All 4 branches covered.">				if (arg.startsWith(&quot;-&quot;) &amp;&amp; !arg.startsWith(&quot;--&quot;)) {</span>
-<span class="fc" id="L415">					char[] car = arg.substring(1).toCharArray();</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">					for (char c : car) {</span>
-<span class="fc" id="L417">						String argstr = String.format(&quot;-%c&quot;, c);</span>
-<span class="fc" id="L418">						argQue.add(argstr);</span>
+<span class="pc bpc" id="L516" title="1 of 2 branches missed.">			if (doArgs) {</span>
+<span class="fc bfc" id="L517" title="All 4 branches covered.">				if (arg.startsWith(&quot;-&quot;) &amp;&amp; !arg.startsWith(&quot;--&quot;)) {</span>
+<span class="fc" id="L518">					char[] car = arg.substring(1).toCharArray();</span>
+
+<span class="pc bpc" id="L520" title="1 of 2 branches missed.">					if (verbosity &gt;= 3) {</span>
+<span class="nc" id="L521">						errStream.infof(&quot;[INFO] Adding stream of args: %s&quot;, car);</span>
 					}
-<span class="fc" id="L420">				} else {</span>
-<span class="fc" id="L421">					argQue.add(arg);</span>
+
+<span class="fc bfc" id="L524" title="All 2 branches covered.">					for (char c : car) {</span>
+<span class="fc" id="L525">						String argstr = String.format(&quot;-%c&quot;, c);</span>
+<span class="fc" id="L526">						argQue.add(argstr);</span>
+					}
+<span class="fc" id="L528">				} else {</span>
+<span class="fc" id="L529">					argQue.add(arg);</span>
 				}
 			} else {
-<span class="nc" id="L424">				argQue.add(arg);</span>
+<span class="nc" id="L532">				argQue.add(arg);</span>
 			}
 		}
-<span class="fc" id="L427">	}</span>
+<span class="fc" id="L535">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

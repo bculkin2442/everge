@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LogStream.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">everge</a> &gt; <a href="index.source.html" class="el_package">bjc.everge</a> &gt; <span class="el_source">LogStream.java</span></div><h1>LogStream.java</h1><pre class="source lang-java linenums">package bjc.everge;
+
+import java.io.*;
+
+/**
+ * Simple class used for logging with various levels.
+ *
+ * @author Ben Culkin
+ */
+public class LogStream {
+	/**
+	 * Log level for printing nothing.
+	 */
+	public static final int NOTHING = -1;
+
+	/**
+	 * Log level for printing only fatal errors.
+	 */
+	public static final int FATAL = 0;
+
+	/**
+	 * Log level for printing all errors.
+	 */
+	public static final int ERROR = 1;
+
+	/**
+	 * Log level for printing warnings.
+	 */
+	public static final int WARN = 2;
+
+	/**
+	 * Log level for printing info messages.
+	 */
+	public static final int INFO = 3;
+
+	/**
+	 * Log level for printing debug messages.
+	 */
+	public static final int DEBUG = 4;
+
+	/**
+	 * Log level for printing trace messages.
+	 */
+	public static final int TRACE = 5;
+
+	private int verbosity;
+
+	private PrintStream output;
+
+	/**
+	 * Create a new log stream.
+	 *
+	 * Defaults to printing only fatal errors.
+	 *
+	 * @param out
+	 *            The output stream to place things into.
+	 */
+<span class="fc" id="L58">	public LogStream(PrintStream out) {</span>
+<span class="fc" id="L59">		output = out;</span>
+<span class="fc" id="L60">		verbosity = FATAL;</span>
+<span class="fc" id="L61">	}</span>
+
+	/**
+	 * Create a new log stream.
+	 *
+	 * @param out
+	 *              The output stream to place things into.
+	 * @param level
+	 *              The verbosity level. Use the constants in this class for the
+	 *              values.
+	 */
+<span class="nc" id="L72">	public LogStream(PrintStream out, int level) {</span>
+<span class="nc" id="L73">		output = out;</span>
+<span class="nc" id="L74">		verbosity = level;</span>
+<span class="nc" id="L75">	}</span>
+
+	/**
+	 * Get the verbosity of the stream.
+	 * 
+	 * @return The verbosity of the stream.
+	 */
+	public int verbosity() {
+<span class="nc" id="L83">		return verbosity;</span>
+	}
+
+	/**
+	 * Set the verbosity of the stream.
+	 * 
+	 * @param verb
+	 *             The verbosity of the stream.
+	 */
+	public void verbosity(int verb) {
+<span class="fc" id="L93">		verbosity = verb;</span>
+<span class="fc" id="L94">	}</span>
+
+	/**
+	 * Increment the verbosity of the stream.
+	 */
+	public void louder() {
+<span class="fc" id="L100">		louder(1);</span>
+<span class="fc" id="L101">	}</span>
+
+	/**
+	 * Increase the verbosity of the stream by an amount.
+	 * 
+	 * @param amt
+	 *            The amount to increase the verbosity by.
+	 */
+	public void louder(int amt) {
+<span class="fc" id="L110">		verbosity += amt;</span>
+<span class="fc" id="L111">	}</span>
+
+	/**
+	 * Decrement the verbosity of the stream.
+	 */
+	public void quieter() {
+<span class="nc" id="L117">		quieter(1);</span>
+<span class="nc" id="L118">	}</span>
+
+	/**
+	 * Decrease the verbosity of the stream by an amount.
+	 * 
+	 * @param amt
+	 *            The amount to decrease the verbosity by.
+	 */
+	public void quieter(int amt) {
+<span class="nc" id="L127">		verbosity -= amt;</span>
+<span class="nc" id="L128">	}</span>
+
+	/**
+	 * Print a message that will always be visible.
+	 *
+	 * @param msg
+	 *            The message to print.
+	 */
+	public void print(String msg) {
+<span class="nc" id="L137">		output.print(msg);</span>
+<span class="nc" id="L138">	}</span>
+
+	/**
+	 * Print a formatted message that will always be visible.
+	 *
+	 * @param msg
+	 *             The format string for the message to print.
+	 *
+	 * @param args
+	 *             The arguments to the format string.
+	 */
+	public void printf(String msg, Object... args) {
+<span class="fc" id="L150">		output.printf(msg, args);</span>
+<span class="fc" id="L151">	}</span>
+
+	/**
+	 * Print a message at a given verbosity level.
+	 * 
+	 * @param lvl
+	 *            The verbosity level.
+	 * @param msg
+	 *            The message to print.
+	 */
+	public void message(int lvl, String msg) {
+<span class="nc bnc" id="L162" title="All 2 branches missed.">		if (verbosity &gt;= lvl) {</span>
+<span class="nc" id="L163">			output.print(msg);</span>
+		}
+<span class="nc" id="L165">	}</span>
+
+	/**
+	 * Print a formatted message at a given verbosity level.
+	 * 
+	 * @param lvl
+	 *             The verbosity level.
+	 * @param msg
+	 *             The message to print.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void messagef(int lvl, String msg, Object... args) {
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (verbosity &gt;= lvl) {</span>
+<span class="fc" id="L179">			output.printf(msg, args);</span>
+		}
+<span class="fc" id="L181">	}</span>
+
+	/**
+	 * Emit a fatal error message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void fatal(String msg) {
+<span class="nc" id="L190">		message(FATAL, msg);</span>
+<span class="nc" id="L191">	}</span>
+
+	/**
+	 * Emit a formatted fatal error message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void fatalf(String msg, Object... args) {
+<span class="nc" id="L202">		messagef(FATAL, msg, args);</span>
+<span class="nc" id="L203">	}</span>
+
+	/**
+	 * Emit a normal error message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void error(String msg) {
+<span class="nc" id="L212">		message(ERROR, msg);</span>
+<span class="nc" id="L213">	}</span>
+
+	/**
+	 * Emit a formatted normal error message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void errorf(String msg, Object... args) {
+<span class="nc" id="L224">		messagef(ERROR, msg, args);</span>
+<span class="nc" id="L225">	}</span>
+
+	/**
+	 * Emit a warning message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void warn(String msg) {
+<span class="nc" id="L234">		message(WARN, msg);</span>
+<span class="nc" id="L235">	}</span>
+
+	/**
+	 * Emit a formatted warning message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void warnf(String msg, Object... args) {
+<span class="nc" id="L246">		messagef(WARN, msg, args);</span>
+<span class="nc" id="L247">	}</span>
+
+	/**
+	 * Emit an info message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void info(String msg) {
+<span class="nc" id="L256">		message(INFO, msg);</span>
+<span class="nc" id="L257">	}</span>
+
+	/**
+	 * Emit a formatted info message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void infof(String msg, Object... args) {
+<span class="fc" id="L268">		messagef(INFO, msg, args);</span>
+<span class="fc" id="L269">	}</span>
+
+	/**
+	 * Emit a debug message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void debug(String msg) {
+<span class="nc" id="L278">		message(DEBUG, msg);</span>
+<span class="nc" id="L279">	}</span>
+
+	/**
+	 * Emit a formatted debug message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void debugf(String msg, Object... args) {
+<span class="nc" id="L290">		messagef(DEBUG, msg, args);</span>
+<span class="nc" id="L291">	}</span>
+
+	/**
+	 * Emit a tracing message.
+	 * 
+	 * @param msg
+	 *            The message to emit.
+	 */
+	public void trace(String msg) {
+<span class="nc" id="L300">		message(TRACE, msg);</span>
+<span class="nc" id="L301">	}</span>
+
+	/**
+	 * Emit a formatted tracing message.
+	 * 
+	 * @param msg
+	 *             The message to emit.
+	 * @param args
+	 *             The arguments to the message.
+	 */
+	public void tracef(String msg, Object... args) {
+<span class="fc" id="L312">		messagef(TRACE, msg, args);</span>
+<span class="fc" id="L313">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
