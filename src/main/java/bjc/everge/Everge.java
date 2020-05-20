@@ -486,8 +486,12 @@ public class Everge {
 
 			if (verbosity >= 3) {
 				errStream.infof(
-						"[INFO] Processing replacements for string '%s' in mode \n",
-						strang);
+						"[INFO] Processing replacements for string '%s' in mode %s\n",
+						strang, inputStat);
+				
+				if (!inp.equals(inp.trim())) {
+					errStream.infof("[INFO] String '%s' has trailing spaces on it\n", inp);
+				}
 			}
 
 			strang = replSet.apply(inp);

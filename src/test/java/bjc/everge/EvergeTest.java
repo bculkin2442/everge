@@ -51,7 +51,7 @@ public class EvergeTest {
 		evg.setOutput(normOut);
 		evg.setError(normErr);
 
-		// evg.processArgs("--verbosity", "3");
+		evg.processArgs("--verbosity", "3");
 		List<String> errs = new ArrayList<>();
 		boolean stat = evg.processArgs(errs, "--input-status", "line", "--file",
 				"data/test/evg-test1.rp", "data/test/evg-test1.inp");
