@@ -1,2 +1,9 @@
 <project>
+	<body>
+		<menu ref="reports" />
+		
+		<menu name="Overview">
+			<item name="Coverage" href="jacoco-ut/index.html" />
+		</menu>
+	</body>
 </project>
