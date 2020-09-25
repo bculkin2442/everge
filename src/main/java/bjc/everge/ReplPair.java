@@ -206,7 +206,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			// Global control. Process it.
 			if (name.startsWith("|//")) {
-				readGlobal(name, scn, errs, ropts, lno, pno);
+				readGlobal(name, errs, ropts, lno, pno);
 
 				continue;
 			}
@@ -256,7 +256,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 			isMulti = ropts.defMulti;
 
-			ControlledString cs = getControls(body, errs, ropts, lno, pno, "body");
+			ControlledString cs = getControls(body, errs, lno, pno, "body");
 			// Body has attached controls, process them.
 			if (cs.hasControls()) {
 				for (Control cont : cs.controls) {
@@ -541,7 +541,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 
 	private static String readName(String nam, Scanner scn, List<ReplError> errs,
 			ReplPair rp, ReplOpts ropts, IntHolder lno, IntHolder pno) {
-		ControlledString cs = getControls(nam, errs, ropts, lno, pno, "name");
+		ControlledString cs = getControls(nam, errs, lno, pno, "name");
 
 		boolean isMulti = ropts.defMulti;
 
@@ -696,10 +696,10 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 		return name;
 	}
 
-	private static void readGlobal(String nam, Scanner scn, List<ReplError> errs,
+	private static void readGlobal(String nam, List<ReplError> errs,
 			ReplOpts ropts, IntHolder lno, IntHolder pno) {
 		ControlledString cs
-				= getControls(nam.substring(1), errs, ropts, lno, pno, "global");
+				= getControls(nam.substring(1), errs, lno, pno, "global");
 
 		for (Control cont : cs.controls) {
 			switch (cont.name) {
@@ -868,7 +868,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	}
 
 	private static ControlledString getControls(String lne, List<ReplError> errs,
-			ReplOpts ropts, IntHolder lno, IntHolder pno, String type) {
+			IntHolder lno, IntHolder pno, String type) {
 		try {
 			return ControlledString.parse(lne, new ParseStrings("//", ";", "/", "|"));
 		} catch (IllegalArgumentException iaex) {

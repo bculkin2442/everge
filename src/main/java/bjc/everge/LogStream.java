@@ -46,7 +46,7 @@ public class LogStream {
 	private int verbosity;
 
 	private PrintStream output;
-
+	
 	/**
 	 * Create a new log stream.
 	 *
@@ -74,6 +74,33 @@ public class LogStream {
 		verbosity = level;
 	}
 
+	/**
+	 * Create a new log stream.
+	 *
+	 * Defaults to printing only fatal errors.
+	 *
+	 * @param out
+	 *            The output stream to place things into.
+	 */
+	public LogStream(OutputStream out) {
+		output = new PrintStream(out);
+		verbosity = FATAL;
+	}
+
+	/**
+	 * Create a new log stream.
+	 *
+	 * @param out
+	 *              The output stream to place things into.
+	 * @param level
+	 *              The verbosity level. Use the constants in this class for the
+	 *              values.
+	 */
+	public LogStream(OutputStream out, int level) {
+		output = new PrintStream(out);
+		verbosity = level;
+	}
+	
 	/**
 	 * Get the verbosity of the stream.
 	 * 
