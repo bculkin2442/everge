@@ -17,7 +17,7 @@ public class BadReplParse extends RuntimeException {
 	/**
 	 * The errors that were encountered during parsing.
 	 */
-	public List<ReplError> errs;
+	public List<ReplPairError> errs;
 
 	/**
 	 * Create a new exception for ReplPair parsing failing.
@@ -37,7 +37,7 @@ public class BadReplParse extends RuntimeException {
 	 * @param errs
 	 *             The list of errors encountered while parsing.
 	 */
-	public BadReplParse(String msg, List<ReplError> errs) {
+	public BadReplParse(String msg, List<ReplPairError> errs) {
 		super(msg);
 
 		this.errs = errs;
@@ -81,7 +81,7 @@ public class BadReplParse extends RuntimeException {
 		if (errs.size() > 0) {
 			errString.append("\n\t");
 
-			for (ReplError err : errs) {
+			for (ReplPairError err : errs) {
 				errString.append(err.toPrintString("\t"));
 				errString.append("\n\t");
 			}

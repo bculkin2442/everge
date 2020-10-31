@@ -26,7 +26,9 @@ public class ReplPairTest {
 
 		try (FileInputStream fis = new FileInputStream(fName);
 				Scanner scn = new Scanner(fis)) {
-			lrp = ReplPair.readList(scn);
+			ReplPairParser parser = new ReplPairParser();
+			
+			lrp = parser.readList(scn);
 
 			assertTrue(lrp.size() == 0);
 		} catch (IOException ioex) {

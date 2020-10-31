@@ -28,47 +28,62 @@ public class Everge {
 		 */
 		LINE,
 		/**
-		 * Process the input, splitting it around occurances of a regex.
+		 * Process the input, splitting it around occurrences of a regular expression.
 		 */
 		REGEX;
 	}
 
-	// Options for doing repl-pairs
-	private ReplOpts ropts = new ReplOpts();
+	/**
+	 *  Options for doing repl-pairs
+	 */
+	private ReplPairOptions replOptions = new ReplPairOptions();
 
-	// Pair repository
-	private ReplSet replSet = new ReplSet();
+	/**
+	 * Repository for ReplPairs
+	 */
+	private ReplPairSet replSet = new ReplPairSet();
 
-	// Input status
-	private InputStatus inputStat = InputStatus.ALL;
+	/**
+	 *  Input status.
+	 *  
+	 *  How the input to run replacements on should be processed.
+	 */
+	private InputStatus inputStatus = InputStatus.ALL;
 
-	// Are we processing CLI args? (haven't seen a -- yet)
+	/**
+	 *  Are we processing CLI args? (haven't seen a -- yet)
+	 */
 	private boolean doingArgs = true;
 
-	// Should an NL be printed after each replace?
-	private boolean printNL = true;
+	/**
+	 *  Should an NL be printed after each replace?
+	 */
+	private boolean printNLAfterReplace = true;
 
-	// Verbosity level
+	/**
+	 *  Verbosity level
+	 */
 	private int verbosity;
 
-	// The pattern to use for REGEX input mode
-	private String pattern;
+	/**
+	 *  The pattern to use for REGEX input mode
+	 */
+	private String regexPattern;
 
-	// The queue of arguments to process
-	private Deque<String> argQue = new LinkedList<>();
-
-	// Used to prevent inter-mixing argument alterations with input processing.
+	/**
+	 *  Used to prevent inter-mixing argument alterations with input processing.
+	 */
 	private ReadWriteLock argLock = new ReentrantReadWriteLock();
 
 	// Input/output streams
 	/**
 	 * Stream to use for normal output.
 	 */
-	private PrintStream outStream = System.out;
+	private PrintStream outputStream = System.out;
 	/**
 	 * Stream to use for error output.
 	 */
-	private LogStream errStream = new LogStream(System.err);
+	private LogStream errorStream = new LogStream(System.err);
 
 	/**
 	 * Set the output stream.
@@ -77,7 +92,7 @@ public class Everge {
 	 *            The output stream..
 	 */
 	public void setOutput(PrintStream out) {
-		outStream = out;
+		outputStream = out;
 	}
 
 	/**
@@ -87,7 +102,7 @@ public class Everge {
 	 *            The output stream..
 	 */
 	public void setOutput(OutputStream out) {
-		outStream = new PrintStream(out);
+		setOutput(new PrintStream(out));
 	}
 
 	/**
@@ -97,7 +112,7 @@ public class Everge {
 	 *            The error stream.
 	 */
 	public void setError(PrintStream err) {
-		errStream = new LogStream(err);
+		errorStream = new LogStream(err);
 	}
 
 	/**
@@ -107,7 +122,7 @@ public class Everge {
 	 *            The error stream.
 	 */
 	public void setError(OutputStream err) {
-		errStream = new LogStream(new PrintStream(err));
+		setError(new PrintStream(err));
 	}
 
 	/**
@@ -127,7 +142,7 @@ public class Everge {
 	 *
 	 * @param args
 	 *             The arguments to process.
-	 * @return Whether we processed succesfully or not.
+	 * @return Whether we processed successfully or not.
 	 */
 	public boolean processArgs(String... args) {
 		List<String> errs = new ArrayList<>();
@@ -136,19 +151,16 @@ public class Everge {
 		if (verbosity >= 2) {
 			String argString = args.length > 0 ? "arguments" : "argument";
 
-			errStream.infof("[INFO] Processed %d %s\n", args.length, argString);
-			int argc = 0;
+			errorStream.infof("[INFO] Processed %d %s\n", args.length, argString);
+			int argCount = 0;
 			if (verbosity >= 3) {
-				String arg = args[argc++];
-				errStream.tracef("[TRACE]\tArg %d: '%s\n", argc, arg);
+				String arg = args[argCount++];
+				errorStream.tracef("[TRACE]\tArg %d: '%s\n", argCount, arg);
 			}
 		}
 
-		if (!stat) {
-			for (String err : errs) {
-				errStream.errorf("%s\n", err);
-			}
-		}
+		if (!stat)
+			for (String err : errs) errorStream.errorf("%s\n", err);
 
 		return stat;
 	}
@@ -160,35 +172,36 @@ public class Everge {
 	 *             The arguments to process.
 	 * @param errs
 	 *             The list to stash errors in.
-	 * @return Whether we processed succesfully or not.
+	 * @return Whether we processed successfully or not.
 	 */
 	public boolean processArgs(List<String> errs, String... args) {
 		argLock.writeLock().lock();
 
-		boolean retStat = true;
+		boolean returnStatus = true;
 
 		try {
-			loadQueue(args);
+			Deque<String> argQueue = loadQueue(args);
 
-			// Process CLI args
-			while (argQue.size() > 0) {
-				String arg = argQue.pop();
+			// Process CLI arguments
+			while (argQueue.size() > 0) {
+				String arg = argQueue.pop();
 
-				retStat = processArg(errs, retStat, arg);
+				returnStatus = processArg(errs, returnStatus, arg, argQueue);
 			}
 		} finally {
 			argLock.writeLock().unlock();
 		}
 
-		return retStat;
+		return returnStatus;
 	}
 
-	private boolean processArg(List<String> errs, boolean retStat, String arg) {
-		boolean newRet = retStat;
+	private boolean processArg(List<String> errs, boolean retStat, String arg, Deque<String> argQueue) {
+		boolean newReturnStatus = retStat;
 
 		if (arg.equals("--")) {
 			doingArgs = false;
-			return newRet;
+			
+			return newReturnStatus;
 		}
 
 		// Process an argument
@@ -196,7 +209,7 @@ public class Everge {
 			String argName = arg;
 			String argBody = "";
 
-			// Process arguments to arguments
+			// Process 'joined' arguments (a=b)
 			int idx = arg.indexOf("=");
 			if (idx != -1) {
 				argName = arg.substring(0, idx);
@@ -206,76 +219,83 @@ public class Everge {
 			switch (argName) {
 			case "-n":
 			case "--newline":
-				printNL = true;
+				printNLAfterReplace = true;
 				break;
 			case "-N":
 			case "--no-newline":
-				printNL = false;
+				printNLAfterReplace = false;
 				break;
+				
 			case "-v":
 			case "--verbose":
 				verbosity += 1;
-				errStream.louder();
+				errorStream.louder();
 				System.err.printf("[TRACE] Incremented verbosity\n");
 				break;
 			case "-q":
 			case "--quiet":
 				verbosity -= 1;
-				errStream.quieter();
+				errorStream.quieter();
 				System.err.printf("[TRACE] Decremented verbosity\n");
 				break;
 			case "--verbosity":
-				if (argQue.size() < 1) {
+				if (argQueue.size() < 1) {
 					errs.add("[ERROR] No parameter to --verbosity");
-					newRet = false;
+					newReturnStatus = false;
 					break;
 				}
-				argBody = argQue.pop();
+				argBody = argQueue.pop();
 			case "-V":
 				try {
 					verbosity = Integer.parseInt(argBody);
-					errStream.verbosity(verbosity);
+					errorStream.verbosity(verbosity);
 					System.err.printf("[TRACE] Set verbosity to %d\n", verbosity);
 				} catch (NumberFormatException nfex) {
 					String msg = String.format(
 							"[ERROR] Invalid verbosity: '%s' is not an integer", argBody);
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				}
 				break;
+				
 			case "--pattern":
-				if (argQue.size() < 1) {
+				if (argQueue.size() < 1) {
 					errs.add("[ERROR] No parameter to --pattern");
-					newRet = false;
+					newReturnStatus = false;
 					break;
 				}
-				argBody = argQue.pop();
+				argBody = argQueue.pop();
 			case "-p":
+				if (inputStatus != InputStatus.REGEX) 
+					errorStream.warn("[WARN] Specified pattern will be ignored unless input mode is switched to REGEX");
+				
 				try {
-					pattern = argBody;
+					regexPattern = argBody;
 
 					Pattern.compile(argBody);
 				} catch (PatternSyntaxException psex) {
 					String msg = String.format("[ERROR] Pattern '%s' is invalid: %s",
-							pattern, psex.getMessage());
+							regexPattern, psex.getMessage());
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				}
 				break;
+				
 			case "--file":
-				if (argQue.size() < 1) {
+				if (argQueue.size() < 1) {
 					errs.add("[ERROR] No argument to --file");
-					newRet = false;
+					newReturnStatus = false;
 					break;
 				}
-				argBody = argQue.pop();
+				argBody = argQueue.pop();
 			case "-f":
 				try (FileInputStream fis = new FileInputStream(argBody);
 						Scanner scn = new Scanner(fis)) {
-					List<ReplError> ferrs = new ArrayList<>();
+					List<ReplPairError> ferrs = new ArrayList<>();
 
 					List<ReplPair> lrp = new ArrayList<>();
-					lrp = ReplPair.readList(lrp, scn, ferrs, ropts);
+					ReplPairParser parser = new ReplPairParser();
+					lrp = parser.readList(lrp, scn, ferrs, replOptions);
 
 					if (ferrs.size() > 0) {
 						StringBuilder sb = new StringBuilder();
@@ -284,19 +304,18 @@ public class Everge {
 						if (ferrs.size() > 1)
 							errString = String.format("%d errors", ferrs.size());
 
-						{
-							String msg = String.format(
-									"[ERROR] Encountered %s parsing data file'%s'\n",
-									errString, argBody);
-							sb.append(msg);
-						}
-
-						for (ReplError err : ferrs) {
+						
+						String msg = String.format(
+								"[ERROR] Encountered %s parsing data file'%s'\n",
+								errString, argBody);
+						sb.append(msg);
+						
+						for (ReplPairError err : ferrs) {
 							sb.append(String.format("\t%s\n", err));
 						}
 
 						errs.add(sb.toString());
-						newRet = false;
+						newReturnStatus = false;
 					}
 
 					replSet.addPairs(lrp);
@@ -304,21 +323,22 @@ public class Everge {
 					String msg = String.format(
 							"[ERROR] Could not open data file '%s' for input", argBody);
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				} catch (IOException ioex) {
 					String msg = String.format(
 							"[ERROR] Unknown I/O error reading data file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				}
 				break;
+				
 			case "--arg-file":
-				if (argQue.size() < 1) {
+				if (argQueue.size() < 1) {
 					errs.add("[ERROR] No argument to --arg-file");
 					break;
 				}
-				argBody = argQue.pop();
+				argBody = argQueue.pop();
 			case "-F":
 				try (FileInputStream fis = new FileInputStream(argBody);
 						Scanner scn = new Scanner(fis)) {
@@ -341,47 +361,48 @@ public class Everge {
 							"[ERROR] Could not open argument file '%s' for input",
 							argBody);
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				} catch (IOException ioex) {
 					String msg = String.format(
 							"[ERROR] Unknown I/O error reading input file '%s': %s",
 							argBody, ioex.getMessage());
 					errs.add(msg);
-					newRet = false;
+					newReturnStatus = false;
 				}
 				break;
+				
 			case "--input-status":
-				if (argQue.size() < 1) {
+				if (argQueue.size() < 1) {
 					errs.add("[ERROR] No argument to --input-status");
 					break;
 				}
-				argBody = argQue.pop();
+				argBody = argQueue.pop();
 			case "-I":
 				try {
-					inputStat = InputStatus.valueOf(argBody.toUpperCase());
+					inputStatus = InputStatus.valueOf(argBody.toUpperCase());
 				} catch (IllegalArgumentException iaex) {
 					String msg = String.format("[ERROR] '%s' is not a valid input status",
 							argBody);
 					errs.add(msg);
 				}
 				break;
+				
 			default: {
-				String msg = String
-						.format("[ERROR] Unrecognised CLI argument name '%s'\n", argName);
+				String msg = String.format(
+						"[ERROR] Unrecognised CLI argument name '%s'\n", argName);
 				errs.add(msg);
-				newRet = false;
+				newReturnStatus = false;
 			}
 			}
 		} else {
 			String tmp = arg;
 			// Strip off an escaped initial dash
-			if (tmp.startsWith("\\-"))
-				tmp = tmp.substring(1);
+			if (tmp.startsWith("\\-")) tmp = tmp.substring(1);
 
 			processInputFile(tmp);
 		}
 
-		return newRet;
+		return newReturnStatus;
 	}
 
 	/**
@@ -395,11 +416,7 @@ public class Everge {
 		List<String> errs = new ArrayList<>();
 
 		boolean stat = processInputFile(errs, fle);
-		if (!stat) {
-			for (String err : errs) {
-				errStream.errorf("%s\n", err);
-			}
-		}
+		if (!stat) for (String err : errs) errorStream.errorf("%s\n", err);
 
 		return stat;
 	}
@@ -419,16 +436,15 @@ public class Everge {
 		// Read in and do replacements on a file
 		try {
 			if (verbosity > 2) {
-				errStream.printf("[TRACE] Reading file (%s) in mode (%s)\n", fle,
-						inputStat);
+				errorStream.printf("[TRACE] Reading file (%s) in mode (%s)\n", fle,
+						inputStatus);
 			}
 
-			if (inputStat == InputStatus.ALL) {
+			if (inputStatus == InputStatus.ALL) {
 				Path pth = Paths.get(fle);
 
 				if (!Files.isReadable(pth)) {
-					String msg
-							= String.format("[ERROR] File '%s' is not readable\n", fle);
+					String msg = String.format("[ERROR] File '%s' is not readable\n", fle);
 					errs.add(msg);
 					return false;
 				}
@@ -438,26 +454,23 @@ public class Everge {
 				String strang = new String(inp, Charset.forName("UTF-8"));
 
 				processString(strang);
-			} else if (inputStat == InputStatus.LINE) {
-				try (FileInputStream fis = new FileInputStream(fle);
+			} else if (inputStatus == InputStatus.LINE) {
+				try (
+						FileInputStream fis = new FileInputStream(fle);
 						Scanner scn = new Scanner(fis)) {
-					while (scn.hasNextLine()) {
-						processString(scn.nextLine());
-					}
+					while (scn.hasNextLine()) processString(scn.nextLine());
 				}
-			} else if (inputStat == InputStatus.REGEX) {
+			} else if (inputStatus == InputStatus.REGEX) {
 				try (FileInputStream fis = new FileInputStream(fle);
 						Scanner scn = new Scanner(fis)) {
-					scn.useDelimiter(pattern);
+					scn.useDelimiter(regexPattern);
 
-					while (scn.hasNext()) {
-						processString(scn.next());
-					}
+					while (scn.hasNext()) processString(scn.next());
 				}
 			} else {
 				String msg = String.format(
 						"[INTERNAL-ERROR] Input status '%s' is not yet implemented\n",
-						inputStat);
+						inputStatus);
 				errs.add(msg);
 				return false;
 			}
@@ -487,52 +500,56 @@ public class Everge {
 			String strang = inp;
 
 			if (verbosity >= 3) {
-				errStream.infof(
+				errorStream.infof(
 						"[INFO] Processing replacements for string '%s' in mode %s\n",
-						strang, inputStat);
+						strang, inputStatus);
 				
 				if (!inp.equals(inp.trim())) {
-					errStream.infof("[INFO] String '%s' has trailing spaces on it\n", inp);
+					errorStream.infof("[INFO] String '%s' has trailing spaces on it\n", inp);
 				}
 			}
 
 			strang = replSet.apply(inp);
 
-			outStream.print(strang);
-			if (printNL)
-				outStream.println();
+			outputStream.print(strang);
+			if (printNLAfterReplace) outputStream.println();
 		} finally {
 			argLock.readLock().unlock();
 		}
 	}
 
 	// Load arguments into the argument queue.
-	private void loadQueue(String... args) {
+	private Deque<String> loadQueue(String... args) {
+		Deque<String> argQueue = new ArrayDeque<>(args.length);
+		
 		boolean doArgs = true;
 		for (String arg : args) {
 			if (arg.equals("--")) {
 				doArgs = false;
+				continue;
 			}
 
-			// Handle things like -nNv correctly
 			if (doArgs) {
 				if (arg.startsWith("-") && !arg.startsWith("--")) {
+					// Handle things like -nNv correctly
 					char[] car = arg.substring(1).toCharArray();
 
 					if (verbosity >= 3) {
-						errStream.infof("[INFO] Adding stream of args: %s", car);
+						errorStream.infof("[INFO] Adding collection of single-char arguments: %s", car);
 					}
 
 					for (char c : car) {
 						String argstr = String.format("-%c", c);
-						argQue.add(argstr);
+						argQueue.add(argstr);
 					}
 				} else {
-					argQue.add(arg);
+					argQueue.add(arg);
 				}
 			} else {
-				argQue.add(arg);
+				argQueue.add(arg);
 			}
 		}
+		
+		return argQueue;
 	}
 }

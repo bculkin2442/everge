@@ -7,26 +7,22 @@ import java.io.PrintStream;
  *
  * @author Ben Culkin.
  */
-public class ReplOpts {
-	/**
-	 * The default priority.
-	 */
-	public int defPrior = 0;
+public class ReplPairOptions {
+	/** The default priority. */
+	public int defaultPriority = 0;
 
-	/**
-	 * The default stage.
-	 */
-	public int defStage = 0;
+	/** The default stage. */
+	public int defaultStage = 0;
 
 	/**
 	 * Whether to process multi-line defns.
 	 */
-	public boolean defMulti = false;
+	public boolean defaultMulti = false;
 
 	/**
 	 * Default status.
 	 */
-	public StageStatus defStatus = StageStatus.BOTH;
+	public StageStatus defaultStatus = StageStatus.BOTH;
 
 	/**
 	 * Enable debug info.
@@ -47,6 +43,7 @@ public class ReplOpts {
 	 * The stream to print normal output on.
 	 */
 	public PrintStream outStream = System.out;
+
 	/**
 	 * The stream to print error output on.
 	 */
@@ -56,10 +53,10 @@ public class ReplOpts {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (defMulti ? 1231 : 1237);
-		result = prime * result + defPrior;
-		result = prime * result + defStage;
-		result = prime * result + ((defStatus == null) ? 0 : defStatus.hashCode());
+		result = prime * result + (defaultMulti ? 1231 : 1237);
+		result = prime * result + defaultPriority;
+		result = prime * result + defaultStage;
+		result = prime * result + ((defaultStatus == null) ? 0 : defaultStatus.hashCode());
 		result = prime * result + (isDebug ? 1231 : 1237);
 		result = prime * result + (isPerf ? 1231 : 1237);
 		result = prime * result + (isTrace ? 1231 : 1237);
@@ -74,14 +71,14 @@ public class ReplOpts {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ReplOpts other = (ReplOpts) obj;
-		if (defMulti != other.defMulti)
+		ReplPairOptions other = (ReplPairOptions) obj;
+		if (defaultMulti != other.defaultMulti)
 			return false;
-		if (defPrior != other.defPrior)
+		if (defaultPriority != other.defaultPriority)
 			return false;
-		if (defStage != other.defStage)
+		if (defaultStage != other.defaultStage)
 			return false;
-		if (defStatus != other.defStatus)
+		if (defaultStatus != other.defaultStatus)
 			return false;
 		if (isDebug != other.isDebug)
 			return false;

@@ -1,7 +1,7 @@
 package bjc.everge;
 
 import bjc.everge.ControlledString.Control;
-import bjc.everge.ControlledString.ParseStrings;
+import bjc.everge.ControlledString.ControlledStringParseOptions;
 
 import java.io.FileInputStream;
 
@@ -25,7 +25,8 @@ public class TestUtils {
 	public static void assertThrownMessage(boolean logMsg, String msg, String fle) {
 		try (FileInputStream fis = new FileInputStream(fle);
 				Scanner scn = new Scanner(fis)) {
-			ReplPair.readList(new ArrayList<>(), scn);
+			ReplPairParser parser = new ReplPairParser();
+			parser.readList(new ArrayList<>(), scn);
 
 			assertTrue(false);
 		} catch (BadReplParse rpex) {
@@ -62,7 +63,8 @@ public class TestUtils {
 
 		try (FileInputStream fis = new FileInputStream(fle);
 				Scanner scn = new Scanner(fis)) {
-			lrp = ReplPair.readList(scn);
+			ReplPairParser parser = new ReplPairParser(); 
+			lrp = parser.readList(scn);
 		} catch (BadReplParse rpex) {
 			System.err.println(rpex.toPrintString());
 
@@ -156,13 +158,13 @@ public class TestUtils {
 	public static void assertIsControl(boolean doLog, String inp, String strang,
 			Control... args) {
 		ControlledString cs
-				= ControlledString.parse(inp, new ParseStrings("//", ";", "/", "|"));
+				= ControlledString.parse(inp, new ControlledStringParseOptions("//", ";", "/", "|"));
 
 		if (doLog) {
 			System.err.printf("[LOG] CS: %s\n", cs);
 		}
 
-		assertEquals(strang, cs.strang);
+		assertEquals(strang, cs.body);
 
 		assertEquals("array length mismatch:", args.length, cs.count());
 

@@ -2,6 +2,11 @@ package bjc.everge;
 
 import java.util.Arrays;
 
+/* @FixMe Ben Culkin Oct. 31, 2020 - :LeadingControl
+ * 
+ * At the moment, this only parses a single control that is at the start of the
+ * string. Should this be improved?
+ */
 /**
  * Represents a string with a set of control flags attached to it.
  *
@@ -38,6 +43,8 @@ public class ControlledString {
 		 *            The name of the control.
 		 */
 		public Control(String nam) {
+			this();
+			
 			name = nam;
 		}
 
@@ -50,7 +57,8 @@ public class ControlledString {
 		 *            The arguments of the control.
 		 */
 		public Control(String nam, String... ars) {
-			name = nam;
+			this(nam);
+			
 			args = ars;
 		}
 
@@ -73,6 +81,8 @@ public class ControlledString {
 		 * @return The argument at that position.
 		 */
 		public String get(int i) {
+			// @Cleanup: I'm pretty sure Java will auto-throw these, so we should
+			// remove this stuff. --bculkin, Oct. 31, 2020
 			if (i < 0) {
 				String msg = String.format(
 						"Control argument index must be greater than 0 (was %d)", i);
@@ -175,74 +185,78 @@ public class ControlledString {
 	 *
 	 * @author Ben Culkin
 	 */
-	public static class ParseStrings {
+	public static class ControlledStringParseOptions {
 		/**
 		 * The indicator for separating controls from the regular string.
 		 */
-		public String contInd;
+		public String controlIndicator;
 
 		/**
 		 * The indicator for separating individual controls.
 		 */
-		public String contSep;
+		public String controlSeparator;
 
 		/**
 		 * The indicator for separating arguments to a control.
 		 */
-		public String contArg;
+		public String controlArgumentSeparator;
 
 		/**
 		 * The indicator for escaping any of the indicators (including itself)
 		 */
-		public String contEsc;
+		public String controlEscape;
 
 		/**
 		 * Create a new set of parse strings.
 		 *
-		 * @param contInd
+		 * @param controlIndicator
 		 *                The control indicator.
-		 * @param contSep
+		 * @param controlSeparator
 		 *                The control separator.
-		 * @param contArg
+		 * @param controlArgumentSeparator
 		 *                The argument separator.
-		 * @param contEsc
+		 * @param controlEscape
 		 *                The control escape.
 		 */
-		public ParseStrings(String contInd, String contSep, String contArg,
-				String contEsc) {
-			this.contInd = contInd;
-			this.contSep = contSep;
-			this.contArg = contArg;
-			this.contEsc = contEsc;
+		public ControlledStringParseOptions(String controlIndicator,
+				String controlSeparator, String controlArgumentSeparator,
+				String controlEscape) {
+			this.controlIndicator = controlIndicator;
+			this.controlSeparator = controlSeparator;
+			this.controlArgumentSeparator = controlArgumentSeparator;
+			this.controlEscape = controlEscape;
 		}
 
 		/**
 		 * Convenient static constructor.
 		 *
-		 * @param contInd
+		 * @param controlIndicator
 		 *                The control indicator.
-		 * @param contSep
+		 * @param controlSeparator
 		 *                The control separator.
-		 * @param contArg
+		 * @param controlArgumentSeparator
 		 *                The argument separator.
-		 * @param contEsc
+		 * @param controlEscape
 		 *                The control escape.
 		 * @return A new set of control strings.
 		 */
-		public static ParseStrings PS(String contInd, String contSep, String contArg,
-				String contEsc) {
-			return new ParseStrings(contInd, contSep, contArg, contEsc);
+		public static ControlledStringParseOptions CSPS(String controlIndicator,
+				String controlSeparator, String controlArgumentSeparator,
+				String controlEscape) {
+			return new ControlledStringParseOptions(controlIndicator, controlSeparator, controlArgumentSeparator, controlEscape);
 		}
 	}
 
 	/**
 	 * The string the controls apply to.
 	 */
-	public String strang;
+	public String body;
 
 	/**
 	 * The controls that apply to the string.
 	 */
+	// @NOTE Why is this an array? Would it make more sense for it to be a List
+	// of some sort? --bculkin, Oct 31, 2020
 	public Control[] controls;
 
 	/**
@@ -259,9 +273,9 @@ public class ControlledString {
 	 *               The string to use.
 	 */
 	public ControlledString(String strung) {
-		strang = strung;
-
-		controls = new Control[0];
+		this();
+		
+		body = strung;
 	}
 
 	/**
@@ -273,7 +287,7 @@ public class ControlledString {
 	 *                 The controls that apply to the string.
 	 */
 	public ControlledString(String strung, Control... controls) {
-		strang = strung;
+		this(strung);
 
 		this.controls = controls;
 	}
@@ -307,51 +321,59 @@ public class ControlledString {
 	 *                The object to read the strings from
 	 * @return A parsed control string.
 	 */
-	public static ControlledString parse(String lne, ParseStrings strangs) {
-		if (!lne.startsWith(strangs.contInd)) {
-			return new ControlledString(lne);
-		}
+	public static ControlledString parse(String lne, ControlledStringParseOptions strangs) {
+		if (!lne.startsWith(strangs.controlIndicator)) return new ControlledString(lne);
 
-		String[] bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contInd, lne);
+		// Split off initial control
+		String[] controlIntervals = StringUtils.escapeSplit(strangs.controlEscape, strangs.controlIndicator, lne);
 
-		if (bits.length < 2) {
+		if (controlIntervals.length < 2) {
 			String msg = "Did not find control terminator (%s) where it should be";
-			msg = String.format(msg, strangs.contInd);
+			msg = String.format(msg, strangs.controlIndicator);
 
 			throw new IllegalArgumentException(msg);
 		}
 
-		ControlledString cs = new ControlledString(bits[0]);
-		if (bits.length > 2)
-			cs.strang = bits[2];
+		ControlledString controlString = new ControlledString(controlIntervals[0]);
+		/* :LeadingControl
+		 * ... Is this even correct? It would seem that we are discarding any
+		 * text that came before the control.
+		 * 
+		 * Ideally, what we would want to do is concatenate any non-control text,
+		 * and then process each control interval by itself.
+		 */
+		if (controlIntervals.length > 2) controlString.body = controlIntervals[2];
 
-		bits = StringUtils.escapeSplit(strangs.contEsc, strangs.contSep, bits[1]);
+		// Split the individual controls from the string
+		String[] unparsedControls = StringUtils.escapeSplit(strangs.controlEscape,
+				strangs.controlSeparator, controlIntervals[1]);
+		controlString.controls = new Control[unparsedControls.length];
 
-		cs.controls = new Control[bits.length];
+		for (int i = 0; i < unparsedControls.length; i++) {
+			String controlText = unparsedControls[i];
 
-		for (int i = 0; i < bits.length; i++) {
-			String bit = bits[i];
+			// Get the control arguments
+			String[] controlArguments
+					= StringUtils.escapeSplit(strangs.controlEscape, strangs.controlArgumentSeparator, controlText);
 
-			String[] bots
-					= StringUtils.escapeSplit(strangs.contEsc, strangs.contArg, bit);
+			Control control = new Control(controlArguments[0]);
 
-			Control cont = new Control(bots[0]);
-
-			if (cont.name.length() > 1) {
-				cont.name = cont.name.toUpperCase();
+			if (control.name.length() > 1) {
+				// Only single-character controls can be lower-case
+				control.name = control.name.toUpperCase();
 			}
 
-			if (bots.length > 1) {
-				cont.args = new String[bots.length - 1];
-				for (int j = 1; j < bots.length; j++) {
-					cont.args[j - 1] = bots[j];
+			if (controlArguments.length > 1) {
+				control.args = new String[controlArguments.length - 1];
+				for (int j = 1; j < controlArguments.length; j++) {
+					control.args[j - 1] = controlArguments[j];
 				}
 			}
 
-			cs.controls[i] = cont;
+			controlString.controls[i] = control;
 		}
 
-		return cs;
+		return controlString;
 	}
 
 	@Override
@@ -360,12 +382,10 @@ public class ControlledString {
 
 		sb.append("//");
 
-		for (Control cont : controls) {
-			sb.append(cont);
-		}
+		for (Control control : controls) sb.append(control);
 
 		sb.append("//");
-		sb.append(strang);
+		sb.append(body);
 
 		return sb.toString();
 	}

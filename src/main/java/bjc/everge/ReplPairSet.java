@@ -9,15 +9,15 @@ import java.util.*;
  *
  * @author Ben Culkin
  */
-public class ReplSet {
+public class ReplPairSet {
 	// The list of pairs
-	private List<ReplPair> parList;
+	private List<ReplPair> pairList;
 
 	/**
 	 * Create a new blank set of pairs.
 	 */
-	public ReplSet() {
-		parList = new ArrayList<>();
+	public ReplPairSet() {
+		pairList = new ArrayList<>();
 	}
 
 	/**
@@ -26,28 +26,30 @@ public class ReplSet {
 	 * Changes to the list of pairs will carry across to the ReplSet, so be careful
 	 * about that.
 	 *
-	 * @param lst
+	 * @param list
 	 *            The list of pairs to use.
 	 */
-	public ReplSet(List<ReplPair> lst) {
-		parList = lst;
+	public ReplPairSet(List<ReplPair> list) {
+		pairList = list;
 	}
 
 	/**
 	 * Load a ReplSet from a file.
 	 * 
-	 * @param fName
+	 * @param fileName
 	 *              The file to load the ReplSet from.
 	 * @return A ReplSet, loaded from the file.
 	 * @throws IOException
 	 *                     if something goes badly reading it.
 	 */
-	public static ReplSet fromFile(String fName) throws IOException {
-		ReplSet rs = new ReplSet();
+	public static ReplPairSet fromFile(String fileName) throws IOException {
+		ReplPairSet rs = new ReplPairSet();
 
-		try (FileInputStream fis = new FileInputStream(fName);
+		try (FileInputStream fis = new FileInputStream(fileName);
 				Scanner scn = new Scanner(fis)) {
-			rs.parList = ReplPair.readList(scn);
+			ReplPairParser parser = new ReplPairParser();
+			
+			rs.pairList = parser.readList(scn);
 		}
 
 		return rs;
@@ -56,16 +58,14 @@ public class ReplSet {
 	/**
 	 * Adds more pairs to the ReplSet.
 	 *
-	 * @param pars
+	 * @param pairs
 	 *             The pairs to add to the ReplSet.
 	 */
-	public void addPairs(List<ReplPair> pars) {
-		for (ReplPair par : pars) {
-			parList.add(par);
-		}
+	public void addPairs(List<ReplPair> pairs) {
+		for (ReplPair par : pairs) pairList.add(par);
 
 		// Resort the pairs into priority order
-		parList.sort(null);
+		pairList.sort(null);
 	}
 
 	/**
@@ -76,11 +76,11 @@ public class ReplSet {
 	 */
 	public void addPairs(ReplPair... pars) {
 		for (ReplPair par : pars) {
-			parList.add(par);
+			pairList.add(par);
 		}
 
 		// Resort the pairs into priority order
-		parList.sort(null);
+		pairList.sort(null);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class ReplSet {
 	public String apply(String val) {
 		String ret = val;
 
-		for (ReplPair par : parList) {
+		for (ReplPair par : pairList) {
 			System.err.printf("Applying pair '%s' to string '%s' (original was '%s')\n", par, ret, val);
 			String tmp = par.apply(ret);
 
