@@ -47,8 +47,8 @@ public class EvergeTest {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ByteArrayOutputStream errBaos = new ByteArrayOutputStream();
 
-		OutputStream normOut = new MirrorOutputStream(baos, System.out);
-		OutputStream normErr = new MirrorOutputStream(errBaos, System.err);
+		OutputStream normOut = new MirrorOutputStream(baos/*, System.out*/);
+		OutputStream normErr = new MirrorOutputStream(errBaos/*, System.err*/);
 
 		Everge evg = new Everge();
 		evg.setOutput(normOut);
@@ -57,7 +57,7 @@ public class EvergeTest {
 		evg.processArgs("--verbosity", "4");
 		List<String> errs = new ArrayList<>();
 		boolean stat = evg.processArgs(errs, "--input-status", "line", "--file",
-				"data/test/evg-test1.rp", "data/test/evg-test1.inp");
+				"data/test/evg-test1.evg", "data/test/evg-test1.inp");
 		if (!stat) {
 			System.err.println("[ERROR] Did not succesfully process args");
 			for (String err : errs) {

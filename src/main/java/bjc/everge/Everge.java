@@ -195,7 +195,7 @@ public class Everge {
 		return returnStatus;
 	}
 
-	private boolean processArg(List<String> errs, boolean retStat, String arg, Deque<String> argQueue) {
+	private boolean processArg(List<String> errors, boolean retStat, String arg, Deque<String> argQueue) {
 		boolean newReturnStatus = retStat;
 
 		if (arg.equals("--")) {
@@ -223,6 +223,7 @@ public class Everge {
 				break;
 			case "-N":
 			case "--no-newline":
+			case "--nonewline":
 				printNLAfterReplace = false;
 				break;
 				
@@ -230,17 +231,17 @@ public class Everge {
 			case "--verbose":
 				verbosity += 1;
 				errorStream.louder();
-				System.err.printf("[TRACE] Incremented verbosity\n");
+				//System.err.printf("[TRACE] Incremented verbosity\n");
 				break;
 			case "-q":
 			case "--quiet":
 				verbosity -= 1;
 				errorStream.quieter();
-				System.err.printf("[TRACE] Decremented verbosity\n");
+				//System.err.printf("[TRACE] Decremented verbosity\n");
 				break;
 			case "--verbosity":
 				if (argQueue.size() < 1) {
-					errs.add("[ERROR] No parameter to --verbosity");
+					errors.add("[ERROR] No parameter to --verbosity");
 					newReturnStatus = false;
 					break;
 				}
@@ -249,18 +250,18 @@ public class Everge {
 				try {
 					verbosity = Integer.parseInt(argBody);
 					errorStream.verbosity(verbosity);
-					System.err.printf("[TRACE] Set verbosity to %d\n", verbosity);
+					//System.err.printf("[TRACE] Set verbosity to %d\n", verbosity);
 				} catch (NumberFormatException nfex) {
 					String msg = String.format(
 							"[ERROR] Invalid verbosity: '%s' is not an integer", argBody);
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				}
 				break;
 				
 			case "--pattern":
 				if (argQueue.size() < 1) {
-					errs.add("[ERROR] No parameter to --pattern");
+					errors.add("[ERROR] No parameter to --pattern");
 					newReturnStatus = false;
 					break;
 				}
@@ -276,14 +277,14 @@ public class Everge {
 				} catch (PatternSyntaxException psex) {
 					String msg = String.format("[ERROR] Pattern '%s' is invalid: %s",
 							regexPattern, psex.getMessage());
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				}
 				break;
 				
 			case "--file":
 				if (argQueue.size() < 1) {
-					errs.add("[ERROR] No argument to --file");
+					errors.add("[ERROR] No argument to --file");
 					newReturnStatus = false;
 					break;
 				}
@@ -293,9 +294,9 @@ public class Everge {
 						Scanner scn = new Scanner(fis)) {
 					List<ReplPairError> ferrs = new ArrayList<>();
 
-					List<ReplPair> lrp = new ArrayList<>();
+					List<ReplPair> pairList = new ArrayList<>();
 					ReplPairParser parser = new ReplPairParser();
-					lrp = parser.readList(lrp, scn, ferrs, replOptions);
+					pairList = parser.readList(pairList, scn, ferrs, replOptions);
 
 					if (ferrs.size() > 0) {
 						StringBuilder sb = new StringBuilder();
@@ -310,32 +311,31 @@ public class Everge {
 								errString, argBody);
 						sb.append(msg);
 						
-						for (ReplPairError err : ferrs) {
+						for (ReplPairError err : ferrs)
 							sb.append(String.format("\t%s\n", err));
-						}
 
-						errs.add(sb.toString());
+						errors.add(sb.toString());
 						newReturnStatus = false;
 					}
 
-					replSet.addPairs(lrp);
+					replSet.addPairs(pairList);
 				} catch (FileNotFoundException fnfex) {
 					String msg = String.format(
 							"[ERROR] Could not open data file '%s' for input", argBody);
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				} catch (IOException ioex) {
 					String msg = String.format(
 							"[ERROR] Unknown I/O error reading data file '%s': %s",
 							argBody, ioex.getMessage());
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				}
 				break;
 				
 			case "--arg-file":
 				if (argQueue.size() < 1) {
-					errs.add("[ERROR] No argument to --arg-file");
+					errors.add("[ERROR] No argument to --arg-file");
 					break;
 				}
 				argBody = argQueue.pop();
@@ -347,33 +347,34 @@ public class Everge {
 					while (scn.hasNextLine()) {
 						String ln = scn.nextLine().trim();
 
-						if (ln.equals(""))
-							continue;
-						if (ln.startsWith("#"))
-							continue;
+						if (ln.equals(""))      continue;
+						if (ln.startsWith("#")) continue;
 
 						sl.add(ln);
 					}
 
+					// @FixMe :ArgFile
+					// This won't work properly when using the 'non-inline' arguments
+					// oops. It should. -- bculkin, Oct 31
 					processArgs(sl.toArray(new String[0]));
 				} catch (FileNotFoundException fnfex) {
 					String msg = String.format(
 							"[ERROR] Could not open argument file '%s' for input",
 							argBody);
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				} catch (IOException ioex) {
 					String msg = String.format(
 							"[ERROR] Unknown I/O error reading input file '%s': %s",
 							argBody, ioex.getMessage());
-					errs.add(msg);
+					errors.add(msg);
 					newReturnStatus = false;
 				}
 				break;
 				
 			case "--input-status":
 				if (argQueue.size() < 1) {
-					errs.add("[ERROR] No argument to --input-status");
+					errors.add("[ERROR] No argument to --input-status");
 					break;
 				}
 				argBody = argQueue.pop();
@@ -383,14 +384,14 @@ public class Everge {
 				} catch (IllegalArgumentException iaex) {
 					String msg = String.format("[ERROR] '%s' is not a valid input status",
 							argBody);
-					errs.add(msg);
+					errors.add(msg);
 				}
 				break;
 				
 			default: {
 				String msg = String.format(
 						"[ERROR] Unrecognised CLI argument name '%s'\n", argName);
-				errs.add(msg);
+				errors.add(msg);
 				newReturnStatus = false;
 			}
 			}

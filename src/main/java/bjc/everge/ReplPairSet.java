@@ -75,9 +75,7 @@ public class ReplPairSet {
 	 *             The pairs to add to the ReplSet.
 	 */
 	public void addPairs(ReplPair... pars) {
-		for (ReplPair par : pars) {
-			pairList.add(par);
-		}
+		for (ReplPair par : pars) pairList.add(par);
 
 		// Resort the pairs into priority order
 		pairList.sort(null);
@@ -95,10 +93,10 @@ public class ReplPairSet {
 		String ret = val;
 
 		for (ReplPair par : pairList) {
-			System.err.printf("Applying pair '%s' to string '%s' (original was '%s')\n", par, ret, val);
-			String tmp = par.apply(ret);
+			//System.err.printf("Applying pair '%s' to string '%s' (original was '%s')\n", par, ret, val);
+			String msg = par.apply(ret);
 
-			ret = tmp;
+			ret = msg;
 		}
 
 		return ret;
