@@ -1,5 +1,7 @@
 package bjc.everge;
 
+import bjc.data.IntHolder;
+
 /**
  * Represents an error encountered parsing ReplPairs
  *

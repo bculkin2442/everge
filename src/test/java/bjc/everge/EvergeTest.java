@@ -9,6 +9,8 @@ import static bjc.everge.TestUtils.*;
 
 import org.junit.Test;
 
+import bjc.utils.ioutils.*;
+
 /**
  * Unit tests for Everge front-end.
  *
