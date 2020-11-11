@@ -15,7 +15,7 @@ public class ReplPair implements Comparable<ReplPair>, UnaryOperator<String> {
 	int stage;
 
 	// Status of this pair with regards to doing staging stuff
-	StageStatus stat = StageStatus.BOTH;
+	StageStatus status = StageStatus.BOTH;
 
 	/**
 	 * The priority for this replacement.

@@ -13,6 +13,9 @@ import bjc.everge.ControlledString.*;
  *
  */
 public class ReplPairParser {
+	private static final ControlledStringParseOptions STANDARD_OPTIONS =
+			new ControlledStringParseOptions("//", ";", "/", "|");
+
 	/**
 	 * Read a list of replacement pairs from an input source.
 	 *
@@ -81,8 +84,8 @@ public class ReplPairParser {
 	 */
 	public List<ReplPair> readList(List<ReplPair> detals, Scanner scn,
 			List<ReplPairError> errs, ReplPairOptions ropts) {
-		IntHolder lno = new IntHolder();
-		IntHolder pno = new IntHolder();
+		IntHolder lineNumber = new IntHolder();
+		IntHolder pairNumber = new IntHolder();
 	
 		List<List<ReplPair>> stages = new ArrayList<>();
 		stages.add(new ArrayList<ReplPair>());
@@ -90,53 +93,51 @@ public class ReplPairParser {
 		// For every line in the source...
 		while (scn.hasNextLine()) {
 			String name = scn.nextLine().trim();
-			lno.incr();
+			lineNumber.incr();
 	
 			// If its commented or blank, skip it
-			if (name.equals(""))
-				continue;
-			if (name.startsWith("#"))
-				continue;
+			if (name.equals(""))      continue;
+			if (name.startsWith("#")) continue;
 	
 			// Global control. Process it.
 			if (name.startsWith("|//")) {
-				readGlobal(name, errs, ropts, lno, pno);
+				readGlobal(name, errs, ropts, lineNumber, pairNumber);
 	
 				continue;
 			}
 	
-			ReplPair rp = new ReplPair();
+			// Process a ReplPair
+			ReplPair pair = new ReplPair();
 	
-			rp.priority = ropts.defaultPriority;
-			rp.stat = ropts.defaultStatus;
-			rp.lineNumber = lno.get();
-			rp.stage = ropts.defaultStage;
+			pair.priority = ropts.defaultPriority;
+			pair.status = ropts.defaultStatus;
+			pair.lineNumber = lineNumber.get();
+			pair.stage = ropts.defaultStage;
 	
 			boolean isMulti = ropts.defaultMulti;
 	
 			{
-				String tmpName = readName(name, scn, errs, rp, ropts, lno, pno);
-				if (tmpName == null)
-					continue;
+				String tmpName = readName(name, scn, errs, pair, ropts,
+						lineNumber, pairNumber);
+				// Name was blank, move onto the next line
+				if (tmpName == null) continue;
 				name = tmpName;
 			}
 	
-			rp.find = name;
-			if (rp.name == null)
-				rp.name = name;
+			pair.find = name;
+			if (pair.name == null) pair.name = name;
 	
 			// We started to process the pair, mark it as being
 			// started
-			pno.incr();
+			pairNumber.incr();
 			String body = null;
 	
 			// Read in the next uncommented line
 			do {
-				if (!scn.hasNextLine())
-					break;
+				if (!scn.hasNextLine()) break;
 	
 				body = scn.nextLine().trim();
-				lno.incr();
+				lineNumber.incr();
 			} while (body.startsWith("#"));
 	
 			if (body == null) {
@@ -144,15 +145,15 @@ public class ReplPairParser {
 						"Ran out of input looking for replacement body for raw name '%s'",
 						name);
 	
-				errs.add(new ReplPairError(lno, pno, msg, null));
+				errs.add(new ReplPairError(lineNumber, pairNumber, msg, null));
 				break;
 			}
 	
 			isMulti = ropts.defaultMulti;
 	
-			ControlledString cs = getControls(body, errs, lno, pno, "body");
-			// Body has attached controls, process them.
+			ControlledString cs = getControls(body, errs, lineNumber, pairNumber, "body");
 			if (cs.hasControls()) {
+				// Body has attached controls, process them.
 				for (Control cont : cs.controls) {
 					switch (cont.name) {
 					case "MULTITRUE":
@@ -169,16 +170,19 @@ public class ReplPairParser {
 					case "M":
 						if (cont.count() != 1) {
 							String errMsg = String.format(
-									"Expected one multi flag (got %d)", cont.count());
-							errs.add(new ReplPairError(lno, pno, errMsg, body));
+									"Expected one multi flag (got %d)",
+									cont.count());
+							
+							errs.add(new ReplPairError(lineNumber, pairNumber, errMsg, body));
 						} else {
 							isMulti = Boolean.parseBoolean(cont.get(0));
 						}
 						break;
 					default: {
-						String errMsg
-								= String.format("Invalid control name '%s'", cont.name);
-						errs.add(new ReplPairError(lno, pno, errMsg, body));
+						String errMsg = String.format(
+								"Invalid control name '%s'", cont.name);
+						
+						errs.add(new ReplPairError(lineNumber, pairNumber, errMsg, body));
 					}
 						break;
 					}
@@ -188,49 +192,48 @@ public class ReplPairParser {
 			}
 	
 			if (isMulti) {
-				String tmp = readMultiLine(body, scn, ropts, "body", lno);
-				if (tmp == null)
-					continue;
+				String tmp = readMultiLine(body, scn, ropts, "body", lineNumber);
+				if (tmp == null) continue;
 				body = tmp;
 			}
 	
-			rp.replace = body;
+			pair.replace = body;
 	
 			List<ReplPair> stageList = null;
-			if (rp.stage == 0 || stages.size() < (rp.stage - 1)) {
-				stageList = stages.get(rp.stage);
+			if (pair.stage == 0 || stages.size() < (pair.stage - 1)) {
+				stageList = stages.get(pair.stage);
 	
 				if (stageList == null) {
 					stageList = new ArrayList<>();
 	
-					stages.add(rp.stage, stageList);
+					stages.add(pair.stage, stageList);
 				}
 			} else {
-				for (int i = stages.size(); i <= rp.stage; i++) {
+				for (int i = stages.size(); i <= pair.stage; i++) {
 					stages.add(new ArrayList<>());
 				}
 	
-				stageList = stages.get(rp.stage);
+				stageList = stages.get(pair.stage);
 			}
 	
 			if (ropts.isTrace) {
-				ropts.errStream.printf("\t[DEBUG] Stage %d: Added %s\n\t\tContents: %s\n",
-						rp.stage, rp, stageList);
+				ropts.errStream.printf(
+						"\t[DEBUG] Stage %d: Added %s\n\t\tContents: %s\n",
+						pair.stage, pair, stageList);
 			}
 	
-			stageList.add(rp);
+			stageList.add(pair);
 		}
 	
 		// Special-case one-stage processing.
 		if (stages.size() == 1) {
-			if (ropts.isTrace)
-				ropts.errStream.printf("\t[DEBUG] Executing single-stage bypass\n");
+			if (ropts.isTrace) ropts.errStream.printf(
+					"\t[DEBUG] Executing single-stage bypass\n");
 	
 			for (ReplPair rp : stages.iterator().next()) {
-				if (rp.stat == StageStatus.INTERNAL) {
-					if (ropts.isTrace)
-						ropts.errStream.printf("\t[DEBUG] Excluding internal RP %s\n",
-								rp);
+				if (rp.status == StageStatus.INTERNAL) {
+					if (ropts.isTrace) ropts.errStream.printf(
+								"\t[DEBUG] Excluding internal RP %s\n", rp);
 	
 					continue;
 				}
@@ -247,16 +250,16 @@ public class ReplPairParser {
 		List<ReplPair> tmpList = new ArrayList<>();
 		tmpList.addAll(detals);
 	
-		if (ropts.isTrace)
-			ropts.errStream.printf("\t[DEBUG] Stages: %s\n", stages);
+		if (ropts.isTrace) ropts.errStream.printf("\t[DEBUG] Stages: %s\n",
+				stages);
 	
 		int procStg = 0;
 		for (List<ReplPair> stageList : stages) {
 			procStg += 1;
 			List<ReplPair> curStage = new ArrayList<>();
 	
-			if (ropts.isTrace)
-				ropts.errStream.printf("\t[DEBUG] Staging stage %d of %d: %s\n", procStg,
+			if (ropts.isTrace) ropts.errStream.printf(
+						"\t[DEBUG] Staging stage %d of %d: %s\n", procStg,
 						stageList.size(), stageList);
 	
 			for (ReplPair rp : stageList) {
@@ -266,7 +269,8 @@ public class ReplPairParser {
 					String tmp = rp.replace.replaceAll(curPar.find, curPar.replace);
 	
 					if (ropts.isTrace && !rp.replace.equals(tmp)) {
-						ropts.errStream.printf("\t[DEBUG] Staged '%s' -> '%s'\t%s\n",
+						ropts.errStream.printf(
+								"\t[DEBUG] Staged '%s' -> '%s'\t%s\n",
 								rp.replace, tmp, curPar);
 					}
 	
@@ -274,7 +278,7 @@ public class ReplPairParser {
 				}
 	
 				// If we're external; add straight to the output
-				if (rp.stat == StageStatus.EXTERNAL) {
+				if (rp.status == StageStatus.EXTERNAL) {
 					if (ropts.isTrace) {
 						ropts.errStream.printf(
 								"\t[DEBUG] Skipped external for staging: %s\n", rp);
@@ -298,7 +302,7 @@ public class ReplPairParser {
 	
 		// Copy over to output, excluding internals
 		for (ReplPair rp : tmpList) {
-			if (rp.stat == StageStatus.INTERNAL) {
+			if (rp.status == StageStatus.INTERNAL) {
 				if (ropts.isTrace)
 					ropts.errStream.printf("\t[DEBUG] Excluded internal: %s\n", rp);
 	
@@ -478,16 +482,16 @@ public class ReplPairParser {
 				case "INTERNAL":
 				case "INT":
 				case "I":
-					rp.stat = StageStatus.INTERNAL;
+					rp.status = StageStatus.INTERNAL;
 					break;
 				case "EXTERNAL":
 				case "EXT":
 				case "E":
-					rp.stat = StageStatus.EXTERNAL;
+					rp.status = StageStatus.EXTERNAL;
 					break;
 				case "BOTH":
 				case "B":
-					rp.stat = StageStatus.BOTH;
+					rp.status = StageStatus.BOTH;
 					break;
 				default: {
 					String errMsg = String.format(
@@ -507,8 +511,9 @@ public class ReplPairParser {
 		// Multi-line name with a trailer
 		if (isMulti) {
 			String tmp = readMultiLine(name, scn, ropts, "name", lno);
-			if (tmp == null)
-				return null;
+			
+			if (tmp == null) return null;
+			
 			name = tmp;
 		}
 	
@@ -689,7 +694,7 @@ public class ReplPairParser {
 	private ControlledString getControls(String lne, List<ReplPairError> errs,
 			IntHolder lno, IntHolder pno, String type) {
 		try {
-			return ControlledString.parse(lne, new ControlledStringParseOptions("//", ";", "/", "|"));
+			return ControlledString.parse(lne, STANDARD_OPTIONS);
 		} catch (IllegalArgumentException iaex) {
 			String msg = "Did not find control terminator (//) in %s where it should be";
 			msg = String.format(msg, type);

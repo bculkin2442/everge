@@ -1,0 +1,6 @@
+@TODO Ben Culkin Oct 31st, 2020 - :MoreArgs
+	Add more CLI arguments to allow specifying more of the options for pairs.
+	
+	Also, add flags for controlling where input/output is going to at the moment,
+	since if you are specifying multiple files, at the moment, there isn't much
+	of a way to tell the difference between them.
